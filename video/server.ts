@@ -32,6 +32,7 @@ nav a{color:var(--fg-body);text-decoration:none;margin-left:18px;font:13px var(-
 .pill{background:rgba(14,17,20,.78);border:1px solid var(--rule);color:var(--fg-body);font:12px/1 var(--mono);padding:6px 9px;letter-spacing:.04em}.pill b{color:var(--sodium);font-weight:500}
 .pill.live::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#E60026;margin-right:7px;vertical-align:0;animation:blink 1.6s infinite}@keyframes blink{50%{opacity:.25}}
 .ctl{position:absolute;right:12px;top:12px;display:flex;gap:6px}.ctl button,.bar button{background:rgba(14,17,20,.78);border:1px solid var(--rule);color:var(--fg-body);font:12px var(--mono);padding:6px 10px;cursor:pointer}.ctl button:hover,.bar button:hover{border-color:var(--sodium);color:var(--sodium)}
+.stage .scrub{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:10px;align-items:center;background:rgba(14,17,20,.78);border:1px solid var(--rule);padding:6px 10px;font:12px var(--mono);color:var(--fg-body)}.scrub input{flex:1;accent-color:var(--sodium)}.scrub button{background:none;border:1px solid var(--rule);color:var(--sodium);font:12px var(--mono);padding:3px 8px;cursor:pointer}.ctl select{background:rgba(14,17,20,.78);border:1px solid var(--rule);color:var(--fg-body);font:12px var(--mono);padding:6px}
 .note{font:13px/1.6 var(--mono);color:var(--fg-soft);padding:10px 0}
 .cols{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;padding:18px 0 40px}@media(max-width:1000px){.cols{grid-template-columns:1fr}.lede{grid-template-columns:1fr}.lede .meta{text-align:left;white-space:normal}}
 .about p{margin:0 0 12px;color:var(--fg-body);max-width:38rem}.about .modes{font:13px/1.7 var(--mono);color:var(--fg-soft)}.about .modes b{color:var(--fg-body);font-weight:500}
@@ -55,8 +56,8 @@ function zoomable(stage){const el=stage.querySelector('video,img');let sc=1,tx=0
  const clamp=()=>{const W=stage.clientWidth,H=stage.clientHeight;sc=Math.min(8,Math.max(1,sc));tx=Math.min(0,Math.max(W-W*sc,tx));ty=Math.min(0,Math.max(H-H*sc,ty));};
  const zoomAt=(x,y,f)=>{const ns=Math.min(8,Math.max(1,sc*f));f=ns/sc;tx=x-(x-tx)*f;ty=y-(y-ty)*f;sc=ns;clamp();apply();};
  stage.addEventListener('wheel',e=>{e.preventDefault();const r=stage.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,e.deltaY<0?1.2:1/1.2)},{passive:false});
- stage.addEventListener('dblclick',e=>{const r=stage.getBoundingClientRect();if(sc>1.02){sc=1;tx=ty=0;apply()}else zoomAt(e.clientX-r.left,e.clientY-r.top,3)});
- stage.addEventListener('pointerdown',e=>{stage.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);if(pts.size===1)drag=[e.clientX-tx,e.clientY-ty];if(pts.size===2){const a=[...pts.values()];pd=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])}});
+ stage.addEventListener('dblclick',e=>{if(e.target.closest('.ctl,.scrub'))return;const r=stage.getBoundingClientRect();if(sc>1.02){sc=1;tx=ty=0;apply()}else zoomAt(e.clientX-r.left,e.clientY-r.top,3)});
+ stage.addEventListener('pointerdown',e=>{if(e.target.closest('.ctl,.scrub'))return;stage.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);if(pts.size===1)drag=[e.clientX-tx,e.clientY-ty];if(pts.size===2){const a=[...pts.values()];pd=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])}});
  stage.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,[e.clientX,e.clientY]);
   if(pts.size===2){const a=[...pts.values()];const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);const r=stage.getBoundingClientRect();zoomAt((a[0][0]+a[1][0])/2-r.left,(a[0][1]+a[1][1])/2-r.top,d/pd);pd=d;}
   else if(drag&&sc>1){tx=e.clientX-drag[0];ty=e.clientY-drag[1];clamp();apply();}});
@@ -72,15 +73,16 @@ const indexHtml = `<!doctype html><html lang=en><head><meta charset=utf-8><meta 
 <div class=lede><h2>Can an <i>agent</i> beat Civilization VI at Deity?</h2><div class=meta><b>Qin · Deity · Earth TSL</b><br>turn <b id=t>—</b> · game ends T250<br><span id=age>—</span></div></div>
 <div class=stage id=stage>
   <video id=v muted autoplay playsinline></video>
-  <div class=hud><span class="pill live">LIVE · 4K · 30fps</span><span class=pill id=q>connecting…</span></div>
-  <div class=ctl><button class=zi title="zoom in">+</button><button class=zo title="zoom out">−</button><button class=zr title="reset">1:1</button><button class=fs title="fullscreen">⛶</button><button id=snd title="sound">🔇</button></div>
+  <div class=hud><span class="pill live">LIVE · 4K · 30fps · audio</span><span class=pill id=q>connecting…</span></div>
+  <div class=ctl><button class=zi title="zoom in">+</button><button class=zo title="zoom out">−</button><button class=zr title="reset">1:1</button><button class=fs title="fullscreen">⛶</button><button id=snd title="sound">🔇</button><select id=qsel title="quality"><option value=-1>auto</option><option value=0>1080p</option><option value=1>4K</option></select></div>
+  <div class=scrub><button id=golive>● LIVE</button><input id=seek type=range min=0 max=1000 value=1000><span id=tpos>live</span></div>
 </div>
-<div class=note>Scroll or pinch to zoom into the map — the stream is the native 3840×2121 game window, so every tooltip is legible. Double-click to zoom 3×. Only the game window is ever captured.</div>
+<div class=note>Scroll or pinch to zoom into the map — the stream is the native 3840×2121 game window, so every tooltip is legible. Double-click to zoom 3×.</div>
 <div class=cols>
  <div class=about><h3 class=k>What this is</h3>${ABOUT}</div>
  <div><h3 class=k>Agent log</h3><div id=sitrep class=log>loading commentary…</div></div>
 </div></div>
-<footer>civilization.is · built on lmwilki/civ6-mcp · source github.com/DanielleFong/civilization.sh · stream: NVENC H.264 via HLS, ~6 s behind the game. Fallback still: <a href="/frame.jpg" style="color:var(--fg-body)">/frame.jpg</a></footer>
+<footer>civilization.is · built on lmwilki/civ6-mcp · source github.com/DanielleFong/civilization.sh · stream: OBS window capture → NVENC H.264 + AAC via HLS, ~8 s behind the game. Fallback still: <a href="/frame.jpg" style="color:var(--fg-body)">/frame.jpg</a></footer>
 <script src="/hls.min.js"></script>
 <script>${ZOOM}
 zoomable(document.getElementById('stage'));
@@ -93,9 +95,14 @@ if(window.Hls&&Hls.isSupported()){const h=new Hls({lowLatencyMode:false,liveSync
 else if(v.canPlayType('application/vnd.apple.mpegurl')){v.src='/hls/live.m3u8';v.play().catch(()=>{});q.textContent='hls · native';}
 else fallback();
 snd.onclick=()=>{v.muted=!v.muted;snd.textContent=v.muted?'🔇':'🔊'};
-let lastT=0,stall=0;setInterval(()=>{if(v.tagName!=='VIDEO')return;if(v.currentTime===lastT&&!v.paused){if(++stall>=4){stall=0;q.textContent='reconnecting…';if(window.__hls){__hls.stopLoad();__hls.loadSource('/hls/live.m3u8?r='+Date.now());__hls.startLoad();v.play().catch(()=>{});}else{v.src='/hls/live.m3u8?r='+Date.now();v.play().catch(()=>{});}}}else stall=0;lastT=v.currentTime;},3000);
+qsel.onchange=()=>{if(window.__hls){const lv=+qsel.value;if(lv<0){__hls.currentLevel=-1;__hls.autoLevelCapping=-1;__hls.capLevelToPlayerSize=true;}else{__hls.capLevelToPlayerSize=false;const idx=__hls.levels.findIndex(l=>lv===1?l.height>1500:l.height<=1500);__hls.currentLevel=idx;}}};
+let seeking=false;const fmt=s=>{s=Math.max(0,Math.round(s));const m=Math.floor(s/60);return (m?m+'m':'')+String(s%60).padStart(2,'0')+'s'};
+seek.oninput=()=>{seeking=true};seek.onchange=()=>{seeking=false;if(v.seekable.length){const a=v.seekable.start(0),b=v.seekable.end(0);v.currentTime=a+(b-a)*seek.value/1000;v.play().catch(()=>{});}};
+golive.onclick=()=>{if(v.seekable.length){v.currentTime=v.seekable.end(0)-1;v.play().catch(()=>{});}};
+setInterval(()=>{if(v.tagName!=='VIDEO'||!v.seekable.length||seeking)return;const a=v.seekable.start(0),b=v.seekable.end(0);const back=b-v.currentTime;seek.value=Math.round(1000*(v.currentTime-a)/Math.max(1,b-a));tpos.textContent=back<6?'live · '+fmt(b-a)+' buffered':'−'+fmt(back)+' behind live';},1000);
+let lastT=0,stall=0;setInterval(()=>{if(v.tagName!=='VIDEO')return;if(v.currentTime===lastT&&!v.paused&&!seeking){if(++stall>=4){stall=0;q.textContent='reconnecting…';if(window.__hls){__hls.stopLoad();__hls.loadSource('/hls/live.m3u8?r='+Date.now());__hls.startLoad();v.play().catch(()=>{});}else{v.src='/hls/live.m3u8?r='+Date.now();v.play().catch(()=>{});}}}else stall=0;lastT=v.currentTime;},3000);
 async function meta(){const s=await fetch('/sitrep.md?t='+Date.now(),{cache:'no-store'});
-  if(s.ok){const md=await s.text();sitrep.innerHTML=md.replace(/</g,'&lt;').replace(/^(#+ .*)$/gm,'<b>$1</b>');const m=[...md.matchAll(/T(\\d{2,3})\\b/g)].map(x=>+x[1]);if(m.length)t.textContent=Math.max(...m);sitrep.scrollTop=sitrep.scrollHeight;}
+  if(s.ok){const md=await s.text();sitrep.innerHTML=md.replace(/</g,'&lt;').replace(/^(#+ .*)$/gm,'<b>$1</b>');const m=[...md.matchAll(/^### T(\\d{2,3})/gm)].map(x=>+x[1]);if(m.length)t.textContent=Math.max(...m);sitrep.scrollTop=sitrep.scrollHeight;}
   const r=await fetch('/hls/live.m3u8?t='+Date.now(),{cache:'no-store',method:'GET'});const lm=r.headers.get('last-modified');if(lm)age.textContent='stream updated '+Math.round((Date.now()-new Date(lm))/1000)+' s ago';}
 meta();setInterval(meta,5000);
 </script></body></html>`;
@@ -181,8 +188,9 @@ Deno.serve({ port: PORT, hostname: "127.0.0.1" }, async (req) => {
   if (p === "/frame.jpg") return file(DIR + "public.jpg", "image/jpeg", EDGE2);
   if (p === "/hls.min.js") return file(DIR + "hls.min.js", "application/javascript", EDGE_LONG);
   if (p === "/hls/live.m3u8") return file(DIR + "hls/live.m3u8", "application/vnd.apple.mpegurl", EDGE1);
-  if (/^\/hls\/(4k|1080)_\d+_s\d{5}\.ts$/.test(p)) return file(DIR + "hls/" + p.slice(5), "video/mp2t", EDGE_LONG);
-  if (/^\/hls\/(4k|1080)\.m3u8$/.test(p)) return file(DIR + "hls/" + p.slice(5), "application/vnd.apple.mpegurl", EDGE1);
+  if (/^\/hls\/1080_\d+_s\d{5}\.ts$/.test(p)) return file(DIR + "hls/" + p.slice(5), "video/mp2t", EDGE_LONG);
+  if (/^\/hls\/obs_\d{5}\.ts$/.test(p)) return file(DIR + "hls/" + p.slice(5), "video/mp2t", { "cache-control": "public, max-age=4, s-maxage=4" });
+  if (/^\/hls\/(obs|1080)\.m3u8$/.test(p)) return file(DIR + "hls/" + p.slice(5), "application/vnd.apple.mpegurl", EDGE1);
   if (p === "/map") return new Response(mapHtml, { headers: { ...SEC, ...NOCACHE, "content-type": "text/html; charset=utf-8" } });
   if (p === "/state/static.json") return file(DIR + "state/static.json", "application/json", { "cache-control": "public, max-age=3600" });
   if (p === "/state/turns.jsonl") return file(DIR + "state/turns.jsonl", "text/plain; charset=utf-8", { "cache-control": "public, max-age=10" });
