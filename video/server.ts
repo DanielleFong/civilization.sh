@@ -188,9 +188,8 @@ Deno.serve({ port: PORT, hostname: "127.0.0.1" }, async (req) => {
   if (p === "/frame.jpg") return file(DIR + "public.jpg", "image/jpeg", EDGE2);
   if (p === "/hls.min.js") return file(DIR + "hls.min.js", "application/javascript", EDGE_LONG);
   if (p === "/hls/live.m3u8") return file(DIR + "hls/live.m3u8", "application/vnd.apple.mpegurl", EDGE1);
-  if (/^\/hls\/1080_\d+_s\d{5}\.ts$/.test(p)) return file(DIR + "hls/" + p.slice(5), "video/mp2t", EDGE_LONG);
-  if (/^\/hls\/obs_\d{5}\.ts$/.test(p)) return file(DIR + "hls/" + p.slice(5), "video/mp2t", { "cache-control": "public, max-age=4, s-maxage=4" });
-  if (/^\/hls\/(obs|1080)\.m3u8$/.test(p)) return file(DIR + "hls/" + p.slice(5), "application/vnd.apple.mpegurl", EDGE1);
+  if (/^\/hls\/(4k|1080)_\d+_s\d{5}\.ts$/.test(p)) return file(DIR + "hls/" + p.slice(5), "video/mp2t", EDGE_LONG);
+  if (/^\/hls\/(4k|1080)\.m3u8$/.test(p)) return file(DIR + "hls/" + p.slice(5), "application/vnd.apple.mpegurl", EDGE1);
   if (p === "/map") return new Response(mapHtml, { headers: { ...SEC, ...NOCACHE, "content-type": "text/html; charset=utf-8" } });
   if (p === "/state/static.json") return file(DIR + "state/static.json", "application/json", { "cache-control": "public, max-age=3600" });
   if (p === "/state/turns.jsonl") return file(DIR + "state/turns.jsonl", "text/plain; charset=utf-8", { "cache-control": "public, max-age=10" });
