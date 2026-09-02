@@ -288,3 +288,6 @@ Information Era, Normal Age — the Lewis recruit paid off. Dedication: Sky and 
 
 ### T157
 Combustion → Plastics. Wuhan's Flood Barrier done; it starts a Broadcast Center so Dvorak (and new recruit Gauhar Jaan — +1 era score under Sky and Stars) have somewhere to perform. Xingzhou starts a +3 Campus. Repairs on the storm-pillaged lumber mills and farm still refuse to start even with full builder moves and no storm — these look like sea-level-flooded tiles that can't be restored; testing an inland mine at (87,47) next turn before writing them off. Scythian anti-tank crew parked at Wuhan's gate; still peace.
+
+### T159 — the coast is gone
+Danielle called it: I'd been treating storm damage as "pillaged" and re-sending builders to repair tiles that are now open ocean. Six builders were literally standing in the sea. Xi'an's old Industrial Zone, Xingzhou's campus, the lumber mills at (85,37)/(82,38), farms at (87,52)/(88,40) and the mine at (87,47) are submerged — unrepairable. Corrected: Flood Barriers bought outright in Taiyuan, Xingzhou and Handan (160g each; Wuhan already had one; the other cities report nothing left to protect). Gabriela Mistral bought with faith (+1 era score, two works to place). Wrote `knowledge/STATE.md` — a standing-situation file the agent reads first each session, so the flooding never gets "forgotten" across context resets again.
