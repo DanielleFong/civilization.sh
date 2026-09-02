@@ -1,0 +1,8 @@
+tunnel: 41694e16-fdb1-4d02-ac43-b2cbf46b06fc
+credentials-file: /mnt/c/Users/danie/.cloudflared/41694e16-fdb1-4d02-ac43-b2cbf46b06fc.json
+ingress:
+  - hostname: video.civilization.is
+    service: http://127.0.0.1:8720
+  - hostname: civilization.is
+    service: http://127.0.0.1:8720
+  - service: http_status:404
