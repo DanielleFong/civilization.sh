@@ -256,3 +256,24 @@ T101 · SHENYANG founded (80,43) — 12 cities. 'World's Largest Civilization' f
 - T143: Liu Tianhua → Xi'an Broadcast Center, Dvorak → Longxi Broadcast Center (2 Great Works of Music). Hokusai/Tagore parked off the theater tiles. Replaceable Parts + Professional Sports done → Chemistry / Suffrage. Xi'an IZ storm-pillaged (blocks Stadium & Coal Plant) — builder en route to repair. Culture 275/t. Germany 1131 > England 868 > Scythia 828 > China 776.
 - T144: Liu Tianhua's 2nd work into the Bolshoi Theatre. Culture 298/t. Score 788 (Germany 1137, England 878, Scythia 833). Remaining GP charges: van Gogh 3 (needs Beijing/Wuhan Art Museums, 5–8t), Hokusai 1, Dvorak 1, Tagore/Twain 0.
 - T145: Suffrage done → Cold War. Culture 319/t. civilization.is is now public (landing + scrubbable replay + metered 960px live frame); full-res feed stays token-gated. Repo: github.com/DanielleFong/civilization.sh.
+- Repo filled: knowledge base (rules cited by turn, Lua recipes, incidents), replay package with mp4 T10–T145, MCP notes. Contest form closed before submit; emailing organizers.
+
+### T149 — score 799. Germany 1148+. Computers + Cold War done → Steel / Space Race. H.G. Wells recruited. Capture switched to PrintWindow: the public feed now shows the game even while the PC is in use (never the desktop).
+
+### T149 (cont.)
+Van Gogh placed at Wuhan Art Museum; H.G. Wells writes at Beijing's amphitheater. Yiyang and Langfang were idle — both now building Builders (repairs are backing up after the storms). Bad news on the "pillaged" Xi'an Industrial Zone: the district isn't pillaged, it's *gone* — the tile no longer holds a district at all. Sea-level rise ate it. Same story likely at Xingzhou's campus. Rebuild elsewhere, not repair. Barbarian ranger lurking 3 tiles off Wuhan; holding the Crouching Tiger inside the walls rather than trading shots with a 63-strength unit.
+
+### T150–151
+Edmonia Lewis recruited with Great Artist points (she was the last era point I needed — 116/116, so the Atomic Dark Age is off the table) and placed at Xi'an's Art Museum: three sculptures. Beijing starts a Research Lab, Wuhan a Flood Barrier, Xiurong repairs its walls. Two Crouching Tigers and two Musketmen promoted (Garrison / Elite Guard). Trader to Bandar Brunei for the envoy quest. Scythia is massing tanks, artillery and helicopters around (69,44) — 10 tiles west of Shenyang — while at peace and with a defensive pact with Poland; I'm keeping units garrisoned, not provoking. Stuck leader screens (England, then a Germany session that never surfaced) were closed from Lua rather than the UI.
+
+*Streaming note:* the live page is now real video — 3840×2121 at 30 fps, NVENC H.264 over HLS — with pinch/scroll zoom, not a 960px still. Audio next via OBS.
+
+### T152
+Turn 151 hung on an "end turn requested" that never fired; a raw `UI.RequestAction(ENDTURN)` from Lua unstuck it. Steel and Space Race in; now Ballistics + Capitalism. Discovery of the turn: under this ruleset Great Writers and Artists place *one* work per activation and keep the rest — so the six "spent" Great People standing around were not spent at all. Walked them to free slots: Wells → Changsha, Twain → Taiyuan, Hokusai → Beijing Art Museum, Tagore → Wuhan; 19 → 23 Great Works this turn, four GPs finally retired. Lewis to Beijing next; van Gogh to Wuhan's museum; Dvorak waits for a Broadcast Center. Shenyang starts an Industrial Zone at (79,45). Three envoys spent on Brunei/Samarkand. Ranger outside Wuhan hit for 29 — it's holding a captured builder I'd like back.
+
+*Site:* video stream is now two HLS renditions (4K 14 Mb/s + 1080p 4 Mb/s, adaptive); a watchdog restarts encoder/server/tunnel/capture. OBS (for audio) is installed but stuck on a safe-mode dialog — parked.
+
+### T153
+Met the Inca (our Brunei-bound trader wandered into their sight). Rejected three AI deals in a row — Germany wanted 19 favor for scraps, Scythia wanted three Great Works for 52 gold/turn; the works are the score. Van Gogh and Edmonia Lewis both finished their last pieces (Wuhan and Beijing art museums) and retired; Dvorak is the only Great Person left holding work, waiting on a Broadcast Center. Trader finally on the Bandar Brunei route (envoy quest). Ballistics done → Refining, for the Coal Power Plant boost. Warning light: the Inca sit at 15/20 Diplomatic Victory points — future Congress votes go against them.
+
+*Site:* stream segments now carry a per-session id so Cloudflare can't serve stale immutable chunks after an encoder restart; player starts at 1080p and steps up to 4K only if the screen can use it; a page-side stall detector re-attaches the stream. Verified end-to-end by decoding 10 s of the public HLS through the edge.
