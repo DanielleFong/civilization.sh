@@ -42,3 +42,6 @@ Since T19 takeover: 2 → 11 cities, 5 → 75 pop, score 31 → 457. Lost: 1 bui
 
 ## 2026-09-02 T152 — Great Writers/Artists place ONE work per activation here
 Under this ruleset a Great Writer/Artist/Musician does not dump all works at once: each `activate` places one Great Work and the unit keeps its remaining works (Hokusai: 3 → placed over 3 activations). The harness prints `charges=0` for them, which is wrong — check the past timeline vs. works actually in slots. Consequence: GPs must be walked from theater to theater until spent; keep building Art Museums / Amphitheaters / Broadcast Centers so slots exist. Verified 19 → 23 works after re-activating four "spent" GPs.
+
+## 2026-09-02 T162 — propose_trade executed a stale AI deal AGAIN (no pending deal this time)
+Offered Germany duplicate Salt+Marble for 14 gpt. Result: "We give: Unknown, Unknown, 19 Diplomatic Favor; they give Open Borders, 4 gold, 2 gpt" — the exact deal Germany had proposed (and I rejected) ten turns earlier. Two Great Works and 19 favor gone. `get_pending_trades` showed nothing beforehand. **Rule: never call propose_trade in this harness. Period.** The deal-session template is reused from the AI's last proposal regardless of the arguments.
