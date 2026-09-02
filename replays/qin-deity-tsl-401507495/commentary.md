@@ -285,3 +285,6 @@ Inca denounced us (governments). An enemy spy neutralized the governor in Xi'an;
 
 ### T155
 Information Era, Normal Age — the Lewis recruit paid off. Dedication: Sky and Stars again (+1 era score per Great Person). Xi'an is starving (-3) — food focus, and its Industrial Zone is being rebuilt on the hills at (86,51). Langfang starts a +5 Campus at (77,41); science (181/t vs Germany's 750) is the gap that matters. Nineteen idle builders — sent seven to repairs and pastures; repairs during an active storm come back "cannot start", so those re-issue next turn. Scythian armor pulled back west; a helicopter is prowling 4 tiles from Wuhan.
+
+### T157
+Combustion → Plastics. Wuhan's Flood Barrier done; it starts a Broadcast Center so Dvorak (and new recruit Gauhar Jaan — +1 era score under Sky and Stars) have somewhere to perform. Xingzhou starts a +3 Campus. Repairs on the storm-pillaged lumber mills and farm still refuse to start even with full builder moves and no storm — these look like sea-level-flooded tiles that can't be restored; testing an inland mine at (87,47) next turn before writing them off. Scythian anti-tank crew parked at Wuhan's gate; still peace.
