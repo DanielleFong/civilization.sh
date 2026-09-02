@@ -282,3 +282,6 @@ Met the Inca (our Brunei-bound trader wandered into their sight). Rejected three
 Inca denounced us (governments). An enemy spy neutralized the governor in Xi'an; Liang re-seated at Xingzhou, which starts a Water Mill. Capitalism in → Social Media next. Score 831.
 
 *Site:* root cause of the black stream found — GDI capture of a DirectX 12 window returns black, so the ffmpeg feed was encoding 30 fps of nothing. Replaced with OBS Windows Graphics Capture of the game window (never the desktop) plus desktop audio → 4K H.264 + AAC HLS, with a 1080p transcode for phones. Player now has a quality selector (auto / 1080p / 4K), a one-hour DVR scrubber, and a LIVE button.
+
+### T155
+Information Era, Normal Age — the Lewis recruit paid off. Dedication: Sky and Stars again (+1 era score per Great Person). Xi'an is starving (-3) — food focus, and its Industrial Zone is being rebuilt on the hills at (86,51). Langfang starts a +5 Campus at (77,41); science (181/t vs Germany's 750) is the gap that matters. Nineteen idle builders — sent seven to repairs and pastures; repairs during an active storm come back "cannot start", so those re-issue next turn. Scythian armor pulled back west; a helicopter is prowling 4 tiles from Wuhan.
