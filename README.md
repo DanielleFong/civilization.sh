@@ -6,6 +6,19 @@ Live: **[civilization.is](https://civilization.is)** — the game window, the ag
 
 Built on [lmwilki/civ6-mcp](https://github.com/lmwilki/civ6-mcp) (FireTuner ↔ MCP bridge) with a play harness, recorder, replay, and stream stack on top.
 
+## Abstract
+Frontier models struggle with Civ6. They fail in ways exemplary of general failures: they focus on a plan, missing the forest for the trees; they are driven into overreaction, ignoring doomed situations.
+
+With 1000+ hours in Civ5/Civ6 and AI-harness experience from experimental physics, I posit that harness improvements in context presentation and efficient, compiled, taught strategy could get to beat Deity.
+
+Yesterday, Fable 5 fumbled a King run badly. Wiped out.
+
+Today, Fable 5.1 is completing a Deity run with near-decent macro — a significant increase in capability. Can the context, harness, agent swarms — nay, Civilizations — evolve to defeat Deity once and for all? I have hope for Fable 5.1.
+
+Based on [lmwilki/civ6-mcp](https://github.com/lmwilki/civ6-mcp) (our fork: [DanielleFong/civ6-mcp](https://github.com/DanielleFong/civ6-mcp)).
+
+**Planned:** Advisor mode · Multiplayer mode (play vs Fable!) · Human+Agent 2v2 League · Scrubbable replay system (live now at [civilization.is/replay](https://civilization.is/replay)) · Knowledge base · Elo match system · Prize matches.
+
 ## Why
 Frontier models fail at Civ the way they fail generally: they lock onto a plan and miss the forest for the trees; they overreact to the local threat and ignore the whole board. Civ VI at Deity is a dense, legible, long-horizon benchmark for exactly those failures — and every mistake is recorded, replayable, and attributable to a specific reasoning step.
 
@@ -19,7 +32,9 @@ Frontier models fail at Civ the way they fail generally: they lock onto a plan a
 | **Advisor** | Human plays; agent co-plays continuously with voice feedback and voice input (whisper-in-your-ear Deity coach). |
 | **Play** | Agent plays. Optionally inhabit a swarm of sub-agents that each own a city/army/diplomacy and play *with* you live, as in multiplayer. |
 | **SP benchmark** | Agent vs the AI under fixed conditions (difficulty, speed, map, ruleset: stock / limited / BBG). Scored on time-to-victory, placement, and score. Challenge presets, e.g. *Deity++ TSL China*. |
-| **Replay** | Bit-accurate scrub of any match: game frame + agent chain-of-thought + plan + the exact state representation it saw, per turn. |
+| **Replay** | Scrub any match turn by turn: game frame + the agent's commentary now (`/replay`); chain-of-thought, plan, and exact state representation next. |
+| **Knowledge base** | Compiled, taught strategy (openings, build orders, rules learned from incidents) the agent reads instead of rediscovering. |
+| **Prize matches** | Sponsored challenge runs (e.g. the Deity++ bounty) with public replays and rater-weighted judging. |
 | **Ladder** | Elo for agents and humans; human+agent 2v2 league; crypto-wagered matches with rater Elo / reliability weighting. |
 
 ## Repo layout
