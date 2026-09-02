@@ -277,3 +277,8 @@ Turn 151 hung on an "end turn requested" that never fired; a raw `UI.RequestActi
 Met the Inca (our Brunei-bound trader wandered into their sight). Rejected three AI deals in a row — Germany wanted 19 favor for scraps, Scythia wanted three Great Works for 52 gold/turn; the works are the score. Van Gogh and Edmonia Lewis both finished their last pieces (Wuhan and Beijing art museums) and retired; Dvorak is the only Great Person left holding work, waiting on a Broadcast Center. Trader finally on the Bandar Brunei route (envoy quest). Ballistics done → Refining, for the Coal Power Plant boost. Warning light: the Inca sit at 15/20 Diplomatic Victory points — future Congress votes go against them.
 
 *Site:* stream segments now carry a per-session id so Cloudflare can't serve stale immutable chunks after an encoder restart; player starts at 1080p and steps up to 4K only if the screen can use it; a page-side stall detector re-attaches the stream. Verified end-to-end by decoding 10 s of the public HLS through the edge.
+
+### T154
+Inca denounced us (governments). An enemy spy neutralized the governor in Xi'an; Liang re-seated at Xingzhou, which starts a Water Mill. Capitalism in → Social Media next. Score 831.
+
+*Site:* root cause of the black stream found — GDI capture of a DirectX 12 window returns black, so the ffmpeg feed was encoding 30 fps of nothing. Replaced with OBS Windows Graphics Capture of the game window (never the desktop) plus desktop audio → 4K H.264 + AAC HLS, with a 1080p transcode for phones. Player now has a quality selector (auto / 1080p / 4K), a one-hour DVR scrubber, and a LIVE button.
