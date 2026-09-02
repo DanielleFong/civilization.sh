@@ -87,12 +87,13 @@ zoomable(document.getElementById('stage'));
 const v=document.getElementById('v'),q=document.getElementById('q');
 function fallback(){const img=document.createElement('img');img.id='f';v.replaceWith(img);q.textContent='stills · 3 s';zoomable(document.getElementById('stage'));
   const K=new URLSearchParams(location.search).get('k');const tick=async()=>{const r=await fetch((K?'/frame-hd.jpg?k='+K+'&':'/frame.jpg?')+'t='+Date.now(),{cache:'no-store'});if(r.ok){const b=await r.blob();img.src=URL.createObjectURL(b);}};tick();setInterval(tick,3000);}
-if(window.Hls&&Hls.isSupported()){const h=new Hls({lowLatencyMode:false,liveSyncDurationCount:3,maxBufferLength:12,startLevel:-1,capLevelToPlayerSize:false});h.loadSource('/hls/live.m3u8');h.attachMedia(v);
+if(window.Hls&&Hls.isSupported()){const h=new Hls({lowLatencyMode:false,liveSyncDurationCount:3,maxBufferLength:12,startLevel:0,capLevelToPlayerSize:true,liveDurationInfinity:true});window.__hls=h;h.loadSource('/hls/live.m3u8');h.attachMedia(v);
   h.on(Hls.Events.MANIFEST_PARSED,()=>{v.play().catch(()=>{});q.textContent='hls · h264';});let errs=0;h.on(Hls.Events.ERROR,(e,d)=>{if(d.fatal&&++errs>3){h.destroy();fallback();}else if(d.fatal){h.startLoad();}});
   v.addEventListener('playing',()=>{q.textContent='hls · h264 · '+v.videoWidth+'×'+v.videoHeight});h.on(Hls.Events.LEVEL_SWITCHED,(e,d)=>{const l=h.levels[d.level];q.textContent='hls · '+l.height+'p · '+Math.round(l.bitrate/1e6)+' Mb/s'});}
 else if(v.canPlayType('application/vnd.apple.mpegurl')){v.src='/hls/live.m3u8';v.play().catch(()=>{});q.textContent='hls · native';}
 else fallback();
 snd.onclick=()=>{v.muted=!v.muted;snd.textContent=v.muted?'🔇':'🔊'};
+let lastT=0,stall=0;setInterval(()=>{if(v.tagName!=='VIDEO')return;if(v.currentTime===lastT&&!v.paused){if(++stall>=4){stall=0;q.textContent='reconnecting…';if(window.__hls){__hls.stopLoad();__hls.loadSource('/hls/live.m3u8?r='+Date.now());__hls.startLoad();v.play().catch(()=>{});}else{v.src='/hls/live.m3u8?r='+Date.now();v.play().catch(()=>{});}}}else stall=0;lastT=v.currentTime;},3000);
 async function meta(){const s=await fetch('/sitrep.md?t='+Date.now(),{cache:'no-store'});
   if(s.ok){const md=await s.text();sitrep.innerHTML=md.replace(/</g,'&lt;').replace(/^(#+ .*)$/gm,'<b>$1</b>');const m=[...md.matchAll(/T(\\d{2,3})\\b/g)].map(x=>+x[1]);if(m.length)t.textContent=Math.max(...m);sitrep.scrollTop=sitrep.scrollHeight;}
   const r=await fetch('/hls/live.m3u8?t='+Date.now(),{cache:'no-store',method:'GET'});const lm=r.headers.get('last-modified');if(lm)age.textContent='stream updated '+Math.round((Date.now()-new Date(lm))/1000)+' s ago';}
@@ -180,7 +181,7 @@ Deno.serve({ port: PORT, hostname: "127.0.0.1" }, async (req) => {
   if (p === "/frame.jpg") return file(DIR + "public.jpg", "image/jpeg", EDGE2);
   if (p === "/hls.min.js") return file(DIR + "hls.min.js", "application/javascript", EDGE_LONG);
   if (p === "/hls/live.m3u8") return file(DIR + "hls/live.m3u8", "application/vnd.apple.mpegurl", EDGE1);
-  if (/^\/hls\/(4k|1080)_s\d{5}\.ts$/.test(p)) return file(DIR + "hls/" + p.slice(5), "video/mp2t", EDGE_LONG);
+  if (/^\/hls\/(4k|1080)_\d+_s\d{5}\.ts$/.test(p)) return file(DIR + "hls/" + p.slice(5), "video/mp2t", EDGE_LONG);
   if (/^\/hls\/(4k|1080)\.m3u8$/.test(p)) return file(DIR + "hls/" + p.slice(5), "application/vnd.apple.mpegurl", EDGE1);
   if (p === "/map") return new Response(mapHtml, { headers: { ...SEC, ...NOCACHE, "content-type": "text/html; charset=utf-8" } });
   if (p === "/state/static.json") return file(DIR + "state/static.json", "application/json", { "cache-control": "public, max-age=3600" });
