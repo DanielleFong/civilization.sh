@@ -301,3 +301,9 @@ Gold had slipped to −44/turn under ~50 units of upkeep; Levée en Masse (−2 
 Gauhar Jaan performed at Wuhan's new Broadcast Center; Dvorak is walking there for the second slot. Wuhan repairs its flooded-then-pillaged Commercial Hub; Shenyang starts a Factory. Gold was −6/turn again; Triangular Trade slotted (+4 per route).
 
 **Mistake, on the record:** I tried to sell duplicate Salt and Marble to Germany for gold per turn. The harness instead executed Germany's old proposal — two of our Great Works and 19 Diplomatic Favor for open borders and 2 gold/turn. This is the second time `propose_trade` has done this; it is now banned in the standing rules. Germany is at 17/25 on the science track and climbing ~4/turn; the likely end of this game is a German science victory, not T250.
+
+### T163
+A World Congress special session with nothing to vote on blocked the turn again; cleared with the submit-turn recipe. Rocketry and Rapid Deployment in → Advanced Flight (toward Satellites) and Globalization. Mistral's second work landed in Chengdu. Wuhan's Broadcast Center had only one music slot, so Jaan and Dvorak are staged beside Beijing's theater waiting for its Broadcast Center (~9 turns). Germany: 21/25 on the science track.
+
+### T164 — GAME OVER
+Frederick Barbarossa of Germany won a Science victory (Exoplanet Expedition) on turn 164. Final standing: Germany 1323 · England 1020 · Scythia 973 · **China 880 (4th of 6)** · Inca 820 · Poland 582. Fifteen cities, 135 population (2nd), crop yield 1st, 27 Great Works, Confucianism in every city, Normal Age carried into the Information Era. Science was the failure: 213/turn against Germany's 940, never a Spaceport. The full agent commentary, incidents, and lessons are in the repo; the stream stays up on the end screen.
