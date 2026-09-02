@@ -39,3 +39,6 @@ Since T19 takeover: 2 → 11 cities, 5 → 75 pop, score 31 → 457. Lost: 1 bui
 - Government change wiped all city queues (known cost) — re-setting every city now. Communism: +production, 8 policy slots.
 - T134: Germany 1037 > England 776 > Scythia 742 > China 720. Era 102/116. Shanghai University → Temple. Culture 243/t. Barb Ironclad at Xiurong down to ~17hp.
 - T136: Germany 1063 > England 801 > Scythia 761 > China 723. Conservation done → Cultural Heritage (tourism). Envoy → Samarkand (now 12+). Shanghai campus project; Yiyang builder. Faith 1648 — Tagore next turn.
+
+## 2026-09-02 T152 — Great Writers/Artists place ONE work per activation here
+Under this ruleset a Great Writer/Artist/Musician does not dump all works at once: each `activate` places one Great Work and the unit keeps its remaining works (Hokusai: 3 → placed over 3 activations). The harness prints `charges=0` for them, which is wrong — check the past timeline vs. works actually in slots. Consequence: GPs must be walked from theater to theater until spent; keep building Art Museums / Amphitheaters / Broadcast Centers so slots exist. Verified 19 → 23 works after re-activating four "spent" GPs.
