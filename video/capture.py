@@ -33,6 +33,11 @@ with mss.mss() as sct:
             tmp = os.path.join(OUT, "latest.tmp.jpg")
             im.save(tmp, "JPEG", quality=82)
             os.replace(tmp, os.path.join(OUT, "latest.jpg"))
+            # public (metered) variant: 960px, lower quality, ~80KB
+            sm = im.resize((960, int(960 * im.height / im.width)), Image.BILINEAR)
+            tmp2 = os.path.join(OUT, "public.tmp.jpg")
+            sm.save(tmp2, "JPEG", quality=60)
+            os.replace(tmp2, os.path.join(OUT, "public.jpg"))
         except Exception as e:
             print("err", e, flush=True); time.sleep(1)
         time.sleep(INTERVAL)
