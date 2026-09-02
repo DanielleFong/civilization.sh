@@ -37,3 +37,27 @@ Danielle played T1-19 (Xi'an, Jiaodong, pantheon Monument to the Gods, saved T19
 - Stream: https://lace-arms-chess-mit.trycloudflare.com/?k=<token in video/token.txt> ; named tunnel `civilization` → video.civilization.is once NS propagates (Namecheap set to nia/thaddeus.ns.cloudflare.com; zones created).
 - Recorder: recordings/qin-deity-seed-401507495.jsonl (turn snapshots), video/frames/archive/tNNNN_*.jpg (per-turn frames), video/frames/sitrep.md (scroll).
 - Capture: video/capture.py (Windows python, mss, crops to Civ window, blank when absent). Server: video/server.ts (Deno :8720, token cookie).
+
+## World Congress special session with no resolutions (T145)
+`get_world_congress` shows IN SESSION but lists nothing and MCP `end_turn` hangs on "Resume Congress". Submit the empty turn directly:
+`UI.RequestPlayerOperation(Game.GetLocalPlayer(), PlayerOperations.WORLD_CONGRESS_SUBMIT_TURN, {}); UI.RequestAction(ActionTypes.ACTION_ENDTURN)` — both in the SAME Lua call (this is exactly what WorldCongressPopup.lua does when there are no choices). Verified T145→T146.
+
+## Flood Barriers (T145)
+`BUILDING_FLOOD_BARRIER` (prereq TECH_STEAM_POWER, cost 80) is only buildable in cities that currently have tiles flagged for coastal flooding; elsewhere `CANNOT_PRODUCE`. Also blocked city-wide by any pillaged district.
+
+## Close any stuck diplomacy / leader screen (ingame context)
+Hidden sessions (e.g. with a civ that never showed a popup) block end-turn and leave the leader scene glitched on screen.
+```lua
+local me=Game.GetLocalPlayer()
+for pid=0,20 do pcall(function() local s=DiplomacyManager.FindOpenSessionID(me,pid); if s and s~=-1 then DiplomacyManager.CloseSession(s) end end) end
+for _,n in ipairs({"/InGame/DiplomacyActionView","/InGame/DiplomacyDealView","/InGame/LeaderScene"}) do local c=ContextPtr:LookUpControl(n); if c then c:SetHide(true) end end
+```
+Note: `respond_to_diplomacy` needs the *player id* shown by `get_pending_diplomacy` (England was 9, not the diplomacy list index). Closing the last blocker can immediately fire a queued end-turn.
+
+## Force a build when set_city_production reports SILENT_FAILURE (ingame context)
+```lua
+local c=CityManager.GetCity(Game.GetLocalPlayer(),CITY_ID); local h=GameInfo.Buildings["BUILDING_RESEARCH_LAB"].Hash
+if CityManager.CanStartOperation(c,CityOperationTypes.BUILD,{BuildingType=h}) then CityManager.RequestOperation(c,CityOperationTypes.BUILD,{BuildingType=h,InsertMode=CityOperationTypes.VALUE_EXCLUSIVE}) end
+```
+## Districts destroyed by sea-level rise
+A "pillaged" IZ/campus that shows `plot:GetDistrictType()==-1` is gone, not pillaged — rebuild elsewhere; `repair` will never work.
