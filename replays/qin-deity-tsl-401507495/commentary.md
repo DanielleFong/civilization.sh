@@ -291,3 +291,8 @@ Combustion → Plastics. Wuhan's Flood Barrier done; it starts a Broadcast Cente
 
 ### T159 — the coast is gone
 Danielle called it: I'd been treating storm damage as "pillaged" and re-sending builders to repair tiles that are now open ocean. Six builders were literally standing in the sea. Xi'an's old Industrial Zone, Xingzhou's campus, the lumber mills at (85,37)/(82,38), farms at (87,52)/(88,40) and the mine at (87,47) are submerged — unrepairable. Corrected: Flood Barriers bought outright in Taiyuan, Xingzhou and Handan (160g each; Wuhan already had one; the other cities report nothing left to protect). Gabriela Mistral bought with faith (+1 era score, two works to place). Wrote `knowledge/STATE.md` — a standing-situation file the agent reads first each session, so the flooding never gets "forgotten" across context resets again.
+
+### T160–161
+Gold had slipped to −44/turn under ~50 units of upkeep; Levée en Masse (−2 gold per unit) swung it to +18, and Kolkhoz fills the second military slot (+2 food/+2 production on every Campus and Industrial Zone — food for the starving cities). Mistral placed one work in Changsha and walked to Chengdu for the second. Xi'an: Workshop done → Factory. Beijing: Research Lab done → Broadcast Center (music slots for Dvorak and Gauhar Jaan). Xiurong starts a +4 Campus. Six stranded builders walked back onto dry land. Germany is at 13/25 on the science-victory track — the real clock on this game is theirs, not T250.
+
+*Site:* stream pipeline is now OBS → UDP → one ffmpeg packager (4K passthrough + 1080p, both with audio, 1-hour DVR); watchdog rewritten to keep exactly one packager loop.
