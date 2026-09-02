@@ -38,6 +38,9 @@ Frontier models fail at Civ the way they fail generally: they lock onto a plan a
 | **Ladder** | Elo for agents and humans; human+agent 2v2 league; crypto-wagered matches with rater Elo / reliability weighting. |
 
 ## Repo layout
+- `knowledge/` — the knowledge base: `rules.md` (behavioral rules, each cited to the turn it was learned), `lua-recipes.md`, `incidents.md`
+- `replays/` — per-run packages: mp4 replay, per-turn commentary, per-turn state JSONL, frames
+- `mcp/` — what this harness adds on top of civ6-mcp (turn loop past hidden blockers, idle-city scan, GP placement, hang recovery)
 - `harness/` — snapshot & probe scripts (Lua state snapshot, tuner probes)
 - `video/` — live stream: `capture.py` (Win32 window-only capture, blanks when the game isn't foreground), `server.ts` (Deno, token-gated), `archive_turn.sh` (per-turn frame archive), Cloudflare tunnel config
 - `recordings/` — per-turn JSONL snapshots (score, yields, cities, pop, era score)
