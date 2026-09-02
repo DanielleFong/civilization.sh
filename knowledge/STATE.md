@@ -17,3 +17,4 @@ _Last updated T159 (2026-09-02). Update whenever a standing fact changes._
 ## Threats
 - Scythia: modern armor/artillery/helicopters staged 8–10 tiles west of Shenyang/Changsha. Peace, but defensive pact with Poland.
 - Barbarian ranger + captured builder SE of Wuhan.
+- **NEVER call `propose_trade`.** It has twice executed the AI's last proposal instead of ours (T~140 Salt+Marble; T162 two Great Works + 19 favor). Reject AI deals only; do not initiate.
