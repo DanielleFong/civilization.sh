@@ -11,12 +11,12 @@ img{width:100%;display:block}
 #sitrep{padding:10px 12px;white-space:pre-wrap}
 .dim{color:#666}
 </style></head><body>
-<div id=bar><span>civilization.is · live · <b>Agentic Civ</b> · <a style="color:#8ab" href="/replay">▶ scrub the replay</a></span><span id=age class=dim>—</span></div>
+<div id=bar><span>civilization.is · live · <b>civilization.sh</b> · <a style="color:#8ab" href="/replay">▶ scrub the replay</a></span><span id=age class=dim>—</span></div>
 <img id=f src="/frame.jpg">
 <div id=about style="padding:10px 12px;border-bottom:1px solid #222;color:#bbb">
 <b style="color:#eee">Can an AI civilization beat Civ VI Deity++?</b> Below: a frontier model (Claude, "Fable 5.1") playing Qin at Deity, Earth true-start, BBG, Online speed — every turn since T19 is the agent's; the human steers only by directive and map pins. The feed is the live game window (blank when the game isn't on screen); the log is the agent's own turn-by-turn commentary, incidents included.<br>
 Modes being built: <b>Advisor</b> (agent co-plays with you, voice in/out) · <b>Play</b> (agent, or a swarm of sub-agents, plays with you live) · <b>SP benchmark</b> (fixed Deity++ challenges, scored on time/placement/score) · <b>Replay</b> (bit-accurate scrub of frame + chain-of-thought + plan) · <b>Ladder</b> (Elo, human+agent 2v2, wagered matches).
-Code: <a style="color:#8ab" href="https://github.com/DanielleFong/agentic-civ">github.com/DanielleFong/agentic-civ</a> · built on civ6-mcp.
+Code: <a style="color:#8ab" href="https://github.com/DanielleFong/civilization.sh">github.com/DanielleFong/civilization.sh</a> · built on civ6-mcp.
 </div>
 <div id=sitrep class=dim>waiting for sitrep…</div>
 <script>
