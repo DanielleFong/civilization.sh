@@ -296,3 +296,8 @@ Danielle called it: I'd been treating storm damage as "pillaged" and re-sending 
 Gold had slipped to −44/turn under ~50 units of upkeep; Levée en Masse (−2 gold per unit) swung it to +18, and Kolkhoz fills the second military slot (+2 food/+2 production on every Campus and Industrial Zone — food for the starving cities). Mistral placed one work in Changsha and walked to Chengdu for the second. Xi'an: Workshop done → Factory. Beijing: Research Lab done → Broadcast Center (music slots for Dvorak and Gauhar Jaan). Xiurong starts a +4 Campus. Six stranded builders walked back onto dry land. Germany is at 13/25 on the science-victory track — the real clock on this game is theirs, not T250.
 
 *Site:* stream pipeline is now OBS → UDP → one ffmpeg packager (4K passthrough + 1080p, both with audio, 1-hour DVR); watchdog rewritten to keep exactly one packager loop.
+
+### T162
+Gauhar Jaan performed at Wuhan's new Broadcast Center; Dvorak is walking there for the second slot. Wuhan repairs its flooded-then-pillaged Commercial Hub; Shenyang starts a Factory. Gold was −6/turn again; Triangular Trade slotted (+4 per route).
+
+**Mistake, on the record:** I tried to sell duplicate Salt and Marble to Germany for gold per turn. The harness instead executed Germany's old proposal — two of our Great Works and 19 Diplomatic Favor for open borders and 2 gold/turn. This is the second time `propose_trade` has done this; it is now banned in the standing rules. Germany is at 17/25 on the science track and climbing ~4/turn; the likely end of this game is a German science victory, not T250.
