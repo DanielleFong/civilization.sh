@@ -6,6 +6,9 @@ compatibility_date = "2025-01-01"
 binding = "LADDER"
 id = "568771f42ed24ecfaba4f91662e748c4"
 
+[vars]
+BASE_URL = "https://ladder.civilization.is"
+
 [[routes]]
 pattern = "ladder.civilization.is"
 custom_domain = true
