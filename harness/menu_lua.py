@@ -1,11 +1,12 @@
 """Run Lua in any FireTuner state (works at main menu / setup). Usage: menu_lua.py "<lua>" [state_name_substring]"""
-import asyncio, sys
+import asyncio, os, sys
+PORT = int(os.environ.get("CIV_TUNER_PORT", "4318"))
 sys.path.insert(0, r"C:\Users\danie\cc\civbench\civ6-mcp\src")
 from civ_mcp.tuner_client import connect, handshake, execute_lua
 async def main():
     code = sys.argv[1] if len(sys.argv) > 1 else "print('hi')"
     want = sys.argv[2] if len(sys.argv) > 2 else None
-    r, w = await connect("127.0.0.1", 4318)
+    r, w = await connect("127.0.0.1", PORT)
     ident, raw = await handshake(r, w)
     states = {}
     i = 0
