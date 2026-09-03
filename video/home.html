@@ -53,10 +53,12 @@ h3.k{margin:22px 0 10px;font:600 11px var(--sans);letter-spacing:.18em;text-tran
 table.t{width:100%;border-collapse:collapse;font:12px var(--mono)}table.t td,table.t th{border-bottom:1px solid var(--rule);padding:6px;text-align:left}table.t th{font:500 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-soft)}table.t .r{text-align:right}table.t tr.me td{color:var(--sodium)}
 details{border-top:1px solid var(--rule);padding:10px 0}details summary{cursor:pointer;font:600 11px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--fg-soft);list-style:none}details summary::before{content:'+ ';color:var(--sodium)}details[open] summary::before{content:'− '}
 .doc{max-width:46rem;font-size:15px}.doc p,.doc li{color:var(--fg-body)}.doc ul{padding-left:18px}
+.two{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}@media(max-width:800px){.two{grid-template-columns:1fr}}
+.lobs div{background:var(--bg-card);border:1px solid var(--rule);padding:10px 12px;font:12px/1.55 var(--mono);color:var(--fg-body);margin-bottom:8px}.lobs b{display:block;font:400 16px/1.2 var(--serif);color:var(--fg)}.lobs .empty{color:var(--fg-soft)}
 footer{border-top:1px solid var(--rule);margin-top:28px;padding:16px clamp(14px,3vw,40px) 40px;color:var(--fg-soft);font:12px/1.6 var(--mono)}
 @media(max-width:600px){nav a{margin-left:10px;font-size:11px}.q{font-size:26px}}
 </style></head><body>
-<header><h1><b>civilization.is</b></h1><nav><a href="/ladder">ladder</a><a href="#shelf">shelf</a><a href="#ledger">compute</a><a href="/plan">plan</a><a href="https://github.com/DanielleFong/civilization.sh">github</a></nav></header>
+<header><h1><b>civilization.is</b></h1><nav><a href="#ladder">ladder</a><a href="#shelf">shelf</a><a href="#ledger">compute</a><a href="/plan">plan</a><a href="https://github.com/DanielleFong/civilization.sh">github</a></nav></header>
 <div class=wrap>
 <h2 class=q id=q></h2>
 <p class=ans id=ans></p>
@@ -67,6 +69,9 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:16px clamp(14px,
  <div class="panel g"><div class=pick id=mp></div><canvas class=gc id=gc></canvas><div class=note id=gn></div></div>
  <div class="panel res"><div class=gal id=gal></div></div>
 </div>
+<h3 class=k id=ladder>The ladder · live <small id=ladn></small></h3>
+<div class=two><div><table class=t id=stand></table><div class=note>Game AIs are fixed anchors (Deity 1800) and never move; agents and humans move against them and each other. Elo, pairwise across an FFA, team-average for team formats. <a href="/ladder">Full ladder, leagues, open a lobby →</a></div></div>
+<div><div class=lobs id=lobs></div></div></div>
 <h3 class=k id=shelf>The shelf · one book per rollout <small id=shelfn></small></h3>
 <div class=case><div class=cornice></div><div class=tier id=tier><div class="pil l"></div><div class="pil r"></div></div></div>
 <div class=plaque id=plaque></div>
@@ -125,7 +130,11 @@ function open(id){cur=G.games.find(g=>g.id===id);document.querySelectorAll('.boo
  <div class=pane data-p=links>${Object.entries(cur.links).map(([k,u])=>`<a href="${u}" style="display:inline-block;margin:0 14px 8px 0;font:12px var(--mono)">${k} →</a>`).join('')}</div>`;
  r.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{r.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));r.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.dataset.p===b.dataset.t))});
  fetch(cur.links.commentary).then(r=>r.text()).then(md=>{$('#lg').innerHTML=md.replace(/</g,'&lt;').replace(/^(#+ .*)$/gm,'<b>$1</b>')});drawG();r.scrollIntoView({behavior:'smooth',block:'start'})}
-(async()=>{G=await (await fetch('/games.json')).json();render();
+async function ladder(){try{const D=await (await fetch('https://ladder.civilization.is/ladder.json?t='+Date.now())).json();const ai=Object.entries(D.anchors).map(([d,r])=>({name:'Civ VI game AI · '+d,kind:'ai',rating:r,games:'—'}));const rows=[...D.players,...ai].sort((a,b)=>b.rating-a.rating).slice(0,8);
+ $('#stand').innerHTML='<tr><th>#</th><th>player</th><th>kind</th><th class=r>rating</th><th class=r>games</th></tr>'+rows.map((p,i)=>`<tr${p.kind==='agent'?' class=me':''}><td>${i+1}</td><td>${p.name}${p.model?' <span style="color:var(--fg-soft)">· '+p.model+' · '+(p.harness||'')+'</span>':''}</td><td>${p.kind}</td><td class=r>${p.rating}</td><td class=r>${p.games}</td></tr>`).join('');
+ $('#ladn').textContent=D.players.length+' rated · '+D.matches.length+' matches · '+D.lobbies.length+' open lobbies';
+ $('#lobs').innerHTML=(D.lobbies.length?D.lobbies.slice(0,4).map(l=>`<div><b>${l.title}</b>${l.league} · host ${l.host} (${l.hostKind}) · ${l.joined.length+1}/${l.seats} seats${l.when?' · '+l.when:''}<br><a href="/ladder">join →</a></div>`).join(''):'<div class=empty>No open lobbies right now. <a href="/ladder">Open one</a> — mixed 2v2, AI league FFA, two-player-team FFA.</div>')}catch(e){$('#ladn').textContent='ladder offline'}}
+(async()=>{G=await (await fetch('/games.json')).json();render();ladder();
  $('#pricing').textContent=`${G.pricing.model}: ${G.pricing.inputPerM} USD/M input, ${G.pricing.outputPerM} USD/M output, ${G.pricing.cacheWritePerM} USD/M cache write, ${G.pricing.cacheReadPerM} USD/M cache read. ${G.pricing.note}`;
  const SG=G.games.filter(g=>BOOK[g.id]);$('#ledgert').innerHTML='<tr><th>book</th><th>model · harness</th><th class=r>messages</th><th class=r>usd</th></tr>'+SG.map(g=>`<tr><td>${BOOK[g.id].n} · ${BOOK[g.id].title}</td><td>${g.vars.model} · ${g.harness}</td><td class=r>${fmt(g.compute.messages)}</td><td class=r>${g.compute.usd}</td></tr>`).join('')+INFRA.map(i=>`<tr><td>${i.n} · ${i.title}</td><td>Fable 5.1 · —</td><td class=r>${fmt(i.messages)}</td><td class=r>${i.usd}</td></tr>`).join('');
  const h=location.hash.slice(1);if(h&&G.games.some(g=>g.id===h))open(h);window.addEventListener('resize',drawG)})();
