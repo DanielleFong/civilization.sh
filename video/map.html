@@ -17,7 +17,7 @@ nav a{color:var(--fg-body);text-decoration:none;margin-left:18px;font:13px var(-
 .legendrow i{display:inline-block;width:11px;height:11px;margin-right:6px;vertical-align:-1px;border-radius:2px}.legendrow .cs{color:var(--fg-soft)}
 .zoomctl{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}.zoomctl button{background:rgba(14,17,20,.86);border:1px solid var(--rule);color:var(--fg-body);font:14px var(--mono);width:34px;height:34px;cursor:pointer}
 .foot{font:12px/1.5 var(--mono);color:var(--fg-soft);padding:6px clamp(12px,2vw,28px);border-top:1px solid var(--rule);flex:none}
-</style></head><body>
+header.hide{display:none}</style></head><body>
 <header><h1><b>civilization.is</b> · state</h1><nav><a href="/watch">watch</a><a href="/">replay</a><a class=on href="/map">state</a><a href="/results">results</a><a href="/plan">plan</a><a href="https://github.com/DanielleFong/civilization.sh">github</a></nav></header>
 <div class=bar><span id=turn>T—</span><button id=prev>◀</button><input id=s type=range min=0 max=0 value=0><button id=next>▶</button><button id=play>▶▶</button>
 <label class=on><input type=checkbox id=Lterr checked>territory</label><label class=on><input type=checkbox id=Lcity checked>cities</label><label class=on><input type=checkbox id=Lres checked>resources</label><label class=on><input type=checkbox id=Lyield checked>yields</label><label class=on><input type=checkbox id=Lroad checked>roads</label><label><input type=checkbox id=Lgrid>grid</label><span id=n style="color:var(--fg-soft)"></span></div>
@@ -98,6 +98,7 @@ for(const id of ['Lterr','Lcity','Lres','Lyield','Lroad','Lgrid']){const el=docu
 s.oninput=()=>show(+s.value);prev.onclick=()=>show(idx-1);next.onclick=()=>show(idx+1);
 play.onclick=()=>{if(timer){clearInterval(timer);timer=null;play.textContent='▶▶'}else{timer=setInterval(()=>{if(idx>=turns.length-1){clearInterval(timer);timer=null;play.textContent='▶▶'}else show(idx+1)},600);play.textContent='❚❚'}};
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')show(idx-1);if(e.key==='ArrowRight')show(idx+1)});let userZoomed=false;stage.addEventListener('wheel',()=>userZoomed=true,{passive:true});stage.addEventListener('pointerdown',()=>userZoomed=true);window.addEventListener('resize',()=>userZoomed?draw():fit());
+if(new URLSearchParams(location.search).get('embed'))document.querySelector('header').classList.add('hide');
 (async()=>{[st,gi]=await Promise.all([fetch('/state/static.json').then(r=>r.json()),fetch('/state/gameinfo.json').then(r=>r.json())]);W=st.gridW;H=st.gridH;
  turns=(await (await fetch('/state/turns.jsonl')).text()).trim().split('\n').map(l=>{const o=JSON.parse(l);o.turn=+o.turn;return o});
  const P=(st.players||[]).filter(p=>p.pid<20);const majors=P.filter(p=>!p.csType),cs=P.filter(p=>p.csType);
