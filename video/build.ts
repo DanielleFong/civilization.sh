@@ -114,13 +114,14 @@ await Deno.writeTextFile("dist/plan.html", planHtml);
 await Deno.copyFile("frames/archive/t0164_101441.jpg", "dist/results-defeat.jpg");
 const resultsHtml = `<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>civilization.is — results</title><style>${CSS}${DOC_CSS}
 .shot{border:1px solid var(--rule);background:var(--bg-deep)}.shot img{width:100%;display:block}
+.pick{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 10px;font:12px var(--mono)}.pick button{background:var(--bg-card);border:1px solid var(--rule);color:var(--fg-body);padding:5px 10px;cursor:pointer;font:12px var(--mono)}.pick button.on{border-color:var(--sodium);color:var(--sodium)}
 table.rank{width:100%;border-collapse:collapse;font:15px var(--mono)}table.rank td{border-bottom:1px solid var(--rule);padding:9px 8px}table.rank tr.me td{color:var(--sodium)}
 </style></head><body>
 <header><h1><b>civilization.is</b> · results</h1>${NAV("results")}</header><div class=wrap>
 <div class=lede><h2>T164 · Defeat. <i>Science victory, German Empire.</i></h2><div class=meta><b>Game 1</b> · Qin · Deity · Earth TSL · BBG · Online<br>agent-played T20–T164 · final score 880 · 4th of 6</div></div>
 <div class=shot><img src="/results-defeat.jpg" alt="Civilization VI defeat screen: Science Victory, German Empire; Defeat, Chinese Empire"></div>
 <div class=note>The game's own Results screen, captured at T164. The Ranking and Graphs tabs were not captured before the host machine failed; the ranking and score curves below are rebuilt from the harness recorder, the agent's per-turn commentary, and the final result — labeled as such.</div>
-<div class=cols><div><h3 class=k>Ranking · T164 (reconstructed)</h3><table class=rank id=rk></table></div>
+<div class=cols style="grid-template-columns:380px minmax(0,1fr)"><div><h3 class=k>Ranking · T164 (reconstructed)</h3><table class=rank id=rk></table></div>
 <div><h3 class=k>Graphs · all civs (from the harness diary, T19–T151; endpoints T164)</h3><div class=pick id=mp></div><canvas id=ch style="width:100%;height:300px;display:block;background:var(--bg-deep);border:1px solid var(--rule)"></canvas><div class=note id=mn></div></div></div>
 <div class=doc><h3>What decided it</h3><p>Science. Germany reached 940 science per turn against China's 213 and launched the Exoplanet Expedition on T164. China led crop yield, ranked second in population, held 27 Great Works and Confucianism in every city, and never built a Spaceport. The full account, mistakes included, is in the <a href="/">replay commentary</a>; the corrections are the <a href="/plan">plan for Game 2</a>.</p></div>
 </div>
