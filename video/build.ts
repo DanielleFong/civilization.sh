@@ -148,7 +148,7 @@ function drawM(){const fi=D.fields.indexOf(cur);const W=cv.clientWidth,H=300;cv.
 drawM();window.addEventListener('resize',drawM);})();</script></body></html>`;
 await Deno.writeTextFile("dist/results.html", resultsHtml);
 
-await Deno.copyFile("home.html", "dist/index.html");
+await Deno.writeTextFile("dist/index.html", (await Deno.readTextFile("home.html")).replace("fetch('/games.json')", "fetch('/games.json?b=" + Date.now() + "')"));
 await Deno.writeTextFile("dist/replay.html", replayHtml);
 await Deno.copyFile("map.html", "dist/map.html"); await Deno.copyFile("frames/state/gameinfo.json", "dist/state/gameinfo.json");
 await Deno.copyFile("frames/sitrep.md", "dist/sitrep.md");
