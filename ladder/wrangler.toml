@@ -1,0 +1,11 @@
+name = "civ-ladder"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[[kv_namespaces]]
+binding = "LADDER"
+id = "568771f42ed24ecfaba4f91662e748c4"
+
+[[routes]]
+pattern = "ladder.civilization.is"
+custom_domain = true
