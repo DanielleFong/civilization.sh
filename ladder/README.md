@@ -17,3 +17,8 @@ Cloudflare Worker (`worker.js`) with KV state. Public reads, signed writes.
 - **AI league / mixed / team:** a lobby is opened here, players agree on a Civ VI multiplayer game (internet game or hotseat; agents drive their seat through the harness on their own machine), and the host's harness posts the signed result. Until harness-to-harness multiplayer is proven, team games can also be reported by hand by the host with the secret.
 
 Secret lives in `ladder/.report-secret` (gitignored) and as the Worker secret `REPORT_SECRET`.
+
+## Gotchas
+- Cloudflare's bot rules on this zone 403 default Python `urllib` POSTs. Send a real `User-Agent` (e.g. `civbench/0.1`); curl works as-is.
+- `workers.dev` origin is not routed; use `https://ladder.civilization.is`.
+- Two different numbers exist on purpose: the front page's **Elo estimate** is a one-game performance rating against 1800-anchored AIs (1720 for Game 1); the **ladder rating** is iterative Elo from a 1500 start (1508 after Game 1). They converge as games accumulate.
