@@ -25,6 +25,7 @@ function elo(series: Record<string, number[][]>, agent: string, finalOverride?: 
 }
 const g1 = load(["diary_china_-401507495_solar-amber-chariot-09.jsonl"]);
 const g1final = { GERMANY:1323, ENGLAND:1020, SCYTHIA:973, CHINA:880, INCA:820, POLAND:582 };
+for (const [k,v] of Object.entries(g1final)) { const row = F.map(() => null as any); row[0] = 164; row[1] = v; if (k === "CHINA") { row[2] = 213; row[5] = 15; row[6] = 135; row[8] = 27; } (g1.series[k] ??= []).push(row); }
 const g2 = load(["diary_england_-639634487_charred-flax-ember-08.jsonl","diary_england_-639634487_primal-mahogany-zeppelin-59.jsonl","diary_england_-639634487_jagged-cerulean-herald-90.jsonl","diary_england_-639634487_keen-lapis-vigil-36.jsonl","diary_england_-639634487_twilight-sage-javelin-50.jsonl"]);
 const g3 = load(["diary_england_-217493652_twilight-sage-javelin-50.jsonl"]);
 // the running game's diary lags; take the live turn from the harness call log
