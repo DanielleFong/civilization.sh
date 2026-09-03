@@ -133,7 +133,7 @@ await Deno.writeTextFile("dist/results.html", resultsHtml);
 
 await Deno.writeTextFile("dist/index.html", replayHtml);
 await Deno.writeTextFile("dist/replay.html", replayHtml);
-await Deno.writeTextFile("dist/map.html", mapHtml);
+await Deno.copyFile("map.html", "dist/map.html"); await Deno.copyFile("frames/state/gameinfo.json", "dist/state/gameinfo.json");
 await Deno.copyFile("frames/sitrep.md", "dist/sitrep.md");
 await Deno.mkdir("dist/state", { recursive: true });
 for (const f of ["static.json", "turns.jsonl"]) await Deno.copyFile("frames/state/" + f, "dist/state/" + f);
