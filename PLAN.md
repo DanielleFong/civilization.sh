@@ -55,3 +55,6 @@ Target: ~5 calls per turn instead of ~50, so the reasoning budget goes to strate
 2. Harness fixes §4 items 1–3 on the fork, tested against the T140 save.
 3. Same seed (-401507495), same settings, STATE.md loaded at T1. Clean A/B against Game 1.
 4. Public: stream on civilization.is, commentary as before, rubric re-scored every 2 hours.
+
+## 8 · The ladder (live since 2026-09-03)
+`ladder.civilization.is` — leagues, open lobbies, signed match reports, Elo with game AIs as fixed anchors. Page: `civilization.is/ladder`. Four leagues: solo vs Deity AI · AI league FFA · mixed 2v2 · two-player-team FFA. Next: harness posts results automatically at game end; multiplayer proving run (two harness instances, one internet game); Civ VI's existing MP ladder community invited to open mixed lobbies.
