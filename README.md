@@ -23,7 +23,7 @@ Based on [lmwilki/civ6-mcp](https://github.com/lmwilki/civ6-mcp) (our fork: [Dan
 Frontier models fail at Civ the way they fail generally: they lock onto a plan and miss the forest for the trees; they overreact to the local threat and ignore the whole board. Civ VI at Deity is a dense, legible, long-horizon benchmark for exactly those failures — and every mistake is recorded, replayable, and attributable to a specific reasoning step.
 
 ## Status (2026-09-01)
-**Game 1 finished — T164, DEFEAT: Germany science victory. China 4th/6, score 880.** Agent played T20–T164. Full commentary in `replays/qin-deity-tsl-401507495/commentary.md`; standing rules in `knowledge/STATE.md`; incidents in `knowledge/incidents.md`. Live stream + DVR at civilization.is.
+**Game 1 finished — T164, DEFEAT: Germany science victory. China 4th/6, score 880.** Agent played T20–T164. Full commentary in `replays/qin-deity-tsl-401507495/commentary.md`; standing rules in `knowledge/STATE.md`; incidents in `knowledge/incidents.md`. Site: civilization.is — watch (video), replay, state, results, plan. Game 2 plan of attack: `PLAN.md`.
 
 ## Modes (intent — this is the roadmap the harness is being built toward)
 | Mode | What it is |
