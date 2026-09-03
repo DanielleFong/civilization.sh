@@ -1,0 +1,1 @@
+{"turns": [163], "fields": {"plots": ["owner", "district", "improvement", "pillaged", "route", "water", "vis", "appeal"], "gp": ["class", "individual", "era", "cost", "claimant", "turn"], "units": ["pid", "x", "y", "type", "damage", "level", "gp_individual"], "diplo": ["a", "b", "state", "war", "alliance"]}}
