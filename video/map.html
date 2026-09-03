@@ -1,0 +1,107 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>civilization.is — state</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@400;600&display=swap');
+:root{--bg:#14181B;--bg-deep:#0E1114;--bg-card:#1B2024;--rule:#2F363B;--fg:#F3ECD8;--fg-body:#D9CFB6;--fg-soft:#8B8576;--fg-faint:#5A5546;--sodium:#F2A413;--serif:'Newsreader',Georgia,serif;--sans:'Jost',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}html,body{margin:0;height:100%}body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--serif);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px clamp(16px,3vw,40px);border-bottom:1px solid var(--rule);flex:none}
+header h1{margin:0;font:600 15px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-body)}header h1 b{color:var(--sodium)}
+nav a{color:var(--fg-body);text-decoration:none;margin-left:18px;font:13px var(--mono)}nav a.on{color:var(--sodium)}
+.bar{display:flex;gap:10px;align-items:center;padding:8px clamp(12px,2vw,28px);font:13px var(--mono);flex:none;flex-wrap:wrap;border-bottom:1px solid var(--rule)}
+.bar input[type=range]{flex:1;min-width:160px;accent-color:var(--sodium)}.bar #turn{min-width:4em;color:var(--sodium);font-weight:500;font-size:15px}
+.bar button,.bar label{background:var(--bg-card);border:1px solid var(--rule);color:var(--fg-body);padding:5px 10px;cursor:pointer;font:12px var(--mono);user-select:none}.bar label.on{border-color:var(--sodium);color:var(--sodium)}.bar label input{display:none}
+.stage{position:relative;flex:1;min-height:0;background:#0b1622;cursor:grab}.stage:active{cursor:grabbing}canvas{width:100%;height:100%;display:block}
+.hud{position:absolute;left:12px;top:12px;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.tip{background:rgba(14,17,20,.86);border:1px solid var(--rule);padding:8px 10px;font:12px/1.5 var(--mono);color:var(--fg-body);max-width:280px}.tip b{color:var(--sodium);font-weight:500}
+.legendrow{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding:6px clamp(12px,2vw,28px);font:12px/1.6 var(--mono);color:var(--fg-body);border-top:1px solid var(--rule);flex:none}
+.legendrow i{display:inline-block;width:11px;height:11px;margin-right:6px;vertical-align:-1px;border-radius:2px}.legendrow .cs{color:var(--fg-soft)}
+.zoomctl{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}.zoomctl button{background:rgba(14,17,20,.86);border:1px solid var(--rule);color:var(--fg-body);font:14px var(--mono);width:34px;height:34px;cursor:pointer}
+.foot{font:12px/1.5 var(--mono);color:var(--fg-soft);padding:6px clamp(12px,2vw,28px);border-top:1px solid var(--rule);flex:none}
+</style></head><body>
+<header><h1><b>civilization.is</b> · state</h1><nav><a href="/watch">watch</a><a href="/">replay</a><a class=on href="/map">state</a><a href="/results">results</a><a href="/plan">plan</a><a href="https://github.com/DanielleFong/civilization.sh">github</a></nav></header>
+<div class=bar><span id=turn>T—</span><button id=prev>◀</button><input id=s type=range min=0 max=0 value=0><button id=next>▶</button><button id=play>▶▶</button>
+<label class=on><input type=checkbox id=Lterr checked>territory</label><label class=on><input type=checkbox id=Lcity checked>cities</label><label class=on><input type=checkbox id=Lres checked>resources</label><label class=on><input type=checkbox id=Lyield checked>yields</label><label class=on><input type=checkbox id=Lroad checked>roads</label><label><input type=checkbox id=Lgrid>grid</label><span id=n style="color:var(--fg-soft)"></span></div>
+<div class=stage id=stage><canvas id=c></canvas><div class=hud><div class=tip id=tip hidden></div></div><div class=zoomctl><button id=zi>+</button><button id=zo>−</button><button id=zr>⌂</button></div></div>
+<div class=legendrow id=legend></div>
+<div class=foot>Strategic view rebuilt from the tuner's own map data: terrain, hills, rivers, features, resources once; ownership, roads and cities per recorded turn. Yields are base tile yields (terrain + feature + resource), not improved. Scroll/pinch to zoom, drag to pan, ← → to scrub, hover for tile detail.</div>
+<script>
+const SQ3=Math.sqrt(3);
+const CIV={CHINA:'#F2A413',ENGLAND:'#C8102E',GERMANY:'#8A9BA8',SCYTHIA:'#E2572B',INCA:'#B98F2E',POLAND:'#C94F8C',MAPUCHE:'#3F7FBF',MAORI:'#2FA69A',FREE_CITIES:'#6b6b6b'};
+const TCOL={GRASS:'#7fa64f',PLAINS:'#b7a85a',DESERT:'#e0cf95',TUNDRA:'#a8a68a',SNOW:'#e9eef2',COAST:'#3d7db3',OCEAN:'#1f4f7d'};
+const YCOL={YIELD_FOOD:'#7ed957',YIELD_PRODUCTION:'#e8853a',YIELD_GOLD:'#f2d54a',YIELD_SCIENCE:'#5ab0ff',YIELD_CULTURE:'#c66bff',YIELD_FAITH:'#f4f0ff'};
+const YORD=['YIELD_FOOD','YIELD_PRODUCTION','YIELD_GOLD','YIELD_SCIENCE','YIELD_CULTURE','YIELD_FAITH'];
+let st,gi,turns=[],idx=0,timer=null,W,H,owners,roads,cities=[];
+let cam={x:0,y:0,z:1};const cvs=document.getElementById('c'),ctx=cvs.getContext('2d');const stage=document.getElementById('stage');
+const R=14; // base hex radius in world px
+const cx=(x,y)=>(x+(y%2?0.5:0)+0.5)*R*SQ3, cy=y=>(H-1-y)*R*1.5+R;
+function base(){const T=st.terrain;return i=>({t:T[i*6],f:T[i*6+1],h:T[i*6+2],r:T[i*6+3],c:T[i*6+4],res:T[i*6+5]})}
+function tname(i){return (gi.Terrains[i]||'').replace('TERRAIN_','')}
+function terrClass(i){const n=tname(i);return n.split('_')[0]}
+function isMtn(i){return tname(i).endsWith('MOUNTAIN')}
+function yieldsFor(p){const y={};const add=(o)=>{for(const k in (o||{}))y[k]=(y[k]||0)+o[k]};add(gi.yields.terrain[gi.Terrains[p.t]]);if(p.h&&!isMtn(p.t))y.YIELD_PRODUCTION=(y.YIELD_PRODUCTION||0)+1;if(p.f>=0)add(gi.yields.feature[gi.Features[p.f]]);if(p.res>=0)add(gi.yields.resource[gi.Resources[p.res]]);return y}
+function reset(){owners=new Int16Array(W*H).fill(-1);roads=new Uint8Array(W*H);const io=st.initialOwners;if(io&&io.length===W*H){for(let i=0;i<W*H;i++)owners[i]=io[i]}else if(io){for(let k=0;k<io.length;k+=2)owners[io[k]]=io[k+1]}const ir=st.initialRoutes;if(ir&&ir.length===W*H){for(let i=0;i<W*H;i++)roads[i]=ir[i]>=0?1:0}else if(ir){for(let k=0;k<ir.length;k+=2)roads[ir[k]]=ir[k+1]>=0?1:0}cities=st.initialCities||[]}
+function applyTo(j){reset();for(let k=0;k<=j;k++){const t=turns[k];if(t.owners)for(let q=0;q<t.owners.length;q+=2)owners[t.owners[q]]=t.owners[q+1];if(t.roads)for(let q=0;q<t.roads.length;q+=2)roads[t.roads[q]]=t.roads[q+1]>=0?1:0;if(t.cities)cities=t.cities}}
+function pcolor(pid){const p=(st.players||[]).find(p=>p.pid===pid);if(!p)return '#999';const n=p.civ.replace('CIVILIZATION_','');return CIV[n]||(p.csType?'#8b8576':'#aaa')}
+function hexPath(x,y,r){ctx.beginPath();for(let k=0;k<6;k++){const a=Math.PI/180*(60*k-30);ctx.lineTo(x+r*Math.cos(a),y+r*Math.sin(a))}ctx.closePath()}
+const NB=(x,y)=>y%2?[[x+1,y],[x+1,y+1],[x,y+1],[x-1,y],[x,y-1],[x+1,y-1]]:[[x+1,y],[x,y+1],[x-1,y+1],[x-1,y],[x-1,y-1],[x,y-1]];
+function draw(){const dpr=devicePixelRatio||1;const w=stage.clientWidth,h=stage.clientHeight;if(cvs.width!==w*dpr||cvs.height!==h*dpr){cvs.width=w*dpr;cvs.height=h*dpr}
+ ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#0b1622';ctx.fillRect(0,0,w,h);ctx.translate(cam.x,cam.y);ctx.scale(cam.z,cam.z);
+ const z=cam.z,get=base();const L={terr:Lterr.checked,city:Lcity.checked,res:Lres.checked,yield:Lyield.checked,road:Lroad.checked,grid:Lgrid.checked};
+ const vx0=-cam.x/z-R*2,vy0=-cam.y/z-R*2,vx1=(w-cam.x)/z+R*2,vy1=(h-cam.y)/z+R*2;
+ const rows=[];for(let y=0;y<H;y++){const yy=cy(y);if(yy<vy0||yy>vy1)continue;rows.push(y)}
+ // pass 1 terrain
+ for(const y of rows)for(let x=0;x<W;x++){const X=cx(x,y);if(X<vx0||X>vx1)continue;const i=y*W+x,p=get(i);const cls=terrClass(p.t);let col=TCOL[cls]||'#777';
+  if(isMtn(p.t))col='#5a5a58';else if(p.h)col=shade(col,-18);if(p.f>=0){const fn=gi.Features[p.f];if(fn==='FEATURE_ICE')col='#f4f7fa';else if(fn==='FEATURE_FOREST')col=shade(col,-10);else if(fn==='FEATURE_JUNGLE')col='#4f8a3a';else if(fn==='FEATURE_MARSH')col='#6f8f5a';else if(fn.startsWith('FEATURE_FLOODPLAINS'))col=shade(col,8);}
+  hexPath(X,cy(y),R+0.6);ctx.fillStyle=col;ctx.fill();
+  if(L.terr){const o=owners[i];if(o>=0){ctx.fillStyle=pcolor(o);ctx.globalAlpha=.22;ctx.fill();ctx.globalAlpha=1}}
+  if(L.grid){ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=.5;ctx.stroke()}}
+ // pass 2 glyphs (features, hills, mountains, rivers, resources, yields)
+ for(const y of rows)for(let x=0;x<W;x++){const X=cx(x,y),Y=cy(y);if(X<vx0||X>vx1)continue;const i=y*W+x,p=get(i);const fn=p.f>=0?gi.Features[p.f]:'';
+  if(isMtn(p.t)){ctx.fillStyle='#3a3a38';tri(X,Y+3,R*.9,R*.95);ctx.fillStyle='#d8d8d4';tri(X,Y-R*.35,R*.32,R*.3)}
+  else if(p.h){ctx.strokeStyle='rgba(60,40,10,.45)';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(X-R*.3,Y+R*.15,R*.35,Math.PI,0);ctx.arc(X+R*.3,Y+R*.2,R*.35,Math.PI,0);ctx.stroke()}
+  if(fn==='FEATURE_FOREST'||fn==='FEATURE_JUNGLE'){ctx.fillStyle=fn==='FEATURE_FOREST'?'#2f5d2a':'#1f4a24';for(const [dx,dy] of [[-.35,.1],[.3,.2],[-.02,-.3]])tri(X+dx*R,Y+dy*R,R*.28,R*.5)}
+  if(fn==='FEATURE_MARSH'){ctx.strokeStyle='#2c5a3a';ctx.lineWidth=1;for(const dy of [-.2,.1,.4]){ctx.beginPath();ctx.moveTo(X-R*.4,Y+dy*R);ctx.lineTo(X+R*.4,Y+dy*R);ctx.stroke()}}
+  if(fn==='FEATURE_OASIS'){ctx.fillStyle='#3d7db3';ctx.beginPath();ctx.arc(X,Y,R*.3,0,7);ctx.fill()}
+  if(fn.startsWith('FEATURE_FLOODPLAINS')){ctx.strokeStyle='rgba(40,90,140,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X-R*.5,Y+R*.3);ctx.quadraticCurveTo(X,Y+R*.5,X+R*.5,Y+R*.3);ctx.stroke()}
+  if(gi.featureNatural.includes(fn)){ctx.fillStyle='#fff3b0';star(X,Y,R*.55,5);if(z>2.2){label(fn.replace('FEATURE_','').replace(/_/g,' ').toLowerCase(),X,Y-R*.9,9,'#fff3b0')}}
+  if(p.r){ctx.strokeStyle='#4fa3e6';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(X-R*.7,Y+R*.55);ctx.bezierCurveTo(X-R*.2,Y+R*.15,X+R*.2,Y+R*.75,X+R*.7,Y+R*.35);ctx.stroke()}
+  if(L.road&&roads[i]){ctx.strokeStyle='rgba(110,70,30,.9)';ctx.lineWidth=1.6;for(const [nx,ny] of NB(x,y)){if(nx<0||nx>=W||ny<0||ny>=H)continue;const j=ny*W+nx;if(roads[j]&&j>i){ctx.beginPath();ctx.moveTo(X,Y);ctx.lineTo(cx(nx,ny),cy(ny));ctx.stroke()}}}
+  if(L.res&&p.res>=0&&z>1.3){const rn=gi.Resources[p.res];const cls=gi.resourceClass[rn]||'';const col=cls==='RESOURCECLASS_LUXURY'?'#c66bff':cls==='RESOURCECLASS_STRATEGIC'?'#ff6b6b':'#e9e2c8';ctx.fillStyle='rgba(14,17,20,.8)';ctx.beginPath();ctx.arc(X-R*.45,Y-R*.45,R*.34,0,7);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();label(rn.replace('RESOURCE_','').slice(0,2),X-R*.45,Y-R*.45+3.2,R*.42,col,false)}
+  if(L.yield&&z>2.6&&!isMtn(p.t)){const yv=yieldsFor(p);let k=0;const items=[];for(const yk of YORD){for(let q=0;q<(yv[yk]||0);q++)items.push(yk)}const n=items.length;items.forEach((yk,q)=>{const row=Math.floor(q/4),col=q%4,cnt=Math.min(4,n-row*4);const gx=X+(col-(cnt-1)/2)*R*.34,gy=Y+R*.2+row*R*.3;yg(yk,gx,gy,R*.13)})}
+ }
+ // pass 3 borders
+ if(L.terr){ctx.lineWidth=Math.max(1.2,R*.14);for(const y of rows)for(let x=0;x<W;x++){const X=cx(x,y),Y=cy(y);if(X<vx0||X>vx1)continue;const i=y*W+x,o=owners[i];if(o<0)continue;ctx.strokeStyle=pcolor(o);NB(x,y).forEach(([nx,ny],k)=>{const j=(nx<0||nx>=W||ny<0||ny>=H)?-1:ny*W+nx;const oo=j<0?-1:owners[j];if(oo===o)return;const a0=Math.PI/180*(60*k-30),a1=Math.PI/180*(60*(k+1)-30);const r=R-ctx.lineWidth/2;ctx.beginPath();ctx.moveTo(X+r*Math.cos(a0),Y+r*Math.sin(a0));ctx.lineTo(X+r*Math.cos(a1),Y+r*Math.sin(a1));ctx.stroke()})}}
+ // pass 4 cities
+ if(L.city){for(const c of cities){const X=cx(c.x,c.y),Y=cy(c.y);const col=pcolor(c.pid);const p=(st.players||[]).find(p=>p.pid===c.pid);const major=p&&!p.csType;
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(X,Y,R*.42,0,7);ctx.fill();ctx.strokeStyle='#0b0c0a';ctx.lineWidth=1.2;ctx.stroke();ctx.fillStyle='#0b0c0a';ctx.beginPath();ctx.arc(X,Y,R*.16,0,7);ctx.fill();
+  const fs=Math.min(R*1.1,Math.max(8/z,13/z));if(!major&&z<1.15)continue;const name=(c.name||'').replace('LOC_CITY_NAME_','').replace(/_/g,' ').toLowerCase();const txt=name+'  '+c.pop;
+  ctx.font=`500 ${fs}px IBM Plex Mono,ui-monospace,monospace`;const tw=ctx.measureText(txt).width;const bx=X-tw/2-4,by=Y-R*1.55-fs*.9;
+  ctx.fillStyle='rgba(14,17,20,.82)';ctx.fillRect(bx,by,tw+8,fs*1.25);ctx.fillStyle=col;ctx.fillRect(bx,by,3,fs*1.25);ctx.fillStyle=major?'#F3ECD8':'#c9c2ae';ctx.textAlign='left';ctx.fillText(txt,bx+6,by+fs*.98)}}
+ turn.textContent='T'+turns[idx].turn;n.textContent=(idx+1)+'/'+turns.length}
+function shade(hex,d){const n=parseInt(hex.slice(1),16);const r=Math.max(0,Math.min(255,(n>>16)+d)),g=Math.max(0,Math.min(255,((n>>8)&255)+d)),b=Math.max(0,Math.min(255,(n&255)+d));return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0')}
+function tri(x,y,hw,h){ctx.beginPath();ctx.moveTo(x,y-h);ctx.lineTo(x+hw,y);ctx.lineTo(x-hw,y);ctx.closePath();ctx.fill()}
+function star(x,y,r,n){ctx.beginPath();for(let k=0;k<n*2;k++){const a=Math.PI/n*k-Math.PI/2,rr=k%2?r*.45:r;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}ctx.closePath();ctx.fill()}
+function label(t,x,y,fs,col,halo=true){ctx.font=`500 ${fs}px IBM Plex Mono,ui-monospace,monospace`;ctx.textAlign='center';if(halo){ctx.lineWidth=3;ctx.strokeStyle='rgba(14,17,20,.9)';ctx.strokeText(t,x,y)}ctx.fillStyle=col;ctx.fillText(t,x,y)}
+function yg(k,x,y,r){ctx.fillStyle=YCOL[k];if(k==='YIELD_FOOD'){ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}else if(k==='YIELD_PRODUCTION'){tri(x,y+r*.8,r*1.1,r*1.8)}else if(k==='YIELD_GOLD'){ctx.beginPath();ctx.moveTo(x,y-r*1.2);ctx.lineTo(x+r*1.1,y);ctx.lineTo(x,y+r*1.2);ctx.lineTo(x-r*1.1,y);ctx.closePath();ctx.fill()}else if(k==='YIELD_SCIENCE'){ctx.fillRect(x-r*.9,y-r*.9,r*1.8,r*1.8)}else if(k==='YIELD_CULTURE'){star(x,y,r*1.3,5)}else{star(x,y,r*1.3,4)}}
+function show(j){idx=Math.max(0,Math.min(turns.length-1,j));s.value=idx;applyTo(idx);draw()}
+function fit(){const w=stage.clientWidth,h=stage.clientHeight;const mw=W*R*SQ3+R,mh=H*R*1.5+R;cam.z=Math.min(w/mw,h/mh);cam.x=(w-mw*cam.z)/2;cam.y=(h-mh*cam.z)/2;draw()}
+function zoomAt(px,py,f){const nz=Math.min(12,Math.max(.2,cam.z*f));f=nz/cam.z;cam.x=px-(px-cam.x)*f;cam.y=py-(py-cam.y)*f;cam.z=nz;draw()}
+stage.addEventListener('wheel',e=>{e.preventDefault();const r=stage.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,e.deltaY<0?1.15:1/1.15)},{passive:false});
+let drag=null,pts=new Map(),pd=0;stage.addEventListener('pointerdown',e=>{if(e.target.closest('.zoomctl,.legend'))return;stage.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);if(pts.size===1)drag=[e.clientX-cam.x,e.clientY-cam.y];if(pts.size===2){const a=[...pts.values()];pd=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])}});
+stage.addEventListener('pointermove',e=>{if(pts.has(e.pointerId)){pts.set(e.pointerId,[e.clientX,e.clientY]);if(pts.size===2){const a=[...pts.values()];const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);const r=stage.getBoundingClientRect();zoomAt((a[0][0]+a[1][0])/2-r.left,(a[0][1]+a[1][1])/2-r.top,d/pd);pd=d}else if(drag){cam.x=e.clientX-drag[0];cam.y=e.clientY-drag[1];draw()}}else hover(e)});
+const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pd=0;if(!pts.size)drag=null};stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+function hover(e){const r=stage.getBoundingClientRect();const wx=(e.clientX-r.left-cam.x)/cam.z,wy=(e.clientY-r.top-cam.y)/cam.z;const y=Math.round((H-1)-(wy-R)/(R*1.5));if(y<0||y>=H){tip.hidden=true;return}const x=Math.round(wx/(R*SQ3)-(y%2?0.5:0)-0.5);if(x<0||x>=W){tip.hidden=true;return}
+ const p=base()(y*W+x);const o=owners[y*W+x];const pl=(st.players||[]).find(q=>q.pid===o);const yv=yieldsFor(p);const ys=YORD.filter(k=>yv[k]).map(k=>yv[k]+' '+k.replace('YIELD_','').toLowerCase()).join(' · ');
+ tip.hidden=false;tip.innerHTML='<b>('+x+','+y+')</b> '+tname(p.t).toLowerCase().replace(/_/g,' ')+(p.h&&!isMtn(p.t)?' · hills':'')+(p.r?' · river':'')+(p.c?' · coastal':'')+(p.f>=0?'<br>'+gi.Features[p.f].replace('FEATURE_','').toLowerCase().replace(/_/g,' '):'')+(p.res>=0?'<br><span style="color:#c66bff">'+gi.Resources[p.res].replace('RESOURCE_','').toLowerCase()+'</span>':'')+(ys?'<br>'+ys:'')+(pl?'<br>owner: <span style="color:'+pcolor(o)+'">'+pl.civ.replace('CIVILIZATION_','').toLowerCase()+'</span>':'')}
+zi.onclick=()=>zoomAt(stage.clientWidth/2,stage.clientHeight/2,1.4);zo.onclick=()=>zoomAt(stage.clientWidth/2,stage.clientHeight/2,1/1.4);zr.onclick=fit;
+for(const id of ['Lterr','Lcity','Lres','Lyield','Lroad','Lgrid']){const el=document.getElementById(id);el.onchange=()=>{el.parentElement.classList.toggle('on',el.checked);draw()}}
+s.oninput=()=>show(+s.value);prev.onclick=()=>show(idx-1);next.onclick=()=>show(idx+1);
+play.onclick=()=>{if(timer){clearInterval(timer);timer=null;play.textContent='▶▶'}else{timer=setInterval(()=>{if(idx>=turns.length-1){clearInterval(timer);timer=null;play.textContent='▶▶'}else show(idx+1)},600);play.textContent='❚❚'}};
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')show(idx-1);if(e.key==='ArrowRight')show(idx+1)});window.addEventListener('resize',draw);
+(async()=>{[st,gi]=await Promise.all([fetch('/state/static.json').then(r=>r.json()),fetch('/state/gameinfo.json').then(r=>r.json())]);W=st.gridW;H=st.gridH;
+ turns=(await (await fetch('/state/turns.jsonl')).text()).trim().split('\n').map(l=>{const o=JSON.parse(l);o.turn=+o.turn;return o});
+ const P=(st.players||[]).filter(p=>p.pid<20);const majors=P.filter(p=>!p.csType),cs=P.filter(p=>p.csType);
+ legend.innerHTML=majors.map(p=>'<span><i style="background:'+pcolor(p.pid)+'"></i>'+p.civ.replace('CIVILIZATION_','').toLowerCase()+(p.pid===0?' · agent':'')+'</span>').join('')+'<span class=cs>city-states: '+cs.map(p=>p.civ.replace('CIVILIZATION_','').toLowerCase().replace(/_/g,' ')).join(' · ')+'</span>';
+ s.max=turns.length-1;idx=turns.length-1;const U=new URLSearchParams(location.search);if(U.get('t')){const k=turns.findIndex(o=>o.turn>=+U.get('t'));if(k>=0)idx=k}s.value=idx;applyTo(idx);fit();
+ if(U.get('z')){const z=+U.get('z'),x=+(U.get('x')||W/2),y=+(U.get('y')||H/2);cam.z=z;cam.x=stage.clientWidth/2-cx(x,y)*z;cam.y=stage.clientHeight/2-cy(y)*z;draw()}})();
+</script></body></html>
