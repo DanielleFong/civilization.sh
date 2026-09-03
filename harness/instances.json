@@ -1,0 +1,136 @@
+{
+ "original": {
+  "exe": "CivilizationVI_DX12.exe",
+  "port": 4318
+ },
+ "instances": [
+  {
+   "exe": "CivilizationVI_i01.exe",
+   "port": 4401
+  },
+  {
+   "exe": "CivilizationVI_i02.exe",
+   "port": 4402
+  },
+  {
+   "exe": "CivilizationVI_i03.exe",
+   "port": 4403
+  },
+  {
+   "exe": "CivilizationVI_i04.exe",
+   "port": 4404
+  },
+  {
+   "exe": "CivilizationVI_i05.exe",
+   "port": 4405
+  },
+  {
+   "exe": "CivilizationVI_i06.exe",
+   "port": 4406
+  },
+  {
+   "exe": "CivilizationVI_i07.exe",
+   "port": 4407
+  },
+  {
+   "exe": "CivilizationVI_i08.exe",
+   "port": 4408
+  },
+  {
+   "exe": "CivilizationVI_i09.exe",
+   "port": 4409
+  },
+  {
+   "exe": "CivilizationVI_i10.exe",
+   "port": 4410
+  },
+  {
+   "exe": "CivilizationVI_i11.exe",
+   "port": 4411
+  },
+  {
+   "exe": "CivilizationVI_i12.exe",
+   "port": 4412
+  },
+  {
+   "exe": "CivilizationVI_i13.exe",
+   "port": 4413
+  },
+  {
+   "exe": "CivilizationVI_i14.exe",
+   "port": 4414
+  },
+  {
+   "exe": "CivilizationVI_i15.exe",
+   "port": 4415
+  },
+  {
+   "exe": "CivilizationVI_i16.exe",
+   "port": 4416
+  },
+  {
+   "exe": "CivilizationVI_i17.exe",
+   "port": 4417
+  },
+  {
+   "exe": "CivilizationVI_i18.exe",
+   "port": 4418
+  },
+  {
+   "exe": "CivilizationVI_i19.exe",
+   "port": 4419
+  },
+  {
+   "exe": "CivilizationVI_i20.exe",
+   "port": 4420
+  },
+  {
+   "exe": "CivilizationVI_i21.exe",
+   "port": 4421
+  },
+  {
+   "exe": "CivilizationVI_i22.exe",
+   "port": 4422
+  },
+  {
+   "exe": "CivilizationVI_i23.exe",
+   "port": 4423
+  },
+  {
+   "exe": "CivilizationVI_i24.exe",
+   "port": 4424
+  },
+  {
+   "exe": "CivilizationVI_i25.exe",
+   "port": 4425
+  },
+  {
+   "exe": "CivilizationVI_i26.exe",
+   "port": 4426
+  },
+  {
+   "exe": "CivilizationVI_i27.exe",
+   "port": 4427
+  },
+  {
+   "exe": "CivilizationVI_i28.exe",
+   "port": 4428
+  },
+  {
+   "exe": "CivilizationVI_i29.exe",
+   "port": 4429
+  },
+  {
+   "exe": "CivilizationVI_i30.exe",
+   "port": 4430
+  },
+  {
+   "exe": "CivilizationVI_i31.exe",
+   "port": 4431
+  },
+  {
+   "exe": "CivilizationVI_i32.exe",
+   "port": 4432
+  }
+ ]
+}
