@@ -1,0 +1,5 @@
+file 'C:/Users/danie/cc/civilization.sh/video/frames/hls/1080_149689486_s03813.ts'
+file 'C:/Users/danie/cc/civilization.sh/video/frames/hls/1080_149689486_s03814.ts'
+file 'C:/Users/danie/cc/civilization.sh/video/frames/hls/1080_149689486_s03815.ts'
+file 'C:/Users/danie/cc/civilization.sh/video/frames/hls/1080_149689486_s03816.ts'
+file 'C:/Users/danie/cc/civilization.sh/video/frames/hls/1080_149689486_s03817.ts'

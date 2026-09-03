@@ -1,0 +1,122 @@
+{
+ "tag": "game3-china-defeat-T164-exact",
+ "captured": "2026-09-03T11:55:28",
+ "items": [
+  {
+   "file": "00_results.png",
+   "label": "results"
+  },
+  {
+   "file": "01_ranking_top.png",
+   "label": "ranking_top"
+  },
+  {
+   "file": "02_Buildings_Constructed.png",
+   "label": "Buildings Constructed"
+  },
+  {
+   "file": "03_Cities_Captured.png",
+   "label": "Cities Captured"
+  },
+  {
+   "file": "04_Cities_Founded.png",
+   "label": "Cities Founded"
+  },
+  {
+   "file": "05_Cities_Lost.png",
+   "label": "Cities Lost"
+  },
+  {
+   "file": "06_Districts_Constructed.png",
+   "label": "Districts Constructed"
+  },
+  {
+   "file": "07_Great_People_Earned.png",
+   "label": "Great People Earned"
+  },
+  {
+   "file": "08_Number_of_Combats.png",
+   "label": "Number of Combats"
+  },
+  {
+   "file": "09_Player_Culture.png",
+   "label": "Player Culture"
+  },
+  {
+   "file": "10_Player_Era_Score.png",
+   "label": "Player Era Score"
+  },
+  {
+   "file": "11_Player_Faith.png",
+   "label": "Player Faith"
+  },
+  {
+   "file": "12_Player_Gold.png",
+   "label": "Player Gold"
+  },
+  {
+   "file": "13_Player_Science.png",
+   "label": "Player Science"
+  },
+  {
+   "file": "14_Player_Score.png",
+   "label": "Player Score"
+  },
+  {
+   "file": "15_Total_Governor_Titles.png",
+   "label": "Total Governor Titles"
+  },
+  {
+   "file": "16_Total_Governors.png",
+   "label": "Total Governors"
+  },
+  {
+   "file": "17_Total_cities_destroyed.png",
+   "label": "Total cities destroyed"
+  },
+  {
+   "file": "18_Total_religions_founded.png",
+   "label": "Total religions founded"
+  },
+  {
+   "file": "19_Units_Killed.png",
+   "label": "Units Killed"
+  },
+  {
+   "file": "20_Units_Lost.png",
+   "label": "Units Lost"
+  },
+  {
+   "file": "21_War_Declarations_Received.png",
+   "label": "War Declarations Received"
+  },
+  {
+   "file": "22_Wars_Declared.png",
+   "label": "Wars Declared"
+  },
+  {
+   "file": "23_Wonders_Constructed.png",
+   "label": "Wonders Constructed"
+  },
+  {
+   "file": "24_timeline_0.png",
+   "label": "timeline_0"
+  },
+  {
+   "file": "25_timeline_1.png",
+   "label": "timeline_1"
+  },
+  {
+   "file": "26_timeline_2.png",
+   "label": "timeline_2"
+  },
+  {
+   "file": "27_timeline_3.png",
+   "label": "timeline_3"
+  },
+  {
+   "file": "28_timeline_4.png",
+   "label": "timeline_4"
+  }
+ ]
+}

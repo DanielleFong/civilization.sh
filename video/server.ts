@@ -133,40 +133,122 @@ init();
 
 const mapHtml = `<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>civilization.is — state replay</title><style>${CSS}
-canvas{width:100%;display:block;background:#06080c;border:1px solid var(--line)}
+.mapwrap{position:relative;width:100%;height:min(78vh,900px);background:#06080c;border:1px solid var(--line);overflow:hidden;touch-action:none;cursor:grab}
+.mapwrap.drag{cursor:grabbing}
+canvas{display:block;width:100%;height:100%}
+.zoomctl{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:4px}
+.zoomctl button{width:30px;height:30px;font:16px ui-monospace,monospace}
+.tip{position:absolute;pointer-events:none;background:rgba(6,8,12,.92);color:#ddd;border:1px solid var(--line);padding:6px 8px;font:12px ui-monospace,Menlo,monospace;white-space:pre;display:none;z-index:2}
 .legend{display:flex;flex-wrap:wrap;gap:8px 14px;max-width:1100px;margin:6px auto;padding:0 18px;font:12px ui-monospace,Menlo,monospace;color:var(--dim)}
-.legend i{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:-1px}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:-1px;border:1px solid #0006}
+.legend .maj{color:#eee;font-weight:600}
+.keys{max-width:1100px;margin:4px auto;padding:0 18px;font:11px ui-monospace,Menlo,monospace;color:var(--dim)}
 </style></head><body>
 <header><h1><b>civilization.sh</b> · state</h1><nav><a href="/">live</a><a href="/replay">replay</a><a class=on href="/map">state</a><a href="https://github.com/DanielleFong/civilization.sh">github</a></nav></header>
-<div class=wrap><div class=bar><span id=turn>T—</span><button id=prev>◀</button><input id=s type=range min=0 max=0 value=0><button id=next>▶</button><button id=play>▶▶</button><label style="color:var(--dim)"><input type=checkbox id=own checked> territory</label><label style="color:var(--dim)"><input type=checkbox id=cities checked> cities</label><span style="color:var(--dim)" id=n></span></div>
-<div class=frame style="border:0"><canvas id=c></canvas></div>
+<div class=wrap><div class=bar><span id=turn>T—</span><button id=prev>◀</button><input id=s type=range min=0 max=0 value=0><button id=next>▶</button><button id=play>▶▶</button>
+<label style="color:var(--dim)"><input type=checkbox id=own checked> territory</label>
+<label style="color:var(--dim)"><input type=checkbox id=cities checked> cities</label>
+<label style="color:var(--dim)"><input type=checkbox id=yields checked> yields</label>
+<label style="color:var(--dim)"><input type=checkbox id=res checked> resources</label>
+<span style="color:var(--dim)" id=n></span></div>
+<div class=mapwrap id=mw><canvas id=c></canvas><div class=zoomctl><button id=zi>+</button><button id=zo>−</button><button id=zr title="reset">⌂</button></div><div class=tip id=tip></div></div>
 <div class=legend id=legend></div>
+<div class=keys>scroll / pinch = zoom · drag = pan · double-click = zoom in · ← → = turn · yields = base terrain (food ● prod ▲ gold ◆), shown when zoomed · resources: ◆ bonus / luxury / strategic (index→name best-effort)</div>
 <div class=log id=log>Rendered from the tuner's own map data (terrain once; ownership, roads and city snapshots per turn) — not screenshots. Turns are recorded whenever the agent ends a turn through the harness; gaps are turns ended by the raw Lua fallback.</div>
-</div><footer>Hex grid ${"${"}W}×${"${"}H}; colors: terrain class + owner tint. Per-civ vision layers coming next.</footer>
+</div><footer>Hex grid <span id=grid>—</span>; colors: terrain class + civ tint and borders. Districts & per-tile improvements: recorder upgrade pending.</footer>
 <script>
-const PAL={0:'#e8b74a',8:'#c8623c',9:'#b23a48',10:'#c94f8c',11:'#5aa06b',12:'#7d7d7d',13:'#3f7fbf',14:'#e0e0e0',62:'#9c8f6a'};
-const TERR=['#8fae5c','#7fa04e','#c9c27a','#b8b46c','#d9c98a','#c9b36f','#e0dcc0','#d6d2ba','#bcae7a','#a8a06a','#c7c1a1','#b6b08e','#e6f1f3','#dbe9ee','#c7dbe3','#2f6f9e','#183f63'];
-let st=null,turns=[],owners=null,roads=null,i=0,timer=null,cvs=document.getElementById('c'),ctx=cvs.getContext('2d');
-function hexColorForTerrain(t){if(t<0)return '#000';const cls=Math.floor(t/3);const base=TERR[t]||'#777';return base;}
-function reset(){owners=new Int16Array(st.gridW*st.gridH).fill(-1);roads=new Uint8Array(st.gridW*st.gridH);(st.initialOwners||[]).forEach((v,k)=>{if(k%2===0)owners[v]=st.initialOwners[k+1]});}
+// Civ 6-style primary colours for majors; city-states neutral grey with type ring.
+const PAL={0:'#e8b74a',8:'#c8623c',9:'#b23a48',10:'#c94f8c',11:'#4fa86a',12:'#8d8d99',13:'#3f7fbf',14:'#e6d3a3',62:'#9c8f6a'};
+const CS_RING={Trade:'#e0b000',Scientific:'#3fa0ff',Industrial:'#ff8a3d',Cultural:'#c65cff',Militaristic:'#ff4d4d',Religious:'#f0f0f0'};
+const TNAME=['grass','grass hills','grass mtn','plains','plains hills','plains mtn','desert','desert hills','desert mtn','tundra','tundra hills','tundra mtn','snow','snow hills','snow mtn','coast','ocean'];
+const TERR=['#8fae5c','#7fa04e','#6e7d5a','#c9c27a','#b8b46c','#8c8a6a','#e0dcc0','#d6d2ba','#a8a49a','#bcae7a','#a8a06a','#8d8a78','#e6f1f3','#dbe9ee','#c7dbe3','#2f6f9e','#183f63'];
+const FNAME={0:'floodplains',1:'ice',2:'jungle',3:'forest',4:'oasis',5:'marsh',6:'reef',7:'floodplains',8:'floodplains',9:'volcano',10:'geothermal',11:'volcanic soil'};
+// vanilla GameInfo.Resources order (best-effort; DLC/BBG may shift indices)
+const RNAME=['bananas','cattle','copper','crabs','deer','fish','rice','sheep','stone','wheat','citrus','cocoa','coffee','cotton','diamonds','dyes','furs','gypsum','incense','ivory','jade','marble','mercury','pearls','salt','silk','silver','spices','sugar','tea','tobacco','truffles','whales','wine','aluminum','coal','horses','iron','niter','oil','uranium'];
+const RCLASS=i=>i<0?null:i<10?'bonus':i<34?'luxury':i<41?'strategic':'other';
+const RCOL={bonus:'#7ed957',luxury:'#d17bff',strategic:'#ff5c5c',other:'#cccccc'};
+// base yields [food,prod,gold] from terrain + feature + hills
+function baseYield(t,f,h){let y=[0,0,0];const b=Math.floor(t/3);const m=t%3;if(t===15)y=[1,0,1];else if(t===16)y=[1,0,0];else if(m===2)y=[0,0,0];else{y=[[2,0,0],[1,1,0],[0,0,0],[1,0,0],[0,0,0]][b].slice();if(m===1){y[1]+=1;}}
+  if(f===3)y[1]+=1;else if(f===2)y[0]+=1;else if(f===5)y[0]+=1;else if(f===0||f===7||f===8)y[0]+=3;else if(f===4){y[0]+=3;y[2]+=1;}else if(f===6){y[0]+=1;}return y;}
+let st=null,turns=[],owners=null,roads=null,i=0,timer=null;
+const mw=document.getElementById('mw'),cvs=document.getElementById('c'),ctx=cvs.getContext('2d'),tip=document.getElementById('tip');
+let view={z:1,x:0,y:0},base=null,dpr=1;
+function reset(){owners=new Int16Array(st.gridW*st.gridH).fill(-1);roads=new Int8Array(st.gridW*st.gridH);(st.initialRoutes||[]).forEach((v,k)=>{if(k%2===0)roads[v]=st.initialRoutes[k+1]});(st.initialOwners||[]).forEach((v,k)=>{if(k%2===0)owners[v]=st.initialOwners[k+1]});}
 function applyTo(idx){reset();let cities=st.initialCities||[];for(let k=0;k<=idx;k++){const t=turns[k];if(t.owners)for(let j=0;j<t.owners.length;j+=2)owners[t.owners[j]]=t.owners[j+1];if(t.roads)for(let j=0;j<t.roads.length;j+=2)roads[t.roads[j]]=t.roads[j+1];if(t.cities)cities=t.cities;}return cities;}
-function draw(idx){const W=st.gridW,H=st.gridH;const cw=cvs.clientWidth;const r=cw/(W*Math.sqrt(3)+1);cvs.width=cw;cvs.height=Math.ceil(r*1.5*H+r);ctx.fillStyle='#06080c';ctx.fillRect(0,0,cvs.width,cvs.height);
-  const cities=applyTo(idx);const showOwn=own.checked;
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const p=y*W+x;const t=st.terrain[p*6];const cx=(x+(y%2?0.5:0)+0.5)*r*Math.sqrt(3),cy=cvs.height-(y*1.5+1)*r;
-    ctx.beginPath();for(let k=0;k<6;k++){const a=Math.PI/180*(60*k-30);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));}ctx.closePath();
-    ctx.fillStyle=hexColorForTerrain(t);ctx.fill();
-    const o=owners[p];if(showOwn&&o>=0){ctx.fillStyle=(PAL[o]||'#aaa');ctx.globalAlpha=.45;ctx.fill();ctx.globalAlpha=1;}
-    if(roads[p]){ctx.fillStyle='rgba(60,40,20,.7)';ctx.beginPath();ctx.arc(cx,cy,r*.18,0,7);ctx.fill();}}
-  if(cities.checked!==false&&document.getElementById('cities').checked){ctx.font=Math.max(9,r*1.1)+'px ui-monospace,Menlo,monospace';ctx.textAlign='center';
-    for(const c of cities){const cx=(c.x+(c.y%2?0.5:0)+0.5)*r*Math.sqrt(3),cy=cvs.height-(c.y*1.5+1)*r;ctx.fillStyle=PAL[c.pid]||'#fff';ctx.beginPath();ctx.arc(cx,cy,r*.55,0,7);ctx.fill();ctx.strokeStyle='#000';ctx.stroke();ctx.fillStyle='#fff';ctx.fillText(String(c.pop),cx,cy+r*.4);ctx.fillStyle='#ddd';ctx.fillText((c.name||'').replace('LOC_CITY_NAME_','').replace(/_/g,' ').toLowerCase(),cx,cy-r*.8);}}
+function fit(){const W=st.gridW,H=st.gridH;const cw=mw.clientWidth,ch=mw.clientHeight;dpr=window.devicePixelRatio||1;cvs.width=cw*dpr;cvs.height=ch*dpr;
+  base=Math.min(cw/(W*Math.sqrt(3)+1),ch/(H*1.5+0.5));view={z:1,x:(cw-base*Math.sqrt(3)*(W+.5))/2,y:(ch-base*(1.5*H+.5))/2};}
+function hexCenter(x,y,r){return [(x+(y%2?0.5:0)+0.5)*r*Math.sqrt(3),(st.gridH-1-y)*1.5*r+r];}
+function hexPath(cx,cy,r){ctx.beginPath();for(let k=0;k<6;k++){const a=Math.PI/180*(60*k-30);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));}ctx.closePath();}
+const NB=(x,y)=>{const o=y%2?[[1,0],[1,1],[0,1],[-1,0],[0,-1],[1,-1]]:[[1,0],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1]];return o.map(([dx,dy])=>[x+dx,y+dy]);};
+function draw(idx){if(!st)return;const W=st.gridW,H=st.gridH;const r=base*view.z;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#06080c';ctx.fillRect(0,0,cvs.width,cvs.height);ctx.translate(view.x,view.y);
+  const cities=applyTo(idx);const showOwn=own.checked,showY=yields.checked&&r>=13,showR=res.checked&&r>=6;
+  const cw=mw.clientWidth,ch=mw.clientHeight;
+  const x0=Math.max(0,Math.floor((-view.x)/(r*Math.sqrt(3)))-1),x1=Math.min(W-1,Math.ceil((cw-view.x)/(r*Math.sqrt(3)))+1);
+  const yTop=Math.max(0,Math.floor((-view.y)/(r*1.5))-1),yBot=Math.min(H-1,Math.ceil((ch-view.y)/(r*1.5))+1);
+  const yLo=H-1-yBot,yHi=H-1-yTop;
+  // pass 1: terrain + features + tint
+  for(let y=yLo;y<=yHi;y++)for(let x=x0;x<=x1;x++){const p=y*W+x;const t=st.terrain[p*6],f=st.terrain[p*6+1],hill=st.terrain[p*6+2],riv=st.terrain[p*6+3],rs=st.terrain[p*6+5];const [cx,cy]=hexCenter(x,y,r);
+    hexPath(cx,cy,r);ctx.fillStyle=t<0?'#000':(TERR[t]||'#777');ctx.fill();
+    if(f===1){ctx.fillStyle='rgba(235,245,255,.85)';ctx.fill();}
+    const o=owners[p];if(showOwn&&o>=0){ctx.fillStyle=(o<20&&PAL[o])?PAL[o]:'#9a9a9a';ctx.globalAlpha=o<20&&PAL[o]?.38:.22;ctx.fill();ctx.globalAlpha=1;}
+    if(r>=5){
+      if(t%3===2&&t<15){ctx.fillStyle='rgba(60,55,50,.9)';ctx.beginPath();ctx.moveTo(cx-r*.55,cy+r*.35);ctx.lineTo(cx-r*.1,cy-r*.5);ctx.lineTo(cx+r*.2,cy+r*.05);ctx.lineTo(cx+r*.4,cy-r*.2);ctx.lineTo(cx+r*.6,cy+r*.35);ctx.closePath();ctx.fill();ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.moveTo(cx-r*.1,cy-r*.5);ctx.lineTo(cx-r*.22,cy-r*.25);ctx.lineTo(cx+r*.02,cy-r*.25);ctx.closePath();ctx.fill();}
+      else if(hill){ctx.strokeStyle='rgba(70,60,40,.55)';ctx.lineWidth=Math.max(1,r*.08);ctx.beginPath();ctx.arc(cx-r*.25,cy+r*.15,r*.3,Math.PI,0);ctx.arc(cx+r*.3,cy+r*.25,r*.25,Math.PI,0);ctx.stroke();}
+      if(f===3){ctx.fillStyle='#2f5d2a';for(const [dx,dy] of [[-.3,.1],[.25,-.05],[0,.35]]){ctx.beginPath();ctx.moveTo(cx+dx*r,cy+dy*r-r*.3);ctx.lineTo(cx+dx*r-r*.18,cy+dy*r+r*.05);ctx.lineTo(cx+dx*r+r*.18,cy+dy*r+r*.05);ctx.closePath();ctx.fill();}}
+      else if(f===2){ctx.fillStyle='#2c6b3a';for(const [dx,dy] of [[-.3,.05],[.2,-.15],[.05,.35],[.35,.25]]){ctx.beginPath();ctx.arc(cx+dx*r,cy+dy*r,r*.2,0,7);ctx.fill();}}
+      else if(f===5){ctx.strokeStyle='#3b6f7a';ctx.lineWidth=Math.max(1,r*.07);ctx.beginPath();for(const dy of [-.25,0,.25]){ctx.moveTo(cx-r*.4,cy+dy*r);ctx.lineTo(cx+r*.4,cy+dy*r);}ctx.stroke();}
+      else if(f===4){ctx.fillStyle='#3aa7d8';ctx.beginPath();ctx.ellipse(cx,cy+r*.1,r*.32,r*.2,0,0,7);ctx.fill();ctx.fillStyle='#2f7d2a';ctx.fillRect(cx-r*.05,cy-r*.45,r*.1,r*.5);}
+      else if(f===0||f===7||f===8){ctx.strokeStyle='rgba(70,120,60,.6)';ctx.lineWidth=Math.max(1,r*.06);ctx.beginPath();for(const dy of [-.3,-.1,.1,.3]){ctx.moveTo(cx-r*.45,cy+dy*r);ctx.lineTo(cx+r*.45,cy+dy*r);}ctx.stroke();}
+      else if(f===9){ctx.fillStyle='#6b2a2a';ctx.beginPath();ctx.moveTo(cx-r*.5,cy+r*.4);ctx.lineTo(cx,cy-r*.5);ctx.lineTo(cx+r*.5,cy+r*.4);ctx.closePath();ctx.fill();ctx.fillStyle='#ff7a2a';ctx.beginPath();ctx.arc(cx,cy-r*.42,r*.12,0,7);ctx.fill();}
+      if(riv&&t<15){ctx.strokeStyle='#4aa3e0';ctx.lineWidth=Math.max(1,r*.12);ctx.beginPath();ctx.moveTo(cx-r*.5,cy+r*.62);ctx.quadraticCurveTo(cx-r*.15,cy+r*.45,cx+r*.15,cy+r*.62);ctx.quadraticCurveTo(cx+r*.35,cy+r*.72,cx+r*.5,cy+r*.62);ctx.stroke();}
+    }
+    if(roads[p]>0){ctx.strokeStyle='rgba(90,60,30,.85)';ctx.lineWidth=Math.max(1,r*.14);const nb=NB(x,y);ctx.beginPath();let any=false;for(let k=0;k<6;k++){const [nx,ny]=nb[k];if(nx<0||ny<0||nx>=W||ny>=H)continue;if(roads[ny*W+nx]>0){const [qx,qy]=hexCenter(nx,ny,r);ctx.moveTo(cx,cy);ctx.lineTo((cx+qx)/2,(cy+qy)/2);any=true;}}if(any)ctx.stroke();else{ctx.fillStyle='rgba(90,60,30,.85)';ctx.beginPath();ctx.arc(cx,cy,r*.12,0,7);ctx.fill();}}
+    if(showR&&rs>=0){const cl=RCLASS(rs);ctx.fillStyle=RCOL[cl];ctx.strokeStyle='#000';ctx.lineWidth=1;const s=Math.max(2.5,r*.28);ctx.beginPath();ctx.moveTo(cx+r*.5,cy-r*.45-s);ctx.lineTo(cx+r*.5+s,cy-r*.45);ctx.lineTo(cx+r*.5,cy-r*.45+s);ctx.lineTo(cx+r*.5-s,cy-r*.45);ctx.closePath();ctx.fill();ctx.stroke();}
+    if(showY){const y3=baseYield(t,f,hill);let k=0;const tot=y3[0]+y3[1]+y3[2];const s=Math.min(r*.13,4);const cols=Math.min(tot,4);
+      const put=(col,shape)=>{const row=Math.floor(k/4),c=k%4;const px=cx+(c-(Math.min(tot-row*4,4)-1)/2)*s*2.4,py=cy+r*.55-row*s*2.3;ctx.fillStyle=col;ctx.beginPath();if(shape==='c'){ctx.arc(px,py,s,0,7);}else if(shape==='t'){ctx.moveTo(px,py-s);ctx.lineTo(px+s,py+s);ctx.lineTo(px-s,py+s);ctx.closePath();}else{ctx.moveTo(px,py-s);ctx.lineTo(px+s,py);ctx.lineTo(px,py+s);ctx.lineTo(px-s,py);ctx.closePath();}ctx.fill();k++;};
+      for(let q=0;q<y3[0];q++)put('#7ed957','c');for(let q=0;q<y3[1];q++)put('#ff9a3d','t');for(let q=0;q<y3[2];q++)put('#ffd23d','d');}
+  }
+  // pass 2: civ borders
+  if(showOwn&&r>=3){ctx.lineWidth=Math.max(1,r*.14);for(let y=yLo;y<=yHi;y++)for(let x=x0;x<=x1;x++){const p=y*W+x;const o=owners[p];if(o<0)continue;const [cx,cy]=hexCenter(x,y,r);const nb=NB(x,y);ctx.strokeStyle=(o<20&&PAL[o])?PAL[o]:'#bdbdbd';
+      for(let k=0;k<6;k++){const [nx,ny]=nb[k];const no=(nx<0||ny<0||nx>=W||ny>=H)?-2:owners[ny*W+nx];if(no===o)continue;
+        // edge k lies between vertex k and k+1 of hex rotated -30°: map neighbour order to edges
+        const e=[0,1,2,3,4,5][k];const a0=Math.PI/180*(60*e-30),a1=Math.PI/180*(60*(e+1)-30);ctx.beginPath();ctx.moveTo(cx+r*.92*Math.cos(a0),cy+r*.92*Math.sin(a0));ctx.lineTo(cx+r*.92*Math.cos(a1),cy+r*.92*Math.sin(a1));ctx.stroke();}}}
+  // pass 3: cities (markers) then labels last so text is in front
+  if(document.getElementById('cities').checked){const fs=Math.max(10,Math.min(18,r*1.1));ctx.font='600 '+fs+'px ui-monospace,Menlo,monospace';ctx.textAlign='center';ctx.lineJoin='round';
+    for(const c of cities){const [cx,cy]=hexCenter(c.x,c.y,r);const pl=(st.players||[]).find(p=>p.pid===c.pid);const maj=c.pid<20&&PAL[c.pid];const col=maj?PAL[c.pid]:'#9a9a9a';
+      const rr=Math.max(3,r*.55);ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx,cy,rr,0,7);ctx.fill();ctx.lineWidth=Math.max(1,r*.12);ctx.strokeStyle=pl&&pl.csType?(CS_RING[pl.csType]||'#fff'):'#000';ctx.stroke();
+      if(r>=6){ctx.fillStyle='#000';ctx.font='700 '+Math.max(8,rr*1.1)+'px ui-monospace,monospace';ctx.fillText(String(c.pop),cx,cy+rr*.4);ctx.font='600 '+fs+'px ui-monospace,Menlo,monospace';}}
+    for(const c of cities){const [cx,cy]=hexCenter(c.x,c.y,r);const name=(c.name||'').replace('LOC_CITY_NAME_','').replace(/_/g,' ').toLowerCase();const maj=c.pid<20&&PAL[c.pid];
+      ctx.lineWidth=Math.max(2,fs*.28);ctx.strokeStyle='rgba(0,0,0,.95)';ctx.strokeText(name,cx,cy-r*.85);ctx.fillStyle=maj?'#fff':'#d8d8d8';ctx.fillText(name,cx,cy-r*.85);}}
   turn.textContent='T'+turns[idx].turn;n.textContent=(idx+1)+'/'+turns.length;}
 function show(j){i=Math.max(0,Math.min(turns.length-1,j));s.value=i;draw(i);}
+// zoom / pan
+function zoomAt(f,px,py){const nz=Math.max(1,Math.min(14,view.z*f));const k=nz/view.z;view.x=px-(px-view.x)*k;view.y=py-(py-view.y)*k;view.z=nz;clamp();draw(i);}
+function clamp(){const r=base*view.z,W=st.gridW,H=st.gridH,cw=mw.clientWidth,ch=mw.clientHeight;const mw_=r*Math.sqrt(3)*(W+.5),mh=r*(1.5*H+.5);
+  if(mw_<=cw)view.x=(cw-mw_)/2;else view.x=Math.min(0,Math.max(cw-mw_,view.x));if(mh<=ch)view.y=(ch-mh)/2;else view.y=Math.min(0,Math.max(ch-mh,view.y));}
+mw.addEventListener('wheel',e=>{e.preventDefault();const b=mw.getBoundingClientRect();zoomAt(e.deltaY<0?1.2:1/1.2,e.clientX-b.left,e.clientY-b.top);},{passive:false});
+let ptrs=new Map(),drag=null,pinch=null;
+mw.addEventListener('pointerdown',e=>{mw.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);if(ptrs.size===1){drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};mw.classList.add('drag');}else if(ptrs.size===2){const a=[...ptrs.values()];pinch={d:Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]),z:view.z};drag=null;}});
+mw.addEventListener('pointermove',e=>{if(ptrs.has(e.pointerId))ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pinch&&ptrs.size===2){const a=[...ptrs.values()];const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);const b=mw.getBoundingClientRect();const mx=(a[0][0]+a[1][0])/2-b.left,my=(a[0][1]+a[1][1])/2-b.top;zoomAt((pinch.z*d/pinch.d)/view.z,mx,my);return;}
+  if(drag){view.x=drag.vx+(e.clientX-drag.x);view.y=drag.vy+(e.clientY-drag.y);clamp();draw(i);return;}
+  hover(e);});
+const up=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;if(ptrs.size===0){drag=null;mw.classList.remove('drag');}};
+mw.addEventListener('pointerup',up);mw.addEventListener('pointercancel',up);mw.addEventListener('pointerleave',()=>{tip.style.display='none';});
+mw.addEventListener('dblclick',e=>{const b=mw.getBoundingClientRect();zoomAt(1.8,e.clientX-b.left,e.clientY-b.top);});
+zi.onclick=()=>zoomAt(1.4,mw.clientWidth/2,mw.clientHeight/2);zo.onclick=()=>zoomAt(1/1.4,mw.clientWidth/2,mw.clientHeight/2);zr.onclick=()=>{fit();draw(i);};
+function hover(e){const b=mw.getBoundingClientRect();const mx=e.clientX-b.left-view.x,my=e.clientY-b.top-view.y;const r=base*view.z;const yrow=Math.round((my-r)/(1.5*r));const y=st.gridH-1-yrow;if(y<0||y>=st.gridH){tip.style.display='none';return;}
+  const x=Math.round(mx/(r*Math.sqrt(3))-(y%2?0.5:0)-0.5);if(x<0||x>=st.gridW){tip.style.display='none';return;}const p=y*st.gridW+x;const t=st.terrain[p*6],f=st.terrain[p*6+1],h=st.terrain[p*6+2],rv=st.terrain[p*6+3],rs=st.terrain[p*6+5];const o=owners[p];const pl=(st.players||[]).find(q=>q.pid===o);const yl=baseYield(t,f,h);
+  tip.textContent='('+x+','+y+') '+(TNAME[t]||t)+(f>=0?' · '+(FNAME[f]||'feature#'+f):'')+(rv?' · river':'')+(rs>=0?' · '+(RNAME[rs]||'res#'+rs)+' ['+RCLASS(rs)+']':'')+'\\nbase F'+yl[0]+' P'+yl[1]+' G'+yl[2]+(pl?'\\n'+pl.civ.replace('CIVILIZATION_','').toLowerCase():'');
+  tip.style.display='block';tip.style.left=(e.clientX-b.left+14)+'px';tip.style.top=(e.clientY-b.top+14)+'px';}
 async function init(){st=await (await fetch('/state/static.json')).json();const txt=await (await fetch('/state/turns.jsonl')).text();turns=txt.trim().split('\\n').map(l=>{const o=JSON.parse(l);o.turn=+o.turn;return o;});
-  legend.innerHTML=(st.players||[]).filter(p=>p.pid<20).map(p=>'<span><i style="background:'+(PAL[p.pid]||'#aaa')+'"></i>'+p.civ.replace('CIVILIZATION_','').toLowerCase()+(p.csType?' ('+p.csType+')':'')+'</span>').join('');
-  s.max=turns.length-1;show(turns.length-1);}
-s.oninput=()=>show(+s.value);prev.onclick=()=>show(i-1);next.onclick=()=>show(i+1);own.onchange=()=>draw(i);document.getElementById('cities').onchange=()=>draw(i);
+  const ps=(st.players||[]).filter(p=>p.pid<20);const majors=ps.filter(p=>!p.csType),css=ps.filter(p=>p.csType);
+  const item=p=>'<span class="'+(p.csType?'':'maj')+'"><i style="background:'+(PAL[p.pid]||'#9a9a9a')+(p.csType?';border-color:'+(CS_RING[p.csType]||'#fff'):'')+'"></i>'+p.civ.replace('CIVILIZATION_','').toLowerCase()+(p.csType?' ('+p.csType+')':'')+'</span>';
+  legend.innerHTML=majors.map(item).join('')+'<span style="flex-basis:100%;height:0"></span>'+css.map(item).join('');
+  document.getElementById('grid').textContent=st.gridW+'×'+st.gridH;fit();s.max=turns.length-1;const q=new URLSearchParams(location.search);if(q.get('z')){const r0=base;view.z=Math.max(1,Math.min(14,+q.get('z')));const r=r0*view.z;const [hx,hy]=hexCenter(+(q.get('x')||st.gridW/2),+(q.get('y')||st.gridH/2),r);view.x=mw.clientWidth/2-hx;view.y=mw.clientHeight/2-hy;clamp();}show(q.get('t')?turns.findIndex(t=>t.turn>=+q.get('t')):turns.length-1);}
+s.oninput=()=>show(+s.value);prev.onclick=()=>show(i-1);next.onclick=()=>show(i+1);own.onchange=()=>draw(i);yields.onchange=()=>draw(i);res.onchange=()=>draw(i);document.getElementById('cities').onchange=()=>draw(i);
 play.onclick=()=>{if(timer){clearInterval(timer);timer=null;play.textContent='▶▶';}else{timer=setInterval(()=>{if(i>=turns.length-1){clearInterval(timer);timer=null;play.textContent='▶▶';}else show(i+1)},600);play.textContent='❚❚';}};
-document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')show(i-1);if(e.key==='ArrowRight')show(i+1)});window.onresize=()=>draw(i);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')show(i-1);if(e.key==='ArrowRight')show(i+1)});window.onresize=()=>{if(!st)return;const r=base*view.z,cw0=cvs.width/dpr,ch0=cvs.height/dpr;const mx=(cw0/2-view.x)/r,my=(ch0/2-view.y)/r;const z=view.z;fit();view.z=z;const r2=base*z;view.x=mw.clientWidth/2-mx*r2;view.y=mw.clientHeight/2-my*r2;clamp();draw(i);};
 init();
 </script></body></html>`;
 async function file(path: string, type: string, cache: Record<string,string>) {

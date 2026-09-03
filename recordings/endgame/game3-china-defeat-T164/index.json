@@ -1,0 +1,90 @@
+{
+ "tag": "game3-china-defeat-T164",
+ "captured": "2026-09-03T11:33:01",
+ "items": [
+  {
+   "file": "00_Cities_Lost.png",
+   "label": "Cities Lost"
+  },
+  {
+   "file": "01_Districts_Constructed.png",
+   "label": "Districts Constructed"
+  },
+  {
+   "file": "02_Great_People_Earned.png",
+   "label": "Great People Earned"
+  },
+  {
+   "file": "03_Number_of_Combats.png",
+   "label": "Number of Combats"
+  },
+  {
+   "file": "04_Player_Culture.png",
+   "label": "Player Culture"
+  },
+  {
+   "file": "05_Player_Era_Score.png",
+   "label": "Player Era Score"
+  },
+  {
+   "file": "06_Player_Faith.png",
+   "label": "Player Faith"
+  },
+  {
+   "file": "07_Player_Gold.png",
+   "label": "Player Gold"
+  },
+  {
+   "file": "08_Player_Science.png",
+   "label": "Player Science"
+  },
+  {
+   "file": "09_Player_Score.png",
+   "label": "Player Score"
+  },
+  {
+   "file": "10_Total_cities_destroyed.png",
+   "label": "Total cities destroyed"
+  },
+  {
+   "file": "11_Total_Governor_Titles.png",
+   "label": "Total Governor Titles"
+  },
+  {
+   "file": "12_Total_Governors.png",
+   "label": "Total Governors"
+  },
+  {
+   "file": "13_Total_religions_founded.png",
+   "label": "Total religions founded"
+  },
+  {
+   "file": "14_Units_Killed.png",
+   "label": "Units Killed"
+  },
+  {
+   "file": "15_Units_Lost.png",
+   "label": "Units Lost"
+  },
+  {
+   "file": "16_War_Declarations_Received.png",
+   "label": "War Declarations Received"
+  },
+  {
+   "file": "17_Wars_Declared.png",
+   "label": "Wars Declared"
+  },
+  {
+   "file": "18_Wonders_Constructed.png",
+   "label": "Wonders Constructed"
+  },
+  {
+   "file": "19_ranking.png",
+   "label": "ranking"
+  },
+  {
+   "file": "20_results.png",
+   "label": "results"
+  }
+ ]
+}

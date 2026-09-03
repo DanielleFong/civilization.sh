@@ -1,0 +1,12 @@
+
+# media / generated / secrets (kept out of git)
+video/frames/
+video/dist/
+video/edit/*.mp4
+video/edit/*.mkv
+video/edit/*.jpg
+video/token.txt
+video/*.log
+video/public-url.txt
+recordings/endgame/*/*.png
+__pycache__/

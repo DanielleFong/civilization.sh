@@ -56,3 +56,15 @@ Frontier models fail at Civ the way they fail generally: they lock onto a plan a
 Deity (or Deity++ via mod), Online speed, no turn timer, BBG, Earth TSL, fixed seed, agent sees only what a human would. Score/placement at T250 unless victory earlier.
 
 — Danielle Fong · ChinaTalk Evals Contest entry
+
+## Harness (2026-09-03)
+
+Tools in `harness/`, all Windows-side Python driving the game over the FireTuner socket (`127.0.0.1:4318`, one client at a time):
+
+- `endgame_archive_tuner.py` — end-game archive with **no mouse and no OCR**: calls the end-game UI's own Lua (`SetCurrentGraphDataSet`, `OnRankingTab`, timeline scroller) and reads exact per-turn series from `GameSummary.CoalesceDataSet`. Writes `data.json` (22 datasets × all players × all turns), `moments.json` (the game's historian export), `era_score_ledger.tsv`, and a PNG of every graph, the ranking, and the timeline. ~3.7 s per game. Run with the civ6-mcp venv python (needs PIL).
+- `archive_endgame.py` — older SendInput/OCR version; fights the operator's mouse and misses scrolled dropdown entries. Kept as a fallback.
+- `record_human.py` + `record_human.lua` — passive recorder for a **human** playing: polls every 4 s, writes a JSONL line whenever the turn or any decision state changes (queues with progress/cost, districts with tiles, policies, research, civics, governors, religion, tiles with feature/improvement/worked, units, trade routes, great people, diplomacy, city-states, era/dedications, map pins = the player's plan, omniscient rival stats and unit map). Events spell out the diff: chops, production jumps, purchases, placements, pins. Reconnects after a save load.
+- `tuner_proxy.py` — passthrough that lets several clients share the single tuner slot. Works, but it must not connect while the game sits at the main menu (that wedges the tuner); needs a menu-aware lazy connect before running unattended.
+- `dump_districts.*`, `dump_full_map.lua`, `snapshot.lua`, `menu_lua.py` — one-shot dumps.
+
+`recordings/` holds the human Qin/Deity game (T26–T106, `human_china_*.jsonl`), `TAKEOVER-T106.md` (the agent handover brief generated from it), the Game 3 end-game archive (`endgame/game3-china-defeat-T164-exact/`: data, moments, ledger; PNGs are gitignored), and the Game 3 postmortem material.

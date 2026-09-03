@@ -1,0 +1,72 @@
+turn	era	score	type	description
+1	ERA_ANCIENT	1	MOMENT_CITY_BUILT_NEAR_FLOODABLE_RIVER	The citizens of Xi'an adjust to their new home, and keep a wary eye on the nearby river.
+11	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+17	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+17	ERA_ANCIENT	1	MOMENT_PANTHEON_FOUNDED	Could this numinous moment be what those other prophets were talking about?
+18	ERA_ANCIENT	3	MOMENT_FIND_NATURAL_WONDER_FIRST_IN_WORLD	Explorers of China are the first from a major civilization to set eyes on Mount Everest!
+18	ERA_ANCIENT	3	MOMENT_FIND_NATURAL_WONDER_FIRST_IN_WORLD	Explorers of China are the first from a major civilization to set eyes on Hạ Long Bay!
+18	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+21	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+27	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+28	ERA_ANCIENT	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, John the Baptist chooses to bring their talents to China.
+28	ERA_ANCIENT	4	MOMENT_BUILDING_CONSTRUCTED_GAME_ERA_WONDER	Standing in the Stonehenge, the citizens of Xi'an are filled with awe.
+29	ERA_ANCIENT	3	MOMENT_RELIGION_FOUNDED_FIRST_IN_WORLD	It is said that when John the Baptist founded Confucianism, the world's first Religion, the sun broke through the clouds, and a sweet scent filled the air.
+33	ERA_CLASSICAL	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Classical Era, but you know it was when China discovered Currency.
+34	ERA_CLASSICAL	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Classical Era culture began with the discovery of Political Philosophy by China.
+34	ERA_CLASSICAL	2	MOMENT_GOVERNMENT_ENACTED_TIER_1_FIRST	China adopts government by Autocracy, leading to a new political age for the citizens.
+36	ERA_CLASSICAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Great Bath, the citizens of Xi'an remember their glorious past.
+38	ERA_CLASSICAL	3	MOMENT_FIND_NATURAL_WONDER_FIRST_IN_WORLD	Explorers of China are the first from a major civilization to set eyes on Chocolate Hills!
+38	ERA_CLASSICAL	2	MOMENT_PLAYER_GAVE_ENVOY_BECAME_SUZERAIN_FIRST_IN_WORLD	The rulers of Bandar Brunei bow to China, who became their first Suzerain in the world.
+42	ERA_CLASSICAL	1	MOMENT_MITIGATED_RIVER_FLOOD	The waters of the Yangtze River rose, but our foresight prevented flooding in the surrounding land.
+43	ERA_CLASSICAL	3	MOMENT_BARBARIAN_CAMP_DESTROYED_NEAR_YOUR_CITY	The danger on the doorstep of Chengdu has been defeated! The barbarians are driven away.
+51	ERA_MEDIEVAL	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Medieval Era culture began with the discovery of Feudalism by China.
+53	ERA_MEDIEVAL	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Medieval Era, but you know it was when China discovered Apprenticeship.
+53	ERA_MEDIEVAL	3	MOMENT_DISTRICT_CONSTRUCTED_HIGH_ADJACENCY_THEATER_SQUARE	Delightful songs, inspiring words. The artists, poets, and playwrights of Xi'an all stroll the streets of our Theater Square.
+54	ERA_MEDIEVAL	1	MOMENT_UNIT_CREATED_FIRST_REQUIRING_STRATEGIC	Skeptics may ask: "What good is Iron?" But we know now that it is a formidable weapon for our Swordsman.
+57	ERA_MEDIEVAL	1	MOMENT_IMPROVEMENT_CONSTRUCTED_ON_DISASTER_YIELD_TILE_FIRST	The adaptive people of China build after a natural disaster, taking advantage of the renewed land.
+62	ERA_MEDIEVAL	1	MOMENT_CITY_SIZE_SMALL_FIRST	Xi'an grows and its people take pride in the thriving metropolitan life.
+64	ERA_MEDIEVAL	3	MOMENT_CITY_BUILT_NEAR_NATURAL_WONDER	The inspirational sight of Hạ Long Bay fills the citizens of our new city of Shanghai with joy.
+67	ERA_MEDIEVAL	4	MOMENT_UNIT_CREATED_FIRST_UNIQUE	Who but China could create the Crouching Tiger? And who can possibly resist it?
+72	ERA_RENAISSANCE	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Renaissance Era culture began with the discovery of Humanism by China.
+75	ERA_RENAISSANCE	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Renaissance Era, but you know it was when China discovered Printing.
+80	ERA_RENAISSANCE	2	MOMENT_GOVERNMENT_ENACTED_TIER_2_FIRST	Ancient traditions of governance evolve, and Qin (Mandate of Heaven) chooses Theocracy as its new way to rule.
+81	ERA_RENAISSANCE	3	MOMENT_DISTRICT_CONSTRUCTED_HIGH_ADJACENCY_CAMPUS	Walking the quads and lingering outside classrooms of the Campus near Changsha, you can hear scholars debate the ideas that will change the world.
+81	ERA_RENAISSANCE	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of Scythia.
+91	ERA_INDUSTRIAL	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Industrial Era culture began with the discovery of Opera and Ballet by China.
+96	ERA_INDUSTRIAL	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Industrial Era, but you know it was when China discovered Scientific Theory.
+99	ERA_INDUSTRIAL	1	MOMENT_UNIT_CREATED_FIRST_REQUIRING_STRATEGIC	Skeptics may ask: "What good is Niter?" But we know now that it is a formidable weapon for our Musketman.
+101	ERA_INDUSTRIAL	3	MOMENT_CITY_BUILT_BECAME_LARGEST_CIV_BY_MARGIN	Shenyang is the latest city in our sprawling empire, and other civilizations look on in awe.
+101	ERA_INDUSTRIAL	3	MOMENT_CITY_BUILT_NEAR_NATURAL_WONDER	The inspirational sight of Mount Everest fills the citizens of our new city of Shenyang with joy.
+101	ERA_INDUSTRIAL	1	MOMENT_CITY_BUILT_ON_TUNDRA	The citizens of Shenyang take pride in the land's rugged beauty and their own hardiness.
+107	ERA_INDUSTRIAL	1	MOMENT_CITY_BUILT_NEAR_VOLCANO	"We'll be fine," say the citizens of Xiurong. "All mountains smoke a little, right?"
+109	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Edgar Allan Poe chooses to bring their talents to China.
+109	ERA_INDUSTRIAL	3	MOMENT_GREAT_PERSON_CREATED_PATRONAGE_FAITH_OVER_HALF	The prayers of the faithful are answered! Rembrandt van Rijn appears to change the destiny of China.
+110	ERA_INDUSTRIAL	1	MOMENT_CITY_SIZE_MEDIUM_FIRST	Xi'an expands further, and becomes the largest city of our people.
+112	ERA_MODERN	1	MOMENT_CITY_BUILT_ON_DESERT	Visitors complain about the heat of Yiyang, but at least it's a dry heat.
+117	ERA_MODERN	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of Germany.
+119	ERA_MODERN	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of England.
+119	ERA_MODERN	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of Poland.
+119	ERA_MODERN	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Modern Era culture began with the discovery of Mass Media by China.
+122	ERA_MODERN	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Gobustan.
+125	ERA_MODERN	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Modern Era, but you know it was when China discovered Flight.
+127	ERA_MODERN	1	MOMENT_ARTIFACT_EXTRACTED	As the dirt is brushed away, the Stone Tablet sees the light of sun after ages. It will grace the museums of China for years to come.
+128	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Mark Twain chooses to bring their talents to China.
+128	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Katsushika Hokusai chooses to bring their talents to China.
+128	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Liu Tianhua chooses to bring their talents to China.
+128	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Mary Katherine Goddard chooses to bring their talents to China.
+131	ERA_ATOMIC	1	MOMENT_ARTIFACT_EXTRACTED	As the dirt is brushed away, the Mummy sees the light of sun after ages. It will grace the museums of China for years to come.
+133	ERA_ATOMIC	2	MOMENT_GOVERNMENT_ENACTED_TIER_3_FIRST	The honorable traditions of the past will still form part of the new government of Communism that China has chosen.
+133	ERA_ATOMIC	1	MOMENT_ARTIFACT_EXTRACTED	As the dirt is brushed away, the Mask sees the light of sun after ages. It will grace the museums of China for years to come.
+137	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Rabindranath Tagore chooses to bring their talents to China.
+138	ERA_ATOMIC	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Atomic Era culture began with the discovery of Cultural Heritage by China.
+138	ERA_ATOMIC	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Bolshoi Theatre, the citizens of Xi'an remember their glorious past.
+140	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Antonin Dvorak chooses to bring their talents to China.
+140	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Vincent van Gogh chooses to bring their talents to China.
+147	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, H.G. Wells chooses to bring their talents to China.
+149	ERA_ATOMIC	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Atomic Era, but you know it was when China discovered Computers.
+151	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Edmonia Lewis chooses to bring their talents to China.
+152	ERA_ATOMIC	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of the Inca.
+157	ERA_INFORMATION	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Gauhar Jaan chooses to bring their talents to China.
+158	ERA_INFORMATION	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Information Era culture began with the discovery of Social Media by China.
+159	ERA_INFORMATION	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Gabriela Mistral chooses to bring their talents to China.
+163	ERA_INFORMATION	2	MOMENT_IMPROVEMENT_CONSTRUCTED_RENEWABLE_ENERGY_FIRST	Now that we have built this Geothermal Plant to produce clean power, perhaps the smog of Xiurong will start to clear.
