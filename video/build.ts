@@ -5,18 +5,20 @@ const head = src.split("async function file(")[0]
   .replace(/Deno\.readTextFileSync\(new URL\("\.\/token\.txt", import\.meta\.url\)\)/, '"x"');
 let { replayHtml, mapHtml, ZOOM } = new Function(head + "; return {replayHtml, mapHtml, ZOOM};")();
 
-// ---- data: China per-turn series (recordings T11–T100) + "Score NNN" mined from sitrep sections + final standing
-const rec = (await Deno.readTextFile("../recordings/qin-deity-seed-401507495.jsonl")).trim().split("\n").map(l => JSON.parse(l));
-const civName: Record<number,string> = {}; const rivals: Record<string,[number,number][]> = {};
-for (const r of rec) for (const o of r.others ?? []) { if (o.civ) civName[o.id] = o.civ; const n = civName[o.id] ?? String(o.id); if (o.score > 0) (rivals[n] ??= []).push([r.turn, o.score]); }
-const china: number[][] = rec.map(r => [r.turn, r.score, r.sci ?? null, r.cul ?? null, r.faith ?? null, r.gold ?? null, Array.isArray(r.cities) ? r.cities.length : r.cities ?? null, r.pop ?? (Array.isArray(r.cities) ? r.cities.reduce((a: number, c: any) => a + (c.pop ?? 0), 0) : null)]);
-const sitrep = await Deno.readTextFile("frames/sitrep.md");
-for (const part of sitrep.split(/^(?=### T)/m)) { const m = part.match(/^### T(\d+)/); const s = part.match(/\bScore (\d{3,4})\b/); if (m && s && +m[1] > 100) china.push([+m[1], +s[1], null, null, null, null, null, null]); }
-china.push([164, 880, 213, null, null, null, 15, 135]);
-china.sort((a, b) => a[0] - b[0]);
-const final = [["GERMANY",1323],["ENGLAND",1020],["SCYTHIA",973],["CHINA",880],["INCA",820],["POLAND",582]];
+// ---- data: per-civ per-turn series from the harness diary (T19–T151, all majors) + T164 endpoints
+const DIARY = "/mnt/c/Users/danie/.civ6-mcp/diary_china_-401507495_solar-amber-chariot-09.jsonl";
+const drows = (await Deno.readTextFile(DIARY)).trim().split("\n").map(l => JSON.parse(l)).filter(r => r.turn);
+const FIELDS = ["turn","score","science","culture","military","cities","pop","districts","great_works","era_score","gold","faith","diplo_vp"];
+const series: Record<string, number[][]> = {}; const civOf: Record<string,string> = {};
+for (const r of drows) { const n = String(r.civ ?? r.pid).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/ .*/,""); civOf[n] = r.leader ?? ""; (series[n] ??= []).push(FIELDS.map(f => r[f] ?? null)); }
+for (const k in series) series[k].sort((a,b)=>a[0]-b[0]);
+const finalScores: Record<string, number> = { GERMANY:1323, ENGLAND:1020, SCYTHIA:973, CHINA:880, INCA:820, POLAND:582 };
+for (const [k,v] of Object.entries(finalScores)) { (series[k] ??= []).push([164, v, k==="CHINA"?213:null, null, null, k==="CHINA"?15:null, k==="CHINA"?135:null, null, k==="CHINA"?27:null, null, null, null, null]); }
+const china = series.CHINA; const rivals: Record<string,[number,number][]> = {};
+for (const [k,v] of Object.entries(series)) if (k!=="CHINA") rivals[k] = v.map(r => [r[0], r[1]]).filter(p => p[1] != null) as [number,number][];
+const final = Object.entries(finalScores).sort((a,b)=>b[1]-a[1]);
 await Deno.mkdir("dist", { recursive: true });
-await Deno.writeTextFile("dist/data.json", JSON.stringify({ china, rivals, final, fields: ["turn","score","sci","cul","faith","gold","cities","pop"] }));
+await Deno.writeTextFile("dist/data.json", JSON.stringify({ china, rivals, final, series, fields: FIELDS, leaders: civOf }));
 
 // ---- branding + preamble + data panel
 const brand = (h: string) => h.replace(/<b>civilization\.sh<\/b>/g, "<b>civilization.is</b>")
@@ -119,16 +121,24 @@ table.rank{width:100%;border-collapse:collapse;font:15px var(--mono)}table.rank 
 <div class=shot><img src="/results-defeat.jpg" alt="Civilization VI defeat screen: Science Victory, German Empire; Defeat, Chinese Empire"></div>
 <div class=note>The game's own Results screen, captured at T164. The Ranking and Graphs tabs were not captured before the host machine failed; the ranking and score curves below are rebuilt from the harness recorder, the agent's per-turn commentary, and the final result — labeled as such.</div>
 <div class=cols><div><h3 class=k>Ranking · T164 (reconstructed)</h3><table class=rank id=rk></table></div>
-<div><h3 class=k>Score over time (reconstructed)</h3><canvas id=ch style="width:100%;height:260px;display:block;background:var(--bg-deep);border:1px solid var(--rule)"></canvas><div class=note>Amber: China (agent). Grey: rivals where recorded (T11–T100 from the recorder; endpoints at T164).</div></div></div>
+<div><h3 class=k>Graphs · all civs (from the harness diary, T19–T151; endpoints T164)</h3><div class=pick id=mp></div><canvas id=ch style="width:100%;height:300px;display:block;background:var(--bg-deep);border:1px solid var(--rule)"></canvas><div class=note id=mn></div></div></div>
 <div class=doc><h3>What decided it</h3><p>Science. Germany reached 940 science per turn against China's 213 and launched the Exoplanet Expedition on T164. China led crop yield, ranked second in population, held 27 Great Works and Confucianism in every city, and never built a Spaceport. The full account, mistakes included, is in the <a href="/">replay commentary</a>; the corrections are the <a href="/plan">plan for Game 2</a>.</p></div>
 </div>
 <footer>Data: <a href="/data.json" style="color:var(--fg-body)">data.json</a> · commentary: <a href="/sitrep.md" style="color:var(--fg-body)">sitrep.md</a></footer>
 <script>(async()=>{const D=await (await fetch('/data.json')).json();const rk=document.getElementById('rk');rk.innerHTML=D.final.map(([c,s],k)=>'<tr'+(c==='CHINA'?' class=me':'')+'><td>'+(k+1)+'</td><td>'+c.toLowerCase()+(c==='CHINA'?' · agent':'')+'</td><td style="text-align:right">'+s+'</td></tr>').join('');
-const cv=document.getElementById('ch');const W=cv.clientWidth,H=260;cv.width=W;cv.height=H;const x=cv.getContext('2d');x.fillStyle='#0E1114';x.fillRect(0,0,W,H);const T0=10,T1=166,S1=1400,px=t=>12+(t-T0)/(T1-T0)*(W-24),py=s=>H-14-s/S1*(H-28);
-x.strokeStyle='#2F363B';x.beginPath();for(const s of [400,800,1200]){x.moveTo(12,py(s));x.lineTo(W-12,py(s));}x.stroke();x.fillStyle='#5A5546';x.font='11px IBM Plex Mono,monospace';for(const s of [400,800,1200])x.fillText(s,14,py(s)-3);for(const t of [50,100,150])x.fillText('T'+t,px(t)-8,H-2);
-for(const [n,pts] of Object.entries(D.rivals)){x.strokeStyle='#4A5760';x.beginPath();pts.forEach(([t,s],k)=>k?x.lineTo(px(t),py(s)):x.moveTo(px(t),py(s)));x.stroke();}
-let ly=-99;D.final.forEach(([c,s])=>{if(c==='CHINA')return;x.fillStyle='#8B8576';x.beginPath();x.arc(px(164),py(s),3,0,7);x.fill();let yy=Math.max(py(s)-5,ly+13);ly=yy;x.fillText(c.toLowerCase()+' '+s,px(164)-100,yy)});
-x.strokeStyle='#F2A413';x.lineWidth=2;x.beginPath();D.china.forEach((r,k)=>k?x.lineTo(px(r[0]),py(r[1])):x.moveTo(px(r[0]),py(r[1])));x.stroke();})();</script></body></html>`;
+const COL={CHINA:'#F2A413',ENGLAND:'#C8102E',GERMANY:'#8A9BA8',SCYTHIA:'#E2572B',INCA:'#B98F2E',POLAND:'#C94F8C',MAPUCHE:'#3F7FBF',MAORI:'#2FA69A'};
+const METRICS=[['score','Score'],['science','Science / turn'],['culture','Culture / turn'],['military','Military strength'],['cities','Cities'],['pop','Population'],['districts','Districts'],['great_works','Great Works'],['era_score','Era score'],['gold','Gold treasury'],['faith','Faith'],['diplo_vp','Diplomatic VP']];
+const mp=document.getElementById('mp');let cur='score';mp.innerHTML=METRICS.map(([k,l])=>'<button data-k="'+k+'"'+(k===cur?' class=on':'')+'>'+l+'</button>').join('');
+mp.querySelectorAll('button').forEach(b=>b.onclick=()=>{cur=b.dataset.k;mp.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));drawM()});
+const cv=document.getElementById('ch');
+function drawM(){const fi=D.fields.indexOf(cur);const W=cv.clientWidth,H=300;cv.width=W;cv.height=H;const x=cv.getContext('2d');x.fillStyle='#0E1114';x.fillRect(0,0,W,H);
+ let mx=1;for(const v of Object.values(D.series))for(const r of v)if(r[fi]!=null)mx=Math.max(mx,r[fi]);const T0=15,T1=168;const px=t=>14+(t-T0)/(T1-T0)*(W-28),py=v=>H-16-v/(mx*1.05)*(H-32);
+ x.strokeStyle='#2F363B';x.fillStyle='#5A5546';x.font='11px IBM Plex Mono,monospace';for(let k=1;k<=4;k++){const v=Math.round(mx*k/4);x.beginPath();x.moveTo(14,py(v));x.lineTo(W-14,py(v));x.stroke();x.fillText(v,16,py(v)-3)}for(const t of [25,50,75,100,125,150])x.fillText('T'+t,px(t)-8,H-3);
+ const names=Object.keys(D.series).sort((a,b)=>(a==='CHINA')-(b==='CHINA'));const ends=[];
+ for(const n of names){const pts=D.series[n].filter(r=>r[fi]!=null);if(!pts.length)continue;x.strokeStyle=COL[n]||'#888';x.lineWidth=n==='CHINA'?2.5:1.4;x.globalAlpha=n==='CHINA'?1:.85;x.beginPath();pts.forEach((r,k)=>k?x.lineTo(px(r[0]),py(r[fi])):x.moveTo(px(r[0]),py(r[fi])));x.stroke();x.globalAlpha=1;const l=pts[pts.length-1];ends.push([py(l[fi]),n,l[fi],px(l[0])])}
+ ends.sort((a,b)=>a[0]-b[0]);let ly=-99;for(const [yy,n,v,xx] of ends){const y2=Math.max(yy,ly+12);ly=y2;x.fillStyle=COL[n]||'#888';x.fillText(n.toLowerCase()+' '+Math.round(v),Math.min(xx+6,W-110),y2+4)}
+ document.getElementById('mn').textContent=METRICS.find(m=>m[0]===cur)[1]+' · every major civ as the harness recorded it each turn; Germany, England and Scythia score endpoints at T164 from the result screen.'}
+drawM();window.addEventListener('resize',drawM);})();</script></body></html>`;
 await Deno.writeTextFile("dist/results.html", resultsHtml);
 
 await Deno.writeTextFile("dist/index.html", replayHtml);
