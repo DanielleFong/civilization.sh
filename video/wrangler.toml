@@ -1,0 +1,11 @@
+name = "civilization-is"
+compatibility_date = "2025-01-01"
+
+[assets]
+directory = "./dist"
+html_handling = "auto-trailing-slash"
+
+routes = [
+  { pattern = "civilization.is", custom_domain = true },
+  { pattern = "www.civilization.is", custom_domain = true }
+]
