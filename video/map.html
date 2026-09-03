@@ -74,14 +74,14 @@ function draw(){const dpr=devicePixelRatio||1;const w=stage.clientWidth,h=stage.
  // pass 3 borders
  if(L.terr){ctx.lineWidth=Math.max(1.2,R*.14);for(const y of rows)for(let x=0;x<W;x++){const X=cx(x,y),Y=cy(y);if(X<vx0||X>vx1)continue;const i=y*W+x,o=owners[i];if(o<0)continue;ctx.strokeStyle=pcolor(o);NB(x,y).forEach(([nx,ny],k)=>{const j=(nx<0||nx>=W||ny<0||ny>=H)?-1:ny*W+nx;const oo=j<0?-1:owners[j];if(oo===o)return;const a0=Math.PI/180*(60*k-30),a1=Math.PI/180*(60*(k+1)-30);const r=R-ctx.lineWidth/2;ctx.beginPath();ctx.moveTo(X+r*Math.cos(a0),Y+r*Math.sin(a0));ctx.lineTo(X+r*Math.cos(a1),Y+r*Math.sin(a1));ctx.stroke()})}}
  // pass 3.5 districts & wonders (when the data carries them)
- if(L.city&&z>1.6)for(const c of cities){for(const d of (c.d||[])){const [t,dx,dy,pil]=d;const X=cx(dx,dy),Y=cy(dy);const key=t==='DISTRICT_WONDER'&&d[4]?'wonder/'+d[4]:'dist/'+t;const ic=icon(key);const s=R*1.1;if(ic){ctx.globalAlpha=pil?.45:1;ctx.drawImage(ic,X-s/2,Y-s/2,s,s);ctx.globalAlpha=1}else{ctx.fillStyle='rgba(243,236,216,.85)';ctx.beginPath();ctx.arc(X,Y,R*.3,0,7);ctx.fill()}}}
+ if(L.city&&z>1.6)for(const c of cities){for(const d of (c.d||[])){const [t,dx,dy,pil]=d;if(t==='DISTRICT_CITY_CENTER')continue;const X=cx(dx,dy),Y=cy(dy);const key=t==='DISTRICT_WONDER'&&d[4]?'wonder/'+d[4]:'dist/'+t;const ic=icon(key);const s=R*1.1;if(ic){ctx.globalAlpha=pil?.45:1;ctx.drawImage(ic,X-s/2,Y-s/2,s,s);ctx.globalAlpha=1}else{ctx.fillStyle='rgba(243,236,216,.85)';ctx.beginPath();ctx.arc(X,Y,R*.3,0,7);ctx.fill()}}}
  // pass 4 cities
  if(L.city){for(const c of cities){const X=cx(c.x,c.y),Y=cy(c.y);const col=pcolor(c.pid);const p=(st.players||[]).find(p=>p.pid===c.pid);const major=p&&!p.csType;
   ctx.fillStyle=col;ctx.beginPath();ctx.arc(X,Y,R*.42,0,7);ctx.fill();ctx.strokeStyle='#0b0c0a';ctx.lineWidth=1.2;ctx.stroke();ctx.fillStyle='#0b0c0a';ctx.beginPath();ctx.arc(X,Y,R*.16,0,7);ctx.fill();
   const fs=Math.min(R*1.1,Math.max(8/z,13/z));if(!major&&z<1.15)continue;const name=(c.name||'').replace('LOC_CITY_NAME_','').replace(/_/g,' ').toLowerCase();const txt=name+'  '+c.pop;
   ctx.font=`500 ${fs}px IBM Plex Mono,ui-monospace,monospace`;const tw=ctx.measureText(txt).width;const bx=X-tw/2-4,by=Y-R*1.55-fs*.9;
   ctx.fillStyle='rgba(14,17,20,.82)';ctx.fillRect(bx,by,tw+8,fs*1.25);ctx.fillStyle=col;ctx.fillRect(bx,by,3,fs*1.25);ctx.fillStyle=major?'#F3ECD8':'#c9c2ae';ctx.textAlign='left';ctx.fillText(txt,bx+6,by+fs*.98)}}
- turn.textContent='T'+turns[idx].turn;n.textContent=(idx+1)+'/'+turns.length}
+ turn.textContent='T'+((FULL&&idx===turns.length-1)?FULL.turn+' ·full':turns[idx].turn);n.textContent=(idx+1)+'/'+turns.length}
 function shade(hex,d){const n=parseInt(hex.slice(1),16);const r=Math.max(0,Math.min(255,(n>>16)+d)),g=Math.max(0,Math.min(255,((n>>8)&255)+d)),b=Math.max(0,Math.min(255,(n&255)+d));return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0')}
 function tri(x,y,hw,h){ctx.beginPath();ctx.moveTo(x,y-h);ctx.lineTo(x+hw,y);ctx.lineTo(x-hw,y);ctx.closePath();ctx.fill()}
 function star(x,y,r,n){ctx.beginPath();for(let k=0;k<n*2;k++){const a=Math.PI/n*k-Math.PI/2,rr=k%2?r*.45:r;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}ctx.closePath();ctx.fill()}
