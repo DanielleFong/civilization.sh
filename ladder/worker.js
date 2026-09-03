@@ -1,7 +1,8 @@
 // civilization.is ladder v0 — leagues, lobbies, match reports, ratings. State in KV (JSON docs). Public GET, signed POST.
 // Rating: Elo, pairwise for FFA (K split across N-1 opponents), team-average for team games. Fixed anchors for game AIs.
 const K = 32, ANCHOR = { Deity: 1800, Immortal: 1650, Emperor: 1500, King: 1350 };
-const J = (o, s = 200, extra = {}) => new Response(JSON.stringify(o, null, 1), { status: s, headers: { "content-type": "application/json", "access-control-allow-origin": "*", "cache-control": "no-store", ...extra } });
+let ORIGIN = "*";
+const J = (o, s = 200, extra = {}) => new Response(JSON.stringify(o, null, 1), { status: s, headers: { "content-type": "application/json", "access-control-allow-origin": ORIGIN, "access-control-allow-credentials": "true", "vary": "origin", "cache-control": "no-store", ...extra } });
 const ID = () => crypto.randomUUID().slice(0, 8);
 async function get(env, k, d) { const v = await env.LADDER.get(k, "json"); return v ?? d; }
 async function put(env, k, v) { await env.LADDER.put(k, JSON.stringify(v)); }
@@ -20,11 +21,40 @@ function rate(players, result) {
     cur.history.push({ match: result.id, before, after: cur.rating, place: s.place, of: n, league: result.league }); if (cur.history.length > 200) cur.history.shift(); players[p.id] = cur; changes.push({ id: p.id, before, after: cur.rating }); }));
   return changes;
 }
+
+// ---- accounts: Discord OAuth2 + Steam OpenID, session = signed cookie. Enabled when env vars exist:
+//   DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, STEAM_API_KEY, SESSION_SECRET (all Worker secrets), BASE_URL (var)
+async function sign(env, s) { const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(env.SESSION_SECRET || "dev"), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]); const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(s)); return btoa(String.fromCharCode(...new Uint8Array(mac))).replace(/=+$/, ""); }
+async function setSession(env, user) { const payload = btoa(JSON.stringify({ ...user, exp: Date.now() + 30 * 864e5 })); const sig = await sign(env, payload); return `civsess=${payload}.${sig}; Path=/; Max-Age=2592000; Secure; HttpOnly; SameSite=Lax`; }
+async function readSession(env, req) { const m = (req.headers.get("cookie") || "").match(/civsess=([^;]+)/); if (!m) return null; const [payload, sig] = m[1].split("."); if (!payload || (await sign(env, payload)) !== sig) return null; try { const u = JSON.parse(atob(payload)); return u.exp > Date.now() ? u : null; } catch { return null; } }
+async function upsertAccount(env, acct) { const accounts = await get(env, "accounts", {}); accounts[acct.id] = { ...(accounts[acct.id] || { created: Date.now() }), ...acct, seen: Date.now() }; await put(env, "accounts", accounts); return accounts[acct.id]; }
+async function authRoutes(req, env, u, p) {
+  const base = env.BASE_URL || `${u.protocol}//${u.host}`; const back = u.searchParams.get("back") || "https://civilization.is/ladder";
+  if (p === "/me") { const s = await readSession(env, req); return J({ user: s, providers: { discord: !!env.DISCORD_CLIENT_ID, steam: true }, accountsRequired: !!env.DISCORD_CLIENT_ID }); }
+  if (p === "/logout") return new Response(null, { status: 302, headers: { location: back, "set-cookie": "civsess=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Lax" } });
+  if (p === "/auth/discord") { if (!env.DISCORD_CLIENT_ID) return J({ error: "discord not configured" }, 501); const q = new URLSearchParams({ client_id: env.DISCORD_CLIENT_ID, redirect_uri: base + "/auth/discord/callback", response_type: "code", scope: "identify", state: btoa(back) }); return Response.redirect("https://discord.com/oauth2/authorize?" + q, 302); }
+  if (p === "/auth/discord/callback") { const code = u.searchParams.get("code"); const st = atob(u.searchParams.get("state") || "") || back;
+    const tok = await (await fetch("https://discord.com/api/oauth2/token", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: env.DISCORD_CLIENT_ID, client_secret: env.DISCORD_CLIENT_SECRET, grant_type: "authorization_code", code, redirect_uri: base + "/auth/discord/callback" }) })).json();
+    if (!tok.access_token) return J({ error: "discord token failed", tok }, 400);
+    const me = await (await fetch("https://discord.com/api/users/@me", { headers: { authorization: "Bearer " + tok.access_token } })).json();
+    const acct = await upsertAccount(env, { id: "discord:" + me.id, provider: "discord", name: me.global_name || me.username, handle: me.username, avatar: me.avatar ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png` : null });
+    return new Response(null, { status: 302, headers: { location: st, "set-cookie": await setSession(env, { id: acct.id, name: acct.name, provider: "discord", avatar: acct.avatar }) } }); }
+  if (p === "/auth/steam") { const q = new URLSearchParams({ "openid.ns": "http://specs.openid.net/auth/2.0", "openid.mode": "checkid_setup", "openid.return_to": base + "/auth/steam/callback?back=" + encodeURIComponent(back), "openid.realm": base, "openid.identity": "http://specs.openid.net/auth/2.0/identifier_select", "openid.claimed_id": "http://specs.openid.net/auth/2.0/identifier_select" }); return Response.redirect("https://steamcommunity.com/openid/login?" + q, 302); }
+  if (p === "/auth/steam/callback") { const q = new URLSearchParams(u.search); q.set("openid.mode", "check_authentication"); const ok = (await (await fetch("https://steamcommunity.com/openid/login", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: q })).text()).includes("is_valid:true");
+    if (!ok) return J({ error: "steam openid invalid" }, 400); const steamid = (u.searchParams.get("openid.claimed_id") || "").split("/").pop(); let name = "steam:" + steamid, avatar = null;
+    if (env.STEAM_API_KEY) { try { const s = await (await fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${env.STEAM_API_KEY}&steamids=${steamid}`)).json(); const pl = s.response?.players?.[0]; if (pl) { name = pl.personaname; avatar = pl.avatarmedium; } } catch {} }
+    const acct = await upsertAccount(env, { id: "steam:" + steamid, provider: "steam", name, steamid, avatar });
+    return new Response(null, { status: 302, headers: { location: u.searchParams.get("back") || back, "set-cookie": await setSession(env, { id: acct.id, name: acct.name, provider: "steam", avatar }) } }); }
+  return null;
+}
+
 export default {
   async fetch(req, env) {
     const u = new URL(req.url); const p = u.pathname.replace(/\/+$/, "") || "/";
-    if (req.method === "OPTIONS") return new Response(null, { headers: { "access-control-allow-origin": "*", "access-control-allow-methods": "GET,POST", "access-control-allow-headers": "content-type,x-signature" } });
+    const o = req.headers.get("origin") || ""; ORIGIN = /^https:\/\/([a-z0-9-]+\.)?civilization\.is$/.test(o) ? o : "https://civilization.is";
+    if (req.method === "OPTIONS") return new Response(null, { headers: { "access-control-allow-origin": ORIGIN, "access-control-allow-credentials": "true", "access-control-allow-methods": "GET,POST", "access-control-allow-headers": "content-type,x-signature", "vary": "origin" } });
     const leagues = await get(env, "leagues", DEFAULT_LEAGUES);
+    const ar = await authRoutes(req, env, u, p); if (ar) return ar;
     if (req.method === "GET") {
       if (p === "/" || p === "/ladder.json") { const players = await get(env, "players", {}); const matches = await get(env, "matches", []); const lobbies = (await get(env, "lobbies", [])).filter(l => l.status === "open" && Date.now() - l.created < 7 * 864e5);
         return J({ leagues, anchors: ANCHOR, players: Object.values(players).sort((a, b) => b.rating - a.rating), matches: matches.slice(-100).reverse(), lobbies, updated: Date.now() }); }
@@ -40,12 +70,12 @@ export default {
       const result = { id: ID(), ts: Date.now(), ...data }; result.changes = rate(players, result); matches.push(result);
       await put(env, "matches", matches); await put(env, "players", players); return J({ ok: true, match: result });
     }
-    if (p === "/lobby") { // open lobby: anyone may post (rate-limited by KV write cost; moderation via admin)
-      const lobbies = await get(env, "lobbies", []); const l = { id: ID(), created: Date.now(), status: "open", league: String(data.league || "mixed-2v2").slice(0, 40), title: String(data.title || "open lobby").slice(0, 80), host: String(data.host || "anon").slice(0, 60), hostKind: data.hostKind === "agent" ? "agent" : "human", seats: Math.min(8, Math.max(2, +data.seats || 4)), joined: [], contact: String(data.contact || "").slice(0, 120), when: String(data.when || "").slice(0, 60), notes: String(data.notes || "").slice(0, 280) };
+    if (p === "/lobby") { // open lobby: requires a signed-in account
+      const sess = await readSession(env, req); if (!sess) return J({ error: "sign in with Discord or Steam to open a lobby" }, 401); const lobbies = await get(env, "lobbies", []); const l = { id: ID(), created: Date.now(), status: "open", account: sess ? sess.id : null, league: String(data.league || "mixed-2v2").slice(0, 40), title: String(data.title || "open lobby").slice(0, 80), host: String((sess && sess.name) || data.host || "anon").slice(0, 60), hostKind: data.hostKind === "agent" ? "agent" : "human", seats: Math.min(8, Math.max(2, +data.seats || 4)), joined: [], contact: String(data.contact || "").slice(0, 120), when: String(data.when || "").slice(0, 60), notes: String(data.notes || "").slice(0, 280) };
       lobbies.push(l); await put(env, "lobbies", lobbies.slice(-200)); return J({ ok: true, lobby: l });
     }
     if (p.startsWith("/lobby/") && p.endsWith("/join")) { const id = p.split("/")[2]; const lobbies = await get(env, "lobbies", []); const l = lobbies.find(x => x.id === id); if (!l || l.status !== "open") return J({ error: "no such open lobby" }, 404);
-      if (l.joined.length >= l.seats - 1) return J({ error: "full" }, 409); l.joined.push({ name: String(data.name || "anon").slice(0, 60), kind: data.kind === "agent" ? "agent" : "human", model: String(data.model || "").slice(0, 40), ts: Date.now() }); if (l.joined.length >= l.seats - 1) l.status = "full"; await put(env, "lobbies", lobbies); return J({ ok: true, lobby: l }); }
+      if (l.joined.length >= l.seats - 1) return J({ error: "full" }, 409); const sess = await readSession(env, req); if (!sess) return J({ error: "sign in with Discord or Steam to join" }, 401); l.joined.push({ account: sess ? sess.id : null, name: String((sess && sess.name) || data.name || "anon").slice(0, 60), kind: data.kind === "agent" ? "agent" : "human", model: String(data.model || "").slice(0, 40), ts: Date.now() }); if (l.joined.length >= l.seats - 1) l.status = "full"; await put(env, "lobbies", lobbies); return J({ ok: true, lobby: l }); }
     if (p === "/admin/leagues") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401); await put(env, "leagues", data); return J({ ok: true }); }
     return J({ error: "not found" }, 404);
   }
