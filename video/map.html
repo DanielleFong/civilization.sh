@@ -97,7 +97,7 @@ zi.onclick=()=>zoomAt(stage.clientWidth/2,stage.clientHeight/2,1.4);zo.onclick=(
 for(const id of ['Lterr','Lcity','Lres','Lyield','Lroad','Lgrid']){const el=document.getElementById(id);el.onchange=()=>{el.parentElement.classList.toggle('on',el.checked);draw()}}
 s.oninput=()=>show(+s.value);prev.onclick=()=>show(idx-1);next.onclick=()=>show(idx+1);
 play.onclick=()=>{if(timer){clearInterval(timer);timer=null;play.textContent='▶▶'}else{timer=setInterval(()=>{if(idx>=turns.length-1){clearInterval(timer);timer=null;play.textContent='▶▶'}else show(idx+1)},600);play.textContent='❚❚'}};
-document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')show(idx-1);if(e.key==='ArrowRight')show(idx+1)});window.addEventListener('resize',draw);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')show(idx-1);if(e.key==='ArrowRight')show(idx+1)});let userZoomed=false;stage.addEventListener('wheel',()=>userZoomed=true,{passive:true});stage.addEventListener('pointerdown',()=>userZoomed=true);window.addEventListener('resize',()=>userZoomed?draw():fit());
 (async()=>{[st,gi]=await Promise.all([fetch('/state/static.json').then(r=>r.json()),fetch('/state/gameinfo.json').then(r=>r.json())]);W=st.gridW;H=st.gridH;
  turns=(await (await fetch('/state/turns.jsonl')).text()).trim().split('\n').map(l=>{const o=JSON.parse(l);o.turn=+o.turn;return o});
  const P=(st.players||[]).filter(p=>p.pid<20);const majors=P.filter(p=>!p.csType),cs=P.filter(p=>p.csType);
