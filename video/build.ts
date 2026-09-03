@@ -154,4 +154,6 @@ await Deno.copyFile("map.html", "dist/map.html"); await Deno.copyFile("ladder.ht
 await Deno.copyFile("frames/sitrep.md", "dist/sitrep.md");
 await Deno.mkdir("dist/state", { recursive: true });
 for (const f of ["static.json", "turns.jsonl", "full_T163.json"]) await Deno.copyFile("frames/state/" + f, "dist/state/" + f);
+await Deno.mkdir("dist/state/turns", { recursive: true });
+for await (const e of Deno.readDir("frames/state/turns")) if (e.isFile && e.name.endsWith(".json")) await Deno.copyFile("frames/state/turns/" + e.name, "dist/state/turns/" + e.name);
 console.log("frames:", files.length, "china pts:", china.length, "rivals:", Object.keys(rivals).join(","));
