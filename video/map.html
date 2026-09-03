@@ -106,5 +106,5 @@ if(new URLSearchParams(location.search).get('embed'))document.querySelector('hea
  const P=(st.players||[]).filter(p=>p.pid<20);const majors=P.filter(p=>!p.csType),cs=P.filter(p=>p.csType);
  legend.innerHTML=majors.map(p=>'<span><i style="background:'+pcolor(p.pid)+'"></i>'+p.civ.replace('CIVILIZATION_','').toLowerCase()+(p.pid===0?' · agent':'')+'</span>').join('')+'<span class=cs>city-states: '+cs.map(p=>p.civ.replace('CIVILIZATION_','').toLowerCase().replace(/_/g,' ')).join(' · ')+'</span>';
  s.max=turns.length-1;idx=turns.length-1;const U=new URLSearchParams(location.search);if(U.get('t')){const k=turns.findIndex(o=>o.turn>=+U.get('t'));if(k>=0)idx=k}s.value=idx;applyTo(idx);fit();
- if(U.get('z')){const z=+U.get('z'),x=+(U.get('x')||W/2),y=+(U.get('y')||H/2);cam.z=z;cam.x=stage.clientWidth/2-cx(x,y)*z;cam.y=stage.clientHeight/2-cy(y)*z;draw()}})();
+ if(U.get('z')){userZoomed=true;const z=+U.get('z'),x=+(U.get('x')||W/2),y=+(U.get('y')||H/2);cam.z=z;cam.x=stage.clientWidth/2-cx(x,y)*z;cam.y=stage.clientHeight/2-cy(y)*z;draw()}})();
 </script></body></html>
