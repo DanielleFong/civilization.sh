@@ -98,7 +98,8 @@ async def open_any(retries: int = 90):
             states = {int(raw[i]): raw[i + 1] for i in range(0, len(raw) - 1, 2) if raw[i].isdigit()}
             ingame = next((k for k, v in states.items() if v.strip().lower() == "ingame"), None)
             if ingame is not None: return r, w, ingame
-            fe = next((k for k, v in states.items() if _re.search(r"frontend|mainmenu", v, _re.I)), None)
+            fe = next((k for k, v in states.items() if v.strip() == "MainMenu"), None)
+            if fe is None: fe = next((k for k, v in states.items() if _re.search(r"frontend", v, _re.I)), None)
             if fe is not None: print("main menu: loading from state", states[fe], flush=True); return r, w, fe
             w.close()
         except (ConnectionRefusedError, OSError): pass

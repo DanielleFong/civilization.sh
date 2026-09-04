@@ -1,0 +1,188 @@
+turn	era	score	type	description
+1	ERA_ANCIENT	1	MOMENT_CITY_BUILT_NEAR_FLOODABLE_RIVER	The citizens of Xi'an adjust to their new home, and keep a wary eye on the nearby river.
+11	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+17	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+17	ERA_ANCIENT	1	MOMENT_PANTHEON_FOUNDED	Could this numinous moment be what those other prophets were talking about?
+18	ERA_ANCIENT	3	MOMENT_FIND_NATURAL_WONDER_FIRST_IN_WORLD	Explorers of China are the first from a major civilization to set eyes on Mount Everest!
+18	ERA_ANCIENT	3	MOMENT_FIND_NATURAL_WONDER_FIRST_IN_WORLD	Explorers of China are the first from a major civilization to set eyes on Hạ Long Bay!
+18	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+21	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+22	ERA_ANCIENT	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of Scythia.
+26	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+30	ERA_ANCIENT	1	MOMENT_GOODY_HUT_TRIGGERED	Villagers bring gifts as they join our civilization.
+32	ERA_CLASSICAL	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Classical Era, but you know it was when China discovered Currency.
+35	ERA_CLASSICAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Simon Peter chooses to bring their talents to China.
+35	ERA_CLASSICAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Stonehenge, the citizens of Xi'an remember their glorious past.
+35	ERA_CLASSICAL	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Classical Era culture began with the discovery of Drama and Poetry by China.
+36	ERA_CLASSICAL	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Gobustan.
+37	ERA_CLASSICAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Oracle, the citizens of Chengdu remember their glorious past.
+38	ERA_CLASSICAL	3	MOMENT_CITY_BUILT_NEAR_NATURAL_WONDER	The inspirational sight of Hạ Long Bay fills the citizens of our new city of Changsha with joy.
+39	ERA_CLASSICAL	2	MOMENT_RELIGION_FOUNDED	Clawd is the true path of salvation! Please ignore all those other ones!
+40	ERA_CLASSICAL	2	MOMENT_GOVERNMENT_ENACTED_TIER_1_FIRST	China adopts government by Classical Republic, leading to a new political age for the citizens.
+41	ERA_CLASSICAL	3	MOMENT_CITY_BUILT_NEAR_NATURAL_WONDER	The inspirational sight of Mount Everest fills the citizens of our new city of Beijing with joy.
+41	ERA_CLASSICAL	1	MOMENT_CITY_BUILT_ON_SNOW	The citizens of Beijing have a hundred words for "snow."
+41	ERA_CLASSICAL	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of Poland.
+42	ERA_CLASSICAL	3	MOMENT_FIND_NATURAL_WONDER_FIRST_IN_WORLD	Explorers of China are the first from a major civilization to set eyes on Chocolate Hills!
+42	ERA_CLASSICAL	2	MOMENT_PLAYER_GAVE_ENVOY_BECAME_SUZERAIN_FIRST_IN_WORLD	The rulers of Bandar Brunei bow to China, who became their first Suzerain in the world.
+43	ERA_CLASSICAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Great Bath, the citizens of Chengdu remember their glorious past.
+47	ERA_CLASSICAL	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of Germany.
+49	ERA_CLASSICAL	3	MOMENT_DISTRICT_CONSTRUCTED_HIGH_ADJACENCY_THEATER_SQUARE	Delightful songs, inspiring words. The artists, poets, and playwrights of Chengdu all stroll the streets of our Theater Square.
+52	ERA_MEDIEVAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Apadana, the citizens of Xi'an remember their glorious past.
+52	ERA_MEDIEVAL	3	MOMENT_GREAT_PERSON_CREATED_PATRONAGE_FAITH_OVER_HALF	The prayers of the faithful are answered! Valmiki appears to change the destiny of China.
+52	ERA_MEDIEVAL	1	MOMENT_CITY_BUILT_NEAR_OTHER_CIV_CITY	The bureaucrats of Scythia are piqued by our boldness in settling Chen so near their own city of Myriv.
+52	ERA_MEDIEVAL	2	MOMENT_CITY_BUILT_NEW_CONTINENT	Chen becomes the first settlement on Europe!
+52	ERA_MEDIEVAL	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of England.
+52	ERA_MEDIEVAL	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Cliffs of Dover.
+53	ERA_MEDIEVAL	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Medieval Era, but you know it was when China discovered Apprenticeship.
+55	ERA_MEDIEVAL	3	MOMENT_GREAT_PERSON_CREATED_PATRONAGE_FAITH_OVER_HALF	The prayers of the faithful are answered! Hildegard of Bingen appears to change the destiny of China.
+55	ERA_MEDIEVAL	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Pamukkale.
+56	ERA_MEDIEVAL	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Medieval Era culture began with the discovery of Feudalism by China.
+56	ERA_MEDIEVAL	3	MOMENT_DISTRICT_CONSTRUCTED_HIGH_ADJACENCY_COMMERCIAL_HUB	They say that people are drawn to the Commercial Hub of Jiaodong just for the excitement of buying and selling in the market. But the money is pretty good, too.
+59	ERA_MEDIEVAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Temple of Artemis, the citizens of Chen remember their glorious past.
+60	ERA_MEDIEVAL	3	MOMENT_DISTRICT_CONSTRUCTED_HIGH_ADJACENCY_CAMPUS	Walking the quads and lingering outside classrooms of the Campus near Beijing, you can hear scholars debate the ideas that will change the world.
+61	ERA_MEDIEVAL	3	MOMENT_DISTRICT_CONSTRUCTED_HIGH_ADJACENCY_HOLY_SITE	Chimes and chanting, incense and icon, the Holy Site of Changsha brings worshippers and pilgrims into contemplation of the higher matters.
+64	ERA_MEDIEVAL	1	MOMENT_CITY_BUILT_ON_DESERT	Visitors complain about the heat of Handan, but at least it's a dry heat.
+65	ERA_MEDIEVAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Geoffrey Chaucer chooses to bring their talents to China.
+67	ERA_MEDIEVAL	1	MOMENT_IMPROVEMENT_CONSTRUCTED_ON_DISASTER_YIELD_TILE_FIRST	The adaptive people of China build after a natural disaster, taking advantage of the renewed land.
+70	ERA_MEDIEVAL	1	MOMENT_CITY_SIZE_SMALL_FIRST	Xi'an grows and its people take pride in the thriving metropolitan life.
+70	ERA_MEDIEVAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Colosseum, the citizens of Chengdu remember their glorious past.
+72	ERA_RENAISSANCE	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Renaissance Era culture began with the discovery of Exploration by China.
+72	ERA_RENAISSANCE	2	MOMENT_GOVERNMENT_ENACTED_TIER_2_FIRST	Ancient traditions of governance evolve, and Qin (Mandate of Heaven) chooses Merchant Republic as its new way to rule.
+73	ERA_RENAISSANCE	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Renaissance Era, but you know it was when China discovered Banking.
+73	ERA_RENAISSANCE	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Petra, the citizens of Handan remember their glorious past.
+74	ERA_RENAISSANCE	1	MOMENT_UNIT_CREATED_FIRST_REQUIRING_STRATEGIC	Skeptics may ask: "What good is Iron?" But we know now that it is a formidable weapon for our Knight.
+76	ERA_RENAISSANCE	2	MOMENT_CITY_TRANSFERRED_DISLOYAL_FREE_CITY	The citizens of Myriv feel an affinity with us, and willingly enter our civilization.
+77	ERA_RENAISSANCE	3	MOMENT_CITY_BUILT_BECAME_LARGEST_CIV_BY_MARGIN	Shenyang is the latest city in our sprawling empire, and other civilizations look on in awe.
+77	ERA_RENAISSANCE	3	MOMENT_GREAT_PERSON_CREATED_PATRONAGE_FAITH_OVER_HALF	The prayers of the faithful are answered! Bi Sheng appears to change the destiny of China.
+78	ERA_RENAISSANCE	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Dead Sea.
+78	ERA_RENAISSANCE	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, William Shakespeare chooses to bring their talents to China.
+79	ERA_RENAISSANCE	2	MOMENT_DISTRICT_CONSTRUCTED_CANAL	The opening of the Changsha Canal brings renewed trade and prosperity.
+81	ERA_RENAISSANCE	2	MOMENT_CITY_BUILT_NEW_CONTINENT	Xingzhou becomes the first settlement on Africa!
+82	ERA_RENAISSANCE	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Mausoleum at Halicarnassus, the citizens of Longxi remember their glorious past.
+83	ERA_RENAISSANCE	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Kamāl ud-Dīn Behzād chooses to bring their talents to China.
+83	ERA_RENAISSANCE	1	MOMENT_CITY_BUILT_NEAR_OTHER_CIV_CITY	The bureaucrats of Scythia are piqued by our boldness in settling Shanghai so near their own city of Maikop.
+84	ERA_RENAISSANCE	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Industrial Era culture began with the discovery of Civil Engineering by China.
+84	ERA_RENAISSANCE	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Filippo Brunelleschi chooses to bring their talents to China.
+85	ERA_RENAISSANCE	3	MOMENT_DISTRICT_CONSTRUCTED_HIGH_ADJACENCY_INDUSTRIAL_ZONE	Whistles indicate the start of a new shift, and workers from Changsha stream into the Industrial Zone, ready to put in a good day's work.
+88	ERA_RENAISSANCE	4	MOMENT_BUILDING_CONSTRUCTED_GAME_ERA_WONDER	Standing in the Forbidden City, the citizens of Jiaodong are filled with awe.
+88	ERA_RENAISSANCE	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Leonardo da Vinci chooses to bring their talents to China.
+92	ERA_RENAISSANCE	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Mimar Sinan chooses to bring their talents to China.
+92	ERA_RENAISSANCE	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Marco Polo chooses to bring their talents to China.
+93	ERA_RENAISSANCE	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Lysefjord.
+95	ERA_INDUSTRIAL	4	MOMENT_UNIT_CREATED_FIRST_UNIQUE	Who but China could create the Crouching Tiger? And who can possibly resist it?
+96	ERA_INDUSTRIAL	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Eyjafjallajökull.
+97	ERA_INDUSTRIAL	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Industrial Era, but you know it was when China discovered Industrialization.
+97	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Alexander Pushkin chooses to bring their talents to China.
+97	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Yatsuhashi Kengyo chooses to bring their talents to China.
+98	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_PAST_ERA	After deliberation, Gustavus Adolphus chooses to bring their talents to China.
+99	ERA_INDUSTRIAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Chichen Itza, the citizens of Changsha remember their glorious past.
+101	ERA_INDUSTRIAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Jebel Barkal, the citizens of Xi'an remember their glorious past.
+103	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Dimitrie Cantemir chooses to bring their talents to China.
+105	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Gustave Eiffel chooses to bring their talents to China.
+105	ERA_INDUSTRIAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Kilwa Kisiwani, the citizens of Xi'an remember their glorious past.
+106	ERA_INDUSTRIAL	1	MOMENT_MITIGATED_RIVER_FLOOD	The waters of the Yangtze River rose, but our foresight prevented flooding in the surrounding land.
+107	ERA_INDUSTRIAL	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Modern Era culture began with the discovery of Mass Media by China.
+107	ERA_INDUSTRIAL	1	MOMENT_UNIT_CREATED_FIRST_REQUIRING_STRATEGIC	Skeptics may ask: "What good is Niter?" But we know now that it is a formidable weapon for our Bombard.
+108	ERA_INDUSTRIAL	1	MOMENT_CITY_SIZE_MEDIUM_FIRST	Xi'an expands further, and becomes the largest city of our people.
+108	ERA_INDUSTRIAL	3	MOMENT_GREAT_PERSON_CREATED_PATRONAGE_FAITH_OVER_HALF	The prayers of the faithful are answered! Alfred Nobel appears to change the destiny of China.
+109	ERA_INDUSTRIAL	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Venetian Arsenal, the citizens of Jiaodong remember their glorious past.
+109	ERA_INDUSTRIAL	4	MOMENT_BUILDING_CONSTRUCTED_GAME_ERA_WONDER	Standing in the Hermitage, the citizens of Changsha are filled with awe.
+109	ERA_INDUSTRIAL	3	MOMENT_BELIEF_ADDED_MAX_BELIEFS_REACHED	Theologians clarify the tenets of Clawd and its Beliefs.
+109	ERA_INDUSTRIAL	2	MOMENT_UNIT_CREATED_FIRST_DOMAIN_SEA	The crew of the Great Admiral from China invent the sailor's yarn after their first sea voyage.
+109	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Horatio Nelson chooses to bring their talents to China.
+109	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, James Watt chooses to bring their talents to China.
+110	ERA_INDUSTRIAL	2	MOMENT_CITY_POWER_GENERATED_FROM_RESOURCE_FIRST	Surging machinery and billowing smoke mark the start of our power generation.
+111	ERA_INDUSTRIAL	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Modern Era, but you know it was when China discovered Flight.
+111	ERA_INDUSTRIAL	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Sahara el Beyda.
+113	ERA_INDUSTRIAL	4	MOMENT_BUILDING_CONSTRUCTED_GAME_ERA_WONDER	Standing in the Bolshoi Theatre, the citizens of Xi'an are filled with awe.
+114	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Franz Liszt chooses to bring their talents to China.
+114	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, John Spilsbury chooses to bring their talents to China.
+114	ERA_INDUSTRIAL	3	MOMENT_FIND_NATURAL_WONDER_FIRST_IN_WORLD	Explorers of China are the first from a major civilization to set eyes on Mato Tipila!
+114	ERA_INDUSTRIAL	2	MOMENT_PLAYER_GAVE_ENVOY_BECAME_SUZERAIN_FIRST_IN_WORLD	The rulers of Cahokia bow to China, who became their first Suzerain in the world.
+114	ERA_INDUSTRIAL	2	MOMENT_ROUTE_CREATED_RAILROAD_CONNECTS_TWO_CITIES	The Quxian & Xi'an Railroad successfully links our cities.
+115	ERA_INDUSTRIAL	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Sofonisba Anguissola chooses to bring their talents to China.
+115	ERA_INDUSTRIAL	2	MOMENT_GOVERNMENT_ENACTED_TIER_3_FIRST	The honorable traditions of the past will still form part of the new government of Communism that China has chosen.
+116	ERA_INDUSTRIAL	2	MOMENT_DISTRICT_CONSTRUCTED_NEIGHBORHOOD_FIRST	The citizens of Beijing are the first to discover that the only thing better than living in Beijing is living in a slightly cleaner place outside of it.
+116	ERA_INDUSTRIAL	1	MOMENT_GOVERNOR_FULLY_PROMOTED_FIRST	The art of governance finds its ultimate expression in the leadership of Magnus, the Steward.
+116	ERA_INDUSTRIAL	1	MOMENT_INQUISITION_LAUNCHED	The heavens rejoice as a righteous Inquisition begins to correct those who do not believe in Clawd.
+118	ERA_MODERN	4	MOMENT_NATIONAL_PARK_CREATED_FIRST_IN_WORLD	The world’s first National Park proves what a few far-sighted conservationists knew to be true: We must protect the natural beauty of China for future generations.
+119	ERA_MODERN	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Atomic Era culture began with the discovery of Cultural Heritage by China.
+119	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Nikola Tesla chooses to bring their talents to China.
+121	ERA_MODERN	4	MOMENT_BUILDING_CONSTRUCTED_GAME_ERA_WONDER	Standing in the Cristo Redentor, the citizens of Chen are filled with awe.
+121	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, James Joyce chooses to bring their talents to China.
+121	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_PAST_ERA	After deliberation, Laskarina Bouboulina chooses to bring their talents to China.
+121	ERA_MODERN	2	MOMENT_IMPROVEMENT_CONSTRUCTED_MOUNTAIN_TUNNEL_FIRST	Sit down, and let me sing you the ballad about how John Henry dug the first mountain tunnel in China.
+121	ERA_MODERN	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+122	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Scott Joplin chooses to bring their talents to China.
+122	ERA_MODERN	1	MOMENT_FORMATION_CORPS_FIRST	Mightier than a single unit, our first Corps stands ready to protect the civilization.
+123	ERA_MODERN	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Atomic Era, but you know it was when China discovered Computers.
+124	ERA_MODERN	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the St. Basil's Cathedral, the citizens of Myriv remember their glorious past.
+125	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Alvar Aalto chooses to bring their talents to China.
+125	ERA_MODERN	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+126	ERA_MODERN	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+126	ERA_MODERN	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+126	ERA_MODERN	2	MOMENT_UNIT_KILLED_ASSISTED_BY_GENERAL	Gustavus Adolphus leads the troops in parade after a stunning victory.
+126	ERA_MODERN	1	MOMENT_UNIT_CREATED_FIRST_REQUIRING_STRATEGIC	Skeptics may ask: "What good is Oil?" But we know now that it is a formidable weapon for our Artillery.
+127	ERA_MODERN	3	MOMENT_CITY_BUILT_NEAR_NATURAL_WONDER	The inspirational sight of Sahara el Beyda fills the citizens of our new city of Taiyuan with joy.
+127	ERA_MODERN	1	MOMENT_CITY_BUILT_ON_DESERT	Visitors complain about the heat of Taiyuan, but at least it's a dry heat.
+127	ERA_MODERN	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Yosemite.
+127	ERA_MODERN	5	MOMENT_WORLD_CIRCUMNAVIGATED_FIRST_IN_WORLD	China completes the world's first circumnavigation!
+128	ERA_MODERN	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Mount Vesuvius.
+128	ERA_MODERN	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Crater Lake.
+129	ERA_MODERN	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+129	ERA_MODERN	5	MOMENT_UNIT_CREATED_FIRST_DOMAIN_AIR_IN_WORLD	Humanity realized its dream of flight for the first time, as the Biplane of China took to the skies.
+129	ERA_MODERN	4	MOMENT_IMPROVEMENT_CONSTRUCTED_FIRST_UNIQUE	Truly, this Great Wall represents our civilization's spirit and defines the landscape of our empire.
+130	ERA_MODERN	3	MOMENT_BUILDING_CONSTRUCTED_FULL_ENTERTAINMENT_COMPLEX_FIRST	In China, the expression “spend the afternoon in Chengdu” means “to have a wonderful time.”
+130	ERA_MODERN	3	MOMENT_BUILDING_CONSTRUCTED_FULL_ENCAMPMENT_FIRST	Soldiers march by in formation, calling cadence: I don’t know but I been told/Life in Changsha gets real old.
+130	ERA_MODERN	1	MOMENT_UNIT_CREATED_FIRST_REQUIRING_STRATEGIC	Skeptics may ask: "What good are Horses?" But we know now that they are a formidable weapon for our Cavalry.
+130	ERA_MODERN	1	MOMENT_CITY_BUILT_NEAR_VOLCANO	"We'll be fine," say the citizens of Nanjing. "All mountains smoke a little, right?"
+130	ERA_MODERN	2	MOMENT_UNIT_TOURISM_BOMB	The world-famous band from China make their debut to a huge crowd of happy fans.
+131	ERA_MODERN	2	MOMENT_IMPROVEMENT_CONSTRUCTED_SEASIDE_RESORT_FIRST	Our first Seaside Resort opens in Yiyang, to the delight of all our people, except for one small child whose snack has been carried away by a seagull.
+131	ERA_MODERN	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of the Mapuche.
+131	ERA_MODERN	1	MOMENT_PLAYER_MET_MAJOR	Wary welcomes and curious stares mark the moment of our meeting with the people of the Inca.
+132	ERA_MODERN	4	MOMENT_BUILDING_CONSTRUCTED_GAME_ERA_WONDER	Standing in the Sydney Opera House, the citizens of Jiaodong are filled with awe.
+132	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Antonin Dvorak chooses to bring their talents to China.
+132	ERA_MODERN	3	MOMENT_BUILDING_CONSTRUCTED_FULL_AERODROME_FIRST	Pilots consider making a landing at the Aerodrome in Xiurong to be a rite of passage. The oldest ones remember when it was just a farm field and a couple of temporary hangars.
+132	ERA_MODERN	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Information Era culture began with the discovery of Globalization by China.
+132	ERA_MODERN	1	MOMENT_UNIT_CREATED_FIRST_REQUIRING_STRATEGIC	Skeptics may ask: "What good is Aluminum?" But we know now that it is a formidable weapon for our Fighter.
+133	ERA_MODERN	1	MOMENT_TECH_RESEARCHED_IN_ERA_FIRST	Many dispute the actual start of the Information Era, but you know it was when China discovered Telecommunications.
+133	ERA_MODERN	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+133	ERA_MODERN	1	MOMENT_GOVERNOR_ALL_APPOINTED_FIRST	Victor, the Castellan, enters your service and completes your staff of capable advisors.
+133	ERA_MODERN	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+134	ERA_MODERN	2	MOMENT_PLAYER_GAVE_ENVOY_CANCELED_LEVY	The Mapuche learns that politics is also a battlefield, as China overturns their Suzerain status in Mexico City.
+134	ERA_MODERN	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Galápagos Islands.
+135	ERA_MODERN	2	MOMENT_GOVERNMENT_ENACTED_TIER_4_FIRST	Our people continue to evolve their political system, and attempt the revolutionary new government of Digital Democracy.
+136	ERA_MODERN	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Sergei Korolev chooses to bring their talents to China.
+136	ERA_MODERN	1	MOMENT_TRADING_POST_CONSTRUCTED_IN_OTHER_CIV	Dusty and tired but eager to haggle, merchants open our first Trading Post in the lands of Germany.
+137	ERA_MODERN	4	MOMENT_BUILDING_CONSTRUCTED_GAME_ERA_WONDER	Standing in the Eiffel Tower, the citizens of Xiurong are filled with awe.
+138	ERA_ATOMIC	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+139	ERA_ATOMIC	1	MOMENT_MITIGATED_COASTAL_FLOOD	The rising seas pound against the Xi'an Flood Barrier, but the city is safe.
+139	ERA_ATOMIC	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Torres del Paine.
+139	ERA_ATOMIC	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Pantanal.
+139	ERA_ATOMIC	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Ik-Kil.
+139	ERA_ATOMIC	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Bermuda Triangle.
+139	ERA_ATOMIC	1	MOMENT_FIND_NATURAL_WONDER	Explorers of China discover the majesty of Giant's Causeway.
+139	ERA_ATOMIC	1	MOMENT_CIVIC_CULTURVATED_IN_ERA_FIRST	Let others say what they will, but the real flourishing of Future Era culture began with the discovery of Global Warming Mitigation by China.
+139	ERA_ATOMIC	3	MOMENT_BUILDING_CONSTRUCTED_FULL_WATER_ENTERTAINMENT_COMPLEX_FIRST	They say that the best way to visit Xi'an is on a summer day, as the sun sets and the lights of the Water Park come alight, watching the crowd on the boardwalk.
+139	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Clara Schumann chooses to bring their talents to China.
+139	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Edmonia Lewis chooses to bring their talents to China.
+139	ERA_ATOMIC	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+141	ERA_ATOMIC	3	MOMENT_BUILDING_CONSTRUCTED_PAST_ERA_WONDER	Standing in the Statue of Liberty, the citizens of Changsha remember their glorious past.
+141	ERA_ATOMIC	1	MOMENT_CITY_SIZE_LARGE_FIRST	Paradoxically, the citizens of Changsha are both incredibly proud of their city's size, and yet never stop complaining about how crowded it has gotten.
+143	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Helena Rubinstein chooses to bring their talents to China.
+143	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Rabindranath Tagore chooses to bring their talents to China.
+143	ERA_ATOMIC	1	MOMENT_UNIT_KILLED_UNDERDOG_MILITARY_FORMATION	Despite being heavily outnumbered, our Nuclear Submarine has won the day!
+145	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, John Roebling chooses to bring their talents to China.
+146	ERA_ATOMIC	4	MOMENT_BUILDING_CONSTRUCTED_GAME_ERA_WONDER	Standing in the Biosphère, the citizens of Xi'an are filled with awe.
+146	ERA_ATOMIC	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+146	ERA_ATOMIC	1	MOMENT_ARTIFACT_EXTRACTED	As the dirt is brushed away, the Mummy sees the light of sun after ages. It will grace the museums of China for years to come.
+147	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Mykola Leontovych chooses to bring their talents to China.
+148	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_GAME_ERA	After deliberation, Stephanie Kwolek chooses to bring their talents to China.
+148	ERA_ATOMIC	1	MOMENT_ARTIFACT_EXTRACTED	As the dirt is brushed away, the Chalice sees the light of sun after ages. It will grace the museums of China for years to come.
+149	ERA_ATOMIC	1	MOMENT_UNIT_KILLED_UNDERDOG_MILITARY_FORMATION	Despite being heavily outnumbered, our Machine Gun has won the day!
+149	ERA_ATOMIC	2	MOMENT_CITY_BUILT_NEW_CONTINENT	Xinzheng becomes the first settlement on America!
+150	ERA_ATOMIC	1	MOMENT_ARTIFACT_EXTRACTED	As the dirt is brushed away, the Mask sees the light of sun after ages. It will grace the museums of China for years to come.
+151	ERA_ATOMIC	2	MOMENT_IMPROVEMENT_CONSTRUCTED_RENEWABLE_ENERGY_FIRST	Now that we have built this Wind Farm to produce clean power, perhaps the smog of Chengdu will start to clear.
+151	ERA_ATOMIC	3	MOMENT_NATIONAL_PARK_CREATED	Our civilization’s citizens flock to the newest National Park and reconnect to the natural world.
+152	ERA_ATOMIC	2	MOMENT_PLAYER_GAVE_ENVOY_CANCELED_LEVY	England learns that politics is also a battlefield, as China overturns their Suzerain status in Cahokia.
+153	ERA_ATOMIC	1	MOMENT_GREAT_PERSON_CREATED_PAST_ERA	After deliberation, Franz von Hipper chooses to bring their talents to China.

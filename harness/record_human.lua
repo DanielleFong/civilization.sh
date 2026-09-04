@@ -148,11 +148,14 @@ try("cities", function()
         local f, im, rs = pl:GetFeatureType(), pl:GetImprovementType(), pl:GetResourceType()
         local wk = false; pcall(function() wk = pl:GetWorkerCount() > 0 end); if not wk then pcall(function() wk = cz:IsPlotWorked(pi) end) end
         local pill = false; pcall(function() pill = pl:IsImprovementPillaged() end)
-        tiles[#tiles+1] = string.format('[%d,%d,"%s","%s","%s",%s%s]', pl:GetX(), pl:GetY(),
+        local park = false; pcall(function() park = pl:IsNationalPark() end)
+        local app, tpl = 0, 0; pcall(function() app = pl:GetAppeal() end); pcall(function() tpl = P:GetCulture():GetTourismAt(pi) end)
+        tiles[#tiles+1] = string.format('[%d,%d,"%s","%s","%s",%s%s%s]', pl:GetX(), pl:GetY(),
           f >= 0 and (GameInfo.Features[f].FeatureType:gsub("FEATURE_","")) or "",
           im >= 0 and (GameInfo.Improvements[im].ImprovementType:gsub("IMPROVEMENT_","")) or "",
           rs >= 0 and (GameInfo.Resources[rs].ResourceType:gsub("RESOURCE_","")) or "",
-          wk and 1 or 0, pill and ',"PILLAGED"' or "")
+          wk and 1 or 0, pill and ',"PILLAGED"' or "", park and ',"PARK"' or "")
+        if tpl > 0 or park then tiles[#tiles] = tiles[#tiles]:sub(1, -2) .. string.format(',{"appeal":%d,"tourism":%d}]', app, tpl) end
       end
     end)
     local loy, loyPT = -1, 0; pcall(function() loy = c:GetCulturalIdentity():GetLoyalty(); loyPT = c:GetCulturalIdentity():GetLoyaltyPerTurn() end)
@@ -294,5 +297,31 @@ try("pins", function()
   out[#out+1] = '"pins":[' .. J(pins) .. ']'
 end)
 
+-- culture victory: per major — tourism/turn, foreign tourists attracted, domestic tourists (the wall others must beat)
+try("tourism", function()
+  local rows = {}
+  for _, p in ipairs(PlayerManager.GetAliveMajors()) do
+    local pid = p:GetID(); local C = p:GetCulture()
+    local tour, vis, dom, ttv = -1, -1, -1, -1
+    pcall(function() tour = p:GetStats():GetTourism() end)
+    pcall(function() vis = C:GetTouristsTo() end)
+    pcall(function() dom = C:GetStaycationers() end)
+    pcall(function() ttv = C:GetTurnsUntilVictory() end)
+    rows[#rows+1] = string.format('{"pid":%d,"civ":"%s","tourism":%d,"tourists_to":%d,"domestic":%d,"turns_to_victory":%d}', pid, (PlayerConfigurations[pid]:GetCivilizationTypeName():gsub("CIVILIZATION_","")), tour, vis, dom, ttv)
+  end
+  out[#out+1] = '"tourism":[' .. J(rows) .. ']'
+end)
+
+if WANT_OWNERS then
+  try("owners", function()
+    local W, H = Map.GetGridSize(); local runs = {}; local cur, n = -99, 0
+    for i = 0, W * H - 1 do
+      local o = Map.GetPlotByIndex(i):GetOwner()
+      if o == cur then n = n + 1 else if n > 0 then runs[#runs+1] = cur .. ":" .. n end; cur = o; n = 1 end
+    end
+    if n > 0 then runs[#runs+1] = cur .. ":" .. n end
+    out[#out+1] = string.format('"owners":{"w":%d,"h":%d,"rle":"%s"}', W, H, table.concat(runs, ","))
+  end)
+end
 out[#out+1] = '"errs":[' .. J(errs) .. ']'
 print("HUMAN {" .. J(out) .. "}")

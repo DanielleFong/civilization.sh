@@ -108,18 +108,20 @@ def diff_events(a, b):
 async def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--poll", type=float, default=4.0); ap.add_argument("--out", default=str(HERE.parent / "recordings"))
     a = ap.parse_args()
-    r, w = await connect("127.0.0.1", int(__import__("os").environ.get("CIV_TUNER_PORT", "4320")))
+    r, w = await connect("127.0.0.1", int(__import__("os").environ.get("CIV_TUNER_PORT", "4318")))
     ident, raw = await handshake(r, w)
     states = {int(raw[i]): raw[i + 1] for i in range(0, len(raw) - 1, 2) if raw[i].isdigit()}
     idx = next((k for k, v in states.items() if v.strip().lower() == "ingame"), None)
     if idx is None:
         sys.exit(f"no InGame state (states={states}); is a game loaded?")
-    out = None; prev = None; prev_fp = None; last_turn = None; n = 0
+    out = None; prev = None; prev_fp = None; last_turn = None; n = 0; owners_at = 0.0
     print(f"connected: {ident.strip()} InGame={idx}; polling {a.poll}s", flush=True)
     while True:
         t0 = time.time()
         try:
-            res = await exec_lua(r, w, idx, LUA, timeout=15)
+            want = last_turn is None or (prev is not None and time.time() - owners_at > 20)   # owner grid at most every ~20 s (turn boundaries)
+            res = await exec_lua(r, w, idx, ("WANT_OWNERS=true\n" if want else "WANT_OWNERS=false\n") + LUA, timeout=15)
+            if want: owners_at = time.time()
             m = re.search(r"HUMAN (\{.*\})", str(res), re.S)
             if not m:
                 print(f"[{time.strftime('%H:%M:%S')}] no HUMAN line: {str(res)[:200]}", flush=True)
@@ -151,7 +153,7 @@ async def main():
             while True:
                 await asyncio.sleep(15)
                 try:
-                    r, w = await connect("127.0.0.1", int(__import__("os").environ.get("CIV_TUNER_PORT", "4320")))
+                    r, w = await connect("127.0.0.1", int(__import__("os").environ.get("CIV_TUNER_PORT", "4318")))
                     ident, raw = await handshake(r, w)
                     states = {int(raw[i]): raw[i + 1] for i in range(0, len(raw) - 1, 2) if raw[i].isdigit()}
                     idx = next((k for k, v in states.items() if v.strip().lower() == "ingame"), None)
