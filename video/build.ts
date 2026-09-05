@@ -157,3 +157,7 @@ for (const f of ["static.json", "turns.jsonl", "full_T163.json"]) await Deno.cop
 await Deno.mkdir("dist/state/turns", { recursive: true });
 for await (const e of Deno.readDir("frames/state/turns")) if (e.isFile && e.name.endsWith(".json")) await Deno.copyFile("frames/state/turns/" + e.name, "dist/state/turns/" + e.name);
 console.log("frames:", files.length, "china pts:", china.length, "rivals:", Object.keys(rivals).join(","));
+
+// icons: source of truth is video/icons/ (wiki-fetched, see LIG-988); copied into dist so a clean checkout builds.
+await Deno.mkdir("dist/icons", { recursive: true });
+for await (const e of Deno.readDir("icons")) if (e.isFile) await Deno.copyFile("icons/" + e.name, "dist/icons/" + e.name);
