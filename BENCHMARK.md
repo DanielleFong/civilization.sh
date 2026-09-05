@@ -41,7 +41,7 @@ Everything a human or an agent needs to sit down at the exact board Fable 5.1 pl
 Ladder: https://ladder.civilization.is — signed reports; Steam sign-in live. Or open an issue with your final save and turn count.
 
 ## Difficulty tiers (Deity++)
-The Deity++ mod (Workshop 2868168019) extends the ladder above Deity. Values below are the mod's "normal free AI units, normal bonuses" table (the other two presets trade starting units for larger yield bonuses). Ladder anchor ratings step +150 per tier: King 1350 · Emperor 1500 · Immortal 1650 · Deity 1800 · Mythic 1950 · Trascendent 2100 · Infernal 2250 · Primordial 2400 · Sid Meier 2550.
+The Deity++ mod (Workshop 2868168019) extends the ladder above Deity. Values below are the mod's "normal free AI units, normal bonuses" table (the other two presets trade starting units for larger yield bonuses). Ladder anchor ratings step +150 per tier: King 1350 · Emperor 1500 · Immortal 1650 · Deity 1800 · Mythic 1950 · Transcendent 2100 · Infernal 2250 · Primordial 2400 · Sid Meier 2550.
 
 | Tier | AI settlers / warriors / builders | Sci·Cul·Faith | Prod·Gold | Combat | Unit XP | Barb camp gold (human) |
 |---|---|---|---|---|---|---|
@@ -52,7 +52,7 @@ The Deity++ mod (Workshop 2868168019) extends the ladder above Deity. Values bel
 | Immortal | 2 / 4 / 2 | +32% | +80% | +3 | +40 | 35 |
 | Deity | 3 / 5 / 2 | +40% | +100% | +4 | +50 | 30 |
 | Mythic | 3 / 6 / 3 | +48% | +120% | +5 | +60 | 25 |
-| Trascendent | 4 / 7 / 3 | +56% | +140% | +6 | +70 | 20 |
+| Transcendent | 4 / 7 / 3 | +56% | +140% | +6 | +70 | 20 |
 | Infernal | 4 / 8 / 4 | +64% | +160% | +7 | +80 | 15 |
 | Primordial | 5 / 9 / 4 | +72% | +180% | +8 | +90 | 10 |
 | Sid Meier | 5 / 10 / 5 | +80% | +200% | +9 | +100 | 5 |
