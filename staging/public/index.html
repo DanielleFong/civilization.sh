@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CivBench War Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Staatliches&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0a0e13; --panel:#10161e; --panel2:#151d27; --line:#243140;
+  --text:#c9d4d9; --muted:#5f7381; --brass:#d9a441; --brass-hi:#f0c86a;
+  --p0:#e8c15a; --p1:#c0504d; --p2:#5b8dbf; --p3:#7aa25c; --cs:#9a8fb8; --barb:#6b2f2f;
+  --grass:#3f5d3a; --plains:#6f6b43; --desert:#a38a52; --tundra:#4c545c;
+  --coast:#2c4c62; --ocean:#152535; --snow:#8d979e;
+  --danger:#d06a5a; --ok:#7aa25c; --sci:#5b8dbf; --cul:#a98fd0; --rel:#e0d29a; --dom:#c0504d;
+}
+*{box-sizing:border-box; margin:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1200px 700px at 70% -10%, #14202e 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(255,255,255,.012) 2px 4px),
+    var(--ink);
+  color:var(--text); font:14px/1.45 "IBM Plex Mono", ui-monospace, monospace;
+  display:flex; flex-direction:column; overflow:hidden;
+}
+header{
+  display:flex; align-items:baseline; gap:18px; padding:10px 18px 8px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, #121a24, #0e141c);
+}
+header h1{
+  font:400 26px/1 "Staatliches", sans-serif; letter-spacing:.12em; color:var(--brass);
+  text-shadow:0 0 18px rgba(217,164,65,.25);
+}
+header h1 em{font-style:normal; color:var(--muted); letter-spacing:.08em}
+#hdrInfo{color:var(--muted); font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+#hdrInfo b{color:var(--text); font-weight:500}
+#turnBig{
+  font:400 26px/1 "Staatliches", sans-serif; letter-spacing:.1em; color:var(--text);
+  margin-left:auto; white-space:nowrap;
+}
+#turnBig b{color:var(--brass-hi)}
+#turnBig small{font-size:14px; color:var(--muted); letter-spacing:.06em}
+select{
+  background:var(--panel2); color:var(--text); border:1px solid var(--line);
+  font:inherit; padding:3px 8px; border-radius:3px; max-width:340px;
+}
+main{flex:1; display:flex; min-height:0}
+#mapWrap{flex:1; position:relative; overflow:hidden; cursor:grab}
+#mapWrap.dragging{cursor:grabbing}
+svg{display:block; width:100%; height:100%}
+.hex{stroke:rgba(0,0,0,.35); stroke-width:.6}
+.hex.fog{filter:brightness(.42) saturate(.5)}
+.hex:hover{stroke:var(--brass-hi); stroke-width:1.6}
+.ownerEdge{fill:none; stroke-width:1.7; opacity:.9; pointer-events:none}
+.glyph{pointer-events:none; font-size:9px; text-anchor:middle; fill:rgba(10,14,19,.75)}
+.impr{pointer-events:none; font-size:8px; text-anchor:middle; fill:rgba(240,230,200,.8)}
+.wonderG{pointer-events:none; font-size:11px; text-anchor:middle; fill:var(--brass-hi); paint-order:stroke; stroke:rgba(10,14,19,.9); stroke-width:2}
+.unitG{cursor:pointer}
+.unitC{stroke-width:2; filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.unitTxt{font:600 9px "IBM Plex Mono", monospace; text-anchor:middle; fill:#0a0e13; pointer-events:none}
+.hpArc{fill:none; stroke-width:2; pointer-events:none}
+.cityG{cursor:pointer}
+.cityStar{filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))}
+.cityLabel{
+  font:400 11px "Staatliches", sans-serif; letter-spacing:.1em; fill:var(--text);
+  paint-order:stroke; stroke:rgba(10,14,19,.85); stroke-width:3; text-anchor:middle;
+}
+.capDot{fill:var(--brass-hi)}
+aside{
+  width:330px; border-left:1px solid var(--line); background:var(--panel);
+  overflow-y:auto; padding:14px 16px 20px; flex-shrink:0;
+}
+aside h2{
+  font:400 15px "Staatliches", sans-serif; letter-spacing:.18em; color:var(--brass);
+  border-bottom:1px solid var(--line); padding-bottom:4px; margin:16px 0 8px;
+  display:flex; justify-content:space-between; align-items:baseline;
+}
+aside h2:first-child{margin-top:0}
+aside h2 small{font:12px "IBM Plex Mono", monospace; letter-spacing:0; color:var(--muted)}
+.row{display:flex; justify-content:space-between; gap:8px; padding:1.5px 0}
+.row .k{color:var(--muted)} .row .v{text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.bar{height:5px; background:#0c1219; border:1px solid var(--line); border-radius:2px; margin:3px 0 7px; overflow:hidden}
+.bar i{display:block; height:100%; background:linear-gradient(90deg, var(--brass), var(--brass-hi))}
+.bar.civic i{background:linear-gradient(90deg, #7e5ba6, #a98fd0)}
+.vp{display:grid; grid-template-columns:auto 1fr auto; gap:2px 8px; align-items:center; font-size:12px; margin:2px 0 6px}
+.vp .k{color:var(--muted)}
+.vp .bar{margin:0; height:6px}
+.vp .bar.sci i{background:var(--sci)} .vp .bar.cul i{background:var(--cul)} .vp .bar.rel i{background:var(--rel)} .vp .bar.dom i{background:var(--dom)}
+.civ{border:1px solid var(--line); border-left-width:4px; border-radius:3px; padding:6px 9px; margin:6px 0; background:var(--panel2)}
+.civ .nm{color:var(--text); font-weight:500}
+.civ .sub{color:var(--muted); font-size:12px}
+.civ.dead{opacity:.5}
+.tag{font-size:11px; padding:0 6px; border-radius:2px; border:1px solid var(--line); color:var(--muted); margin-left:4px; white-space:nowrap}
+.tag.war{color:var(--danger); border-color:var(--danger)}
+.tag.friend{color:var(--ok); border-color:var(--ok)}
+.tag.ally{color:var(--sci); border-color:var(--sci)}
+.tag.den{color:#d0905a; border-color:#d0905a}
+.tag.win{color:var(--brass-hi); border-color:var(--brass)}
+.pol{display:inline-block; font-size:11px; padding:1px 6px; margin:2px 3px 2px 0; border:1px solid var(--line); border-radius:2px; color:var(--text); background:#0c1219}
+.pol.empty{color:var(--muted); border-style:dashed}
+.mods{margin-top:3px}
+.mod{display:inline-block; font-size:11px; padding:0 5px; margin:2px 3px 0 0; border-radius:2px; border:1px solid var(--line); color:var(--muted)}
+.mod.pos{color:var(--ok); border-color:rgba(122,162,92,.5)} .mod.neg{color:var(--danger); border-color:rgba(208,106,90,.5)}
+.evt{padding:3px 0 3px 10px; border-left:2px solid var(--line); margin:4px 0; color:var(--muted); font-size:12px}
+.evt b{color:var(--text); font-weight:500}
+.evt.war{border-left-color:var(--danger)} .evt.war b{color:var(--danger)}
+.evt.city{border-left-color:var(--brass)}
+.evt.good{border-left-color:var(--ok)}
+#race{width:100%; height:90px; display:block; background:#0c1219; border:1px solid var(--line); border-radius:3px; margin:4px 0 6px}
+footer{
+  display:flex; flex-direction:column; gap:6px; padding:7px 18px 8px;
+  border-top:1px solid var(--line); background:var(--panel);
+}
+footer .row{display:flex; align-items:center; gap:12px}
+footer .row.fleet{gap:10px; align-items:stretch}
+button{
+  background:var(--panel2); border:1px solid var(--line); color:var(--text);
+  font:inherit; padding:4px 12px; border-radius:3px; cursor:pointer;
+}
+button:hover{border-color:var(--brass); color:var(--brass-hi)}
+button.playing{border-color:var(--brass); color:var(--brass-hi)}
+#liveBtn.live{border-color:var(--danger); color:var(--danger); animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.55}}
+.trail{stroke-width:1.6; opacity:.6; pointer-events:none; stroke-linecap:round;
+  stroke-dasharray:60; stroke-dashoffset:60; animation:draw .5s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.spawnRing{fill:none; stroke-width:1.6; pointer-events:none; animation:ring 1.1s ease-out forwards; transform-box:fill-box; transform-origin:center}
+.spawnRing.big{stroke-width:2.2}
+@keyframes ring{from{opacity:.95; transform:scale(.4)} to{opacity:0; transform:scale(1.7)}}
+.deadX{font-size:13px; text-anchor:middle; pointer-events:none; paint-order:stroke;
+  stroke:rgba(10,14,19,.8); stroke-width:2.5; animation:fadeX 1.4s ease-out forwards}
+@keyframes fadeX{from{opacity:1} to{opacity:.25}}
+.growFlash{fill:none; stroke-width:2.4; pointer-events:none; animation:growF 1.2s ease-out forwards}
+@keyframes growF{from{opacity:1} to{opacity:0}}
+input[type=range]{flex:1; accent-color:var(--brass)}
+#tooltip{
+  position:fixed; pointer-events:none; z-index:10; display:none; max-width:280px;
+  background:rgba(13,19,26,.96); border:1px solid var(--brass); border-radius:3px;
+  padding:8px 10px; font-size:12.5px; box-shadow:0 6px 24px rgba(0,0,0,.55);
+}
+#tooltip .tt-h{color:var(--brass-hi); font-family:"Staatliches"; letter-spacing:.1em; font-size:14px}
+#tooltip .m{color:var(--muted)}
+#legend{
+  position:absolute; left:12px; bottom:12px; background:rgba(13,19,26,.88);
+  border:1px solid var(--line); border-radius:3px; padding:8px 10px; font-size:11.5px; color:var(--muted);
+  display:grid; grid-template-columns:auto auto; gap:2px 14px;
+}
+#legend i{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px}
+#status{color:var(--muted); font-size:12px; min-width:160px; text-align:right}
+#rate{color:var(--muted); font-size:12px}
+#fleetSum{flex:0 0 auto; display:flex; flex-direction:column; justify-content:center; padding:2px 10px; border:1px solid var(--line); border-radius:3px; background:var(--panel2); font-size:11.5px; line-height:1.35; color:var(--muted); min-width:150px}
+#fleetSum b{color:var(--brass-hi); font-size:13px}
+#fleetSum.hot{border-color:#b5651d}
+#liveBar{display:grid; grid-template-columns:repeat(auto-fill, minmax(66px,1fr)); gap:5px; flex:1; min-width:0}   /* wraps to more rows when the fleet outgrows the width */
+.tile{position:relative; display:flex; flex-direction:column; gap:2px; padding:3px 6px 4px; border:1px solid var(--line); border-radius:3px; background:var(--panel2); cursor:pointer; font-size:11px; color:var(--muted); overflow:hidden}
+.tile:hover{border-color:var(--brass)}
+.tile.cur{border-color:var(--danger); color:var(--text)}
+.tile.warn{border-color:#b5651d}
+.tile .t{display:flex; justify-content:space-between; gap:4px; white-space:nowrap}
+.tile .t b{color:var(--text); font-weight:600}
+.tile .p{height:3px; background:#0c1219; border-radius:2px; overflow:hidden}
+.tile .p i{display:block; height:100%; background:linear-gradient(90deg, var(--brass), var(--brass-hi))}
+.tile.cur .p i{background:var(--danger)}
+.tile.warn .p i{background:#b5651d}
+</style>
+</head>
+<body>
+<header>
+  <h1>CIVBENCH <em>/ WAR ROOM</em></h1>
+  <select id="gameSel"></select>
+  <div id="hdrInfo"></div>
+  <div id="turnBig">TURN <b id="turnNum">–</b> <small id="turnMax"></small></div>
+</header>
+<main>
+  <div id="mapWrap">
+    <svg id="map"><defs id="defs"></defs><g id="terrain"></g><g id="dyn"></g><g id="fx"></g><g id="marks"></g></svg>
+    <div id="legend"></div>
+  </div>
+  <aside id="panel"></aside>
+</main>
+<footer>
+  <div class="row">
+    <button id="prevBtn" title="←">◀</button>
+    <button id="playBtn" title="space">PLAY</button>
+    <button id="nextBtn" title="→">▶</button>
+    <button id="liveBtn" title="follow newest turn (L)">LIVE</button>
+    <input type="range" id="scrub" min="1" max="1" value="1">
+    <div id="rate"></div>
+    <div id="status"></div>
+  </div>
+  <div class="row fleet">
+    <div id="fleetSum" title="fleet: valid games per hour, load, memory"></div>
+    <div id="liveBar" title="running games — click a tile to follow it (stays pinned)"></div>
+  </div>
+</footer>
+<div id="tooltip"></div>
+
+<script>
+'use strict';
+const TERRAIN_FILL = {
+  TERRAIN_GRASS:'var(--grass)', TERRAIN_GRASS_HILLS:'var(--grass)',
+  TERRAIN_PLAINS:'var(--plains)', TERRAIN_PLAINS_HILLS:'var(--plains)',
+  TERRAIN_DESERT:'var(--desert)', TERRAIN_DESERT_HILLS:'var(--desert)',
+  TERRAIN_TUNDRA:'var(--tundra)', TERRAIN_TUNDRA_HILLS:'var(--tundra)',
+  TERRAIN_SNOW:'var(--snow)', TERRAIN_COAST:'var(--coast)', TERRAIN_OCEAN:'var(--ocean)',
+};
+const PLAYER_COLOR = ['var(--p0)','var(--p1)','var(--p2)','var(--p3)'];
+const PCOL_HEX = ['#e8c15a','#c0504d','#5b8dbf','#7aa25c'];
+const ownerColor = o => o==null ? '#888' : (o===63 ? 'var(--barb)' : (PLAYER_COLOR[o] || 'var(--cs)'));
+const UNIT_LETTER = t => (t||'?').replace('UNIT_','').split('_').map(w=>w[0]).join('').slice(0,2);
+const fmt = s => (s||'').replace(/^(TERRAIN|FEATURE|RESOURCE|IMPROVEMENT|DISTRICT|UNIT|TECH|CIVIC|BUILDING|GOVERNMENT|CIVILIZATION|LEADER|ERA|POLICY|PROJECT|RELIGION|BELIEF|QUEST|ROUTE|GAMESPEED|MAPSIZE|RULESET|GREAT_PERSON_CLASS|VICTORY)_/,'').replaceAll('_',' ').toLowerCase();
+const IMPR_GLYPH = {IMPROVEMENT_FARM:'≡', IMPROVEMENT_MINE:'⛏', IMPROVEMENT_QUARRY:'▣', IMPROVEMENT_PASTURE:'♞', IMPROVEMENT_PLANTATION:'❀',
+  IMPROVEMENT_CAMP:'△', IMPROVEMENT_FISHING_BOATS:'⌇', IMPROVEMENT_LUMBER_MILL:'⌂', IMPROVEMENT_BARBARIAN_CAMP:'☠', IMPROVEMENT_GOODY_HUT:'?'};
+
+const S = 17;                      // hex size
+const HW = Math.sqrt(3)*S;         // hex width (pointy-top)
+let games = [], cur = null, snap = null, prevSnap = null, playTimer = null;
+let ledger = null, manifest = null;          // per game
+let view = {x:0, y:0, k:1};
+let userView = false;   // true once the user pans/zooms; disables auto-fit
+const snapCache = new Map();                 // "game|turn" -> snapshot (small LRU)
+const turnTimes = [];                        // wall-clock arrival of live turns (for the rate readout)
+
+const $ = id => document.getElementById(id);
+const svg = $('map'), tip = $('tooltip');
+
+function hexCenter(x, y, h){
+  const row = (h-1) - y;   // game y grows north; screen y grows south
+  return [HW*(x + 0.5*(y&1)) + HW, 1.5*S*row + S];
+}
+function hexPoints(cx, cy){
+  const p = [];
+  for(let i=0;i<6;i++){
+    const a = Math.PI/180*(60*i - 30);
+    p.push((cx+S*Math.cos(a)).toFixed(1)+','+(cy+S*Math.sin(a)).toFixed(1));
+  }
+  return p.join(' ');
+}
+
+async function api(u){ const r = await fetch(u); if(!r.ok) throw new Error(u+' → '+r.status); return r.json(); }
+
+/* ---------- boot / game list ---------- */
+async function fetchGames(q){ const r = await api('/api/games?limit=300' + (q ? '&q=' + encodeURIComponent(q) : '')); return r.games || r; }
+async function boot(){
+  // running games first (a dozen stats server-side) so a live view appears at once; the archive list follows
+  try{ runningList = await api('/api/running'); nLive = runningList.length; renderLiveBar(); }
+  catch(e){ $('status').textContent = 'no /api — is server.py running?'; return; }
+  if(runningList.length){ games = runningList.map(g => ({game_id:g.game_id, first:1, last:g.latest, n:g.n, updated:g.updated, complete:false})); $('liveBtn').click(); }
+  try{ games = await fetchGames(); }catch(e){}
+  const sel = $('gameSel');
+  sel.innerHTML = games.map(gameLabel).join('');
+  sel.onchange = () => {
+    // fleet: several games run at once — picking a running game while LIVE pins live mode to it
+    if(liveTimer){ const gg = games.find(x=>x.game_id===sel.value); if(gg && isRunning(gg)){ livePin = sel.value; return; } stopLive(); }
+    selectGame(sel.value);
+  };
+  if(!liveTimer){ const running = games.find(isRunning); if(running){ $('liveBtn').click(); } else if(games.length) selectGame(games[0].game_id); }
+}
+const isRunning = g => g.updated && !g.complete && (Date.now()/1000 - g.updated) < 90;
+// /api/games is a summary (first/last/n): expand the contiguous range locally; exact lists come from /api/turns
+function expandTurns(g){ if(!g.turns){ g.turns = []; for(let t=g.first; t<=g.last; t++) g.turns.push(t); } return g; }
+function gameLabel(g){
+  const tag = isRunning(g) ? ' ▶ running' : (g.complete ? ' ✓' : '');
+  return `<option value="${g.game_id}">${g.game_id} (${g.n}t)${tag}</option>`;
+}
+function refreshGameList(fresh){
+  games = fresh;
+  const sel = $('gameSel'), keep = sel.value;
+  sel.innerHTML = games.map(gameLabel).join('');
+  if(games.some(g=>g.game_id===keep)) sel.value = keep;
+}
+async function loadGameMeta(gid){
+  ledger = null; manifest = null;
+  const [l, m] = await Promise.all([api(`/api/ledger?game=${gid}`).catch(()=>null), api(`/api/manifest?game=${gid}`).catch(()=>null)]);
+  ledger = l; manifest = m;
+}
+async function selectGame(id){
+  cur = games.find(g=>g.game_id===id);
+  if(!cur) return;
+  $('gameSel').value = id;
+  userView = false;                 // re-enable auto-fit for the new game
+  terrainKey = null; prevSnap = null;
+  if(cur.n !== (cur.last - cur.first + 1)) { try{ cur.turns = await api(`/api/turns?game=${id}`); }catch(e){} }   // gaps: exact list
+  expandTurns(cur);
+  const sc = $('scrub');
+  sc.min = cur.turns[0]; sc.max = cur.turns[cur.turns.length-1]; sc.value = sc.min;
+  loadGameMeta(id).then(()=> loadTurn(+sc.min));
+}
+
+/* ---------- turn loading (cached; prev turn reused when stepping) ---------- */
+async function fetchSnap(gid, t){
+  const key = gid+'|'+t;
+  if(snapCache.has(key)) return snapCache.get(key);
+  const s = await api(`/api/snapshot?game=${gid}&turn=${t}`);
+  snapCache.set(key, s);
+  if(snapCache.size > 6) snapCache.delete(snapCache.keys().next().value);
+  return s;
+}
+let loading = false;
+async function loadTurn(t){
+  if(loading) return; loading = true;
+  try{
+    const pi = cur.turns.indexOf(t) - 1;
+    const pt = pi >= 0 ? cur.turns[pi] : null;
+    const havePrev = snap && snap.game_id===cur.game_id && snap.turn===pt;
+    const [next, prev] = await Promise.all([fetchSnap(cur.game_id, t), havePrev || pt==null ? Promise.resolve(null) : fetchSnap(cur.game_id, pt).catch(()=>null)]);
+    prevSnap = havePrev ? snap : prev;
+    snap = next;
+  }
+  catch(e){ $('status').textContent = 'missing turn '+t; loading=false; return; }
+  finally{ loading = false; }
+  $('scrub').value = t;
+  $('turnNum').textContent = t;
+  $('turnMax').textContent = snap.max_turns > 0 ? '/ '+snap.max_turns : '';
+  render();
+}
+
+/* ---------- map rendering: static terrain layer cached per game/reveal ---------- */
+let terrainKey = null;
+const hexEls = new Map();      // "x,y" -> polygon (for fog toggling without a rebuild)
+function renderTerrain(){
+  const h = snap.map_height;
+  const key = snap.game_id+'|'+snap.tiles.length;    // revealed set only grows; count is a safe key
+  if(terrainKey === key){
+    for(const t of snap.tiles){ const el = hexEls.get(t.x+','+t.y); if(el) el.classList.toggle('fog', !t.visible); }
+    return;
+  }
+  terrainKey = key; hexEls.clear();
+  let hexes = [], glyphs = [];
+  for(const t of snap.tiles){
+    const [cx,cy] = hexCenter(t.x, t.y, h);
+    const fill = TERRAIN_FILL[t.terrain] || '#333';
+    hexes.push(`<polygon class="hex${t.visible?'':' fog'}" points="${hexPoints(cx,cy)}" fill="${fill}" data-i="${t.x},${t.y}"/>`);
+    if(t.is_impassable) glyphs.push(`<text class="glyph" x="${cx}" y="${cy+3}" font-size="12">▲</text>`);
+    else if(t.is_hills)  glyphs.push(`<text class="glyph" x="${cx}" y="${cy+3}">◠◠</text>`);
+    if(t.feature==='FEATURE_FOREST') glyphs.push(`<text class="glyph" x="${cx}" y="${cy+4}" font-size="10">&#9824;&#xFE0E;</text>`);
+    if(t.feature==='FEATURE_JUNGLE') glyphs.push(`<text class="glyph" x="${cx}" y="${cy+4}" font-size="10">&#9827;&#xFE0E;</text>`);
+    if(t.resource) glyphs.push(`<circle cx="${cx+HW*0.28}" cy="${cy-S*0.45}" r="2" fill="none" stroke="rgba(217,164,65,.55)" stroke-width="1.1" pointer-events="none"/>`);
+    if(t.has_river && !t.is_water) glyphs.push(`<path d="M ${cx-6} ${cy+S*0.62} q 3 -2.5 6 0 t 6 0" stroke="#5aa0c8" stroke-width="1.4" fill="none" opacity=".8" pointer-events="none"/>`);
+  }
+  $('terrain').innerHTML = hexes.join('') + glyphs.join('');
+  for(const el of $('terrain').querySelectorAll('.hex')) hexEls.set(el.dataset.i, el);
+}
+
+function render(){
+  const h = snap.map_height, w = snap.map_width;
+  renderTerrain();
+  // --- dynamic tile overlays: ownership, improvements, districts, wonders, roads ---
+  let edges = [], impr = [];
+  for(const t of snap.tiles){
+    const [cx,cy] = hexCenter(t.x, t.y, h);
+    if(t.owner!=null) edges.push(`<polygon class="ownerEdge" points="${hexPoints(cx,cy)}" stroke="${ownerColor(t.owner)}" opacity="${t.visible?.9:.45}"/>`);
+    if(t.wonder) impr.push(`<text class="wonderG" x="${cx}" y="${cy+4}">${t.wonder_complete?'★':'☆'}</text>`);
+    else if(t.district && t.district!=='DISTRICT_CITY_CENTER') impr.push(`<text class="impr" x="${cx}" y="${cy+3}" font-size="9" fill="var(--brass-hi)">${t.district.replace('DISTRICT_','')[0]}</text>`);
+    else if(t.improvement && IMPR_GLYPH[t.improvement]) impr.push(`<text class="impr" x="${cx}" y="${cy+3}">${IMPR_GLYPH[t.improvement]}</text>`);
+    if(t.pillaged) impr.push(`<text class="impr" x="${cx+5}" y="${cy-4}" fill="var(--danger)">✶</text>`);
+  }
+  // --- turn-over-turn diff: STRICTLY consecutive turns only (no gap trails) ---
+  let trails = [];
+  if(prevSnap && prevSnap.game_id===snap.game_id && prevSnap.turn === snap.turn - 1){
+    const prevU = new Map(prevSnap.units.map(u=>[u.id,u]));
+    const curU  = new Map(snap.units.map(u=>[u.id,u]));
+    const mine = o => o === snap.observer;   // fog makes rival units flicker; only
+                                             // the observer's units get spawn/death marks
+    for(const u of snap.units){
+      const p = prevU.get(u.id);
+      const col = ownerColor(u.owner);
+      if(p && (p.x!==u.x || p.y!==u.y)){
+        const [x1,y1] = hexCenter(p.x,p.y,h), [x2,y2] = hexCenter(u.x,u.y,h);
+        trails.push(`<line class="trail" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" marker-end="url(#arr${u.owner<4?u.owner:0})"/>`);
+      } else if(!p && mine(u.owner)){
+        const [cx2,cy2] = hexCenter(u.x,u.y,h);
+        trails.push(`<circle class="spawnRing" cx="${cx2}" cy="${cy2}" r="8" stroke="${col}"/>`);
+      }
+    }
+    for(const p of prevSnap.units){
+      if(!curU.has(p.id) && mine(p.owner)){
+        const [cx2,cy2] = hexCenter(p.x,p.y,h);
+        trails.push(`<text class="deadX" x="${cx2}" y="${cy2+4}" fill="${ownerColor(p.owner)}">✕</text>`);
+      }
+    }
+    const prevOwn = new Map(prevSnap.tiles.map(t=>[t.x+','+t.y, t.owner]));
+    const flashes = [];
+    for(const t of snap.tiles){
+      if(t.owner!=null && prevOwn.get(t.x+','+t.y)!==t.owner && prevOwn.has(t.x+','+t.y)){
+        const [cx2,cy2] = hexCenter(t.x,t.y,h);
+        flashes.push(`<polygon class="growFlash" points="${hexPoints(cx2,cy2)}" stroke="${ownerColor(t.owner)}"/>`);
+      }
+    }
+    if(flashes.length <= 12) trails.push(...flashes);  // a border blowout is noise, not signal
+    const prevC = new Set(prevSnap.cities.map(c=>c.id));
+    for(const c of snap.cities){
+      if(!prevC.has(c.id)){
+        const [cx2,cy2] = hexCenter(c.x,c.y,h);
+        trails.push(`<circle class="spawnRing big" cx="${cx2}" cy="${cy2}" r="10" stroke="${ownerColor(c.owner)}"/>`);
+      }
+    }
+  }
+  let marks = [];
+  for(const c of snap.cities){
+    const [cx,cy] = hexCenter(c.x, c.y, h);
+    const col = ownerColor(c.owner);
+    marks.push(`<g class="cityG" data-city="${c.id}">
+      <rect class="cityStar" x="${cx-7.5}" y="${cy-7.5}" width="15" height="15" rx="2" fill="${col}" stroke="#0a0e13" stroke-width="1.4" transform="rotate(45 ${cx} ${cy})"/>
+      ${c.is_capital?`<circle class="capDot" cx="${cx}" cy="${cy}" r="2.4"/>`:''}
+      <text class="cityLabel" x="${cx}" y="${cy-13}">${c.name.toUpperCase()} <tspan fill="var(--brass-hi)">${c.population}</tspan>${c.majority_religion?' <tspan fill="var(--rel)">✝</tspan>':''}</text>
+    </g>`);
+  }
+  for(const u of snap.units){
+    const [cx,cy] = hexCenter(u.x, u.y, h);
+    const col = ownerColor(u.owner);
+    const frac = u.max_hp ? u.hp/u.max_hp : 1;
+    const circ = 2*Math.PI*8.5;
+    marks.push(`<g class="unitG" data-unit="${u.id}">
+      <circle class="unitC" cx="${cx}" cy="${cy}" r="7" fill="${col}" stroke="#0a0e13"/>
+      ${frac<1?`<circle class="hpArc" cx="${cx}" cy="${cy}" r="8.5" stroke="${frac>.5?'var(--ok)':'var(--danger)'}"
+        stroke-dasharray="${(circ*frac).toFixed(1)} ${circ.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`:''}
+      <text class="unitTxt" x="${cx}" y="${cy+3}">${UNIT_LETTER(u.unit_type)}</text>
+    </g>`);
+  }
+  const W = HW*(w+1), H = 1.5*S*(h+1);
+  svg.dataset.w = W; svg.dataset.h = H;
+  if(!userView && snap.tiles.length){
+    let x0=1e9, y0=1e9, x1=-1e9, y1=-1e9;
+    for(const t of snap.tiles){
+      const [cx,cy] = hexCenter(t.x, t.y, h);
+      if(cx<x0)x0=cx; if(cx>x1)x1=cx; if(cy<y0)y0=cy; if(cy>y1)y1=cy;
+    }
+    const pad = 3*S, bw = (x1-x0)+2*pad, bh = (y1-y0)+2*pad;
+    view.k = Math.max(1, Math.min(3.5, Math.min(W/bw, H/bh)));
+    view.x = (x0+x1)/2 - (W/view.k)/2;
+    view.y = (y0+y1)/2 - (H/view.k)/2;
+  }
+  svg.setAttribute('viewBox', `${view.x} ${view.y} ${W/view.k} ${H/view.k}`);
+  $('defs').innerHTML = [0,1,2,3].map(i=>
+    `<marker id="arr${i}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="${PCOL_HEX[i]}"/></marker>`).join('');
+  $('dyn').innerHTML = edges.join('') + impr.join('');
+  $('fx').innerHTML = trails.join('');
+  $('marks').innerHTML = marks.join('');
+  renderPanel();
+  renderLegend();
+  $('status').textContent = `${snap.tiles.length} tiles · ${snap.units.length} units · v${snap.schema_version}`;
+}
+
+/* ---------- side panel ---------- */
+function bar(pct, cls=''){ return `<div class="bar ${cls}"><i style="width:${Math.max(0,Math.min(100,pct))}%"></i></div>`; }
+function playerName(pid){
+  if(pid === snap.observer) return snap.observer_civ ? fmt(snap.observer_civ) : 'you';
+  const r = (snap.rivals||[]).find(r=>r.player_id===pid);
+  if(r && r.is_met) return fmt(r.civ_type);
+  const cs = (snap.city_states||[]).find(c=>c.player_id===pid);
+  if(cs) return fmt(cs.civ_type);
+  const m = manifest && (manifest.roster||[]).find(x=>x.player===pid);
+  if(m) return fmt(m.civ);                // finished game: the roster reveals everyone
+  if(pid === 63) return 'barbarians';
+  return r ? 'unmet civ' : 'P'+pid;
+}
+function ledgerAt(pid, turn){
+  const rows = ledger?.players?.[String(pid)]; if(!rows) return null;
+  let best = null;
+  for(const r of rows){ if(r[0] <= turn) best = r; else break; }
+  return best;
+}
+function vpBars(vp, small){
+  if(!vp || !Object.keys(vp).length) return '';
+  const spec = [['VICTORY_TECHNOLOGY','science','sci'],['VICTORY_CULTURE','culture','cul'],['VICTORY_RELIGIOUS','religion','rel'],['VICTORY_CONQUEST','conquest','dom']];
+  const rows = spec.filter(([k])=>vp[k]!=null).map(([k,l,c])=>{
+    const v = +vp[k]; const pct = v<=1 ? v*100 : Math.min(100, v);
+    return `<span class="k">${l}</span>${bar(pct, c)}<span>${v<=1?(v*100).toFixed(0)+'%':v}</span>`;
+  });
+  const extra = [];
+  if(vp.capitals_held!=null) extra.push(`capitals ${vp.capitals_held}`);
+  if(vp.cities_following_own_religion) extra.push(`following ${vp.cities_following_own_religion}`);
+  return `<div class="vp">${rows.join('')}</div>${extra.length?`<div class="sub">${extra.join(' · ')}</div>`:''}`;
+}
+function raceChart(){
+  if(!ledger?.players) return '';
+  const pids = Object.keys(ledger.players).map(Number).sort();
+  let maxT = 1, maxS = 1;
+  for(const p of pids) for(const r of ledger.players[p]){ if(r[0]>maxT) maxT=r[0]; if(r[1]>maxS) maxS=r[1]; }
+  const W=300, H=90, px=4;
+  const X = t => px + (t/maxT)*(W-2*px), Y = s => H-px - (s/maxS)*(H-2*px);
+  const lines = pids.map(p=>{
+    const pts = ledger.players[p].filter(r=>r[0]<=snap.turn).map(r=>`${X(r[0]).toFixed(1)},${Y(r[1]).toFixed(1)}`).join(' ');
+    return `<polyline points="${pts}" fill="none" stroke="${p===63?'#6b2f2f':(PCOL_HEX[p]||'#9a8fb8')}" stroke-width="${p===snap.observer?2.2:1.3}" opacity="${p===snap.observer?1:.75}"/>`;
+  });
+  const cursor = `<line x1="${X(snap.turn)}" y1="0" x2="${X(snap.turn)}" y2="${H}" stroke="#243140"/>`;
+  return `<svg id="race" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${cursor}${lines.join('')}</svg>`;
+}
+function eventLine(e){
+  const a = e.data?.args || [];
+  const P = i => (typeof a[i]==='number' && a[i]>=0 && a[i]<64) ? playerName(a[i]) : a[i];
+  const t = e.event_type;
+  const m = {
+    DiplomacyDeclareWar: ()=>[`war: ${P(0)} → ${P(1)}`,'war'], DiplomacyMakePeace: ()=>[`peace: ${P(0)} & ${P(1)}`,'good'],
+    DiplomacyMeet: ()=>[`met ${P(1)}`,''], DiplomacyDealEnacted: ()=>[`deal: ${P(0)} & ${P(1)}`,''],
+    DiplomacyStatement: ()=>[`${P(0)} → ${P(1)}: ${String(a[2]).toLowerCase().replaceAll('_',' ')}`,''],
+    CityAddedToMap: ()=>[`${P(0)} founded a city at ${a[2]},${a[3]}`,'city'], CityTransfered: ()=>[`city changed hands: ${P(2)} → ${P(0)}`,'war'],
+    CityLiberated: ()=>[`${P(0)} liberated a city`,'good'], WonderCompleted: ()=>[`${P(3)} completed a wonder`,'city'],
+    PantheonFounded: ()=>[`${P(0)} founded a pantheon`,'good'], ReligionFounded: ()=>[`${P(0)} founded a religion`,'good'],
+    UnitGreatPersonCreated: ()=>[`${P(0)} recruited a great person`,'good'], GovernmentChanged: ()=>[`${P(0)} changed government`,''],
+    PlayerDefeat: ()=>[`${P(0)} was defeated`,'war'], TeamVictory: ()=>[`VICTORY for team ${a[0]}`,'city'],
+    PlayerEraChanged: ()=>[`${P(0)} entered a new era`,''], CitySiegeStatusChanged: ()=>[`siege status changed (${P(0)})`,'war'],
+    UnitKilledInCombat: ()=>[`${P(0)} killed a unit of ${P(2)}`,'war'], ResearchCompleted: ()=>[`research complete`,'good'],
+    CivicCompleted: ()=>[`civic complete`,'good'], TechBoostTriggered: ()=>[`eureka`,'good'], CivicBoostTriggered: ()=>[`inspiration`,'good'],
+    GoodyHutReward: ()=>[`tribal village reward`,'good'], UnitPromoted: ()=>[`unit promoted`,'good'], InfluenceGiven: ()=>[`${P(0)} sent an envoy`,''],
+    CityProductionChanged: ()=>[`production changed`,''], ResearchChanged: ()=>[`research changed`,''], CivicChanged: ()=>[`civic changed`,''],
+    NaturalWonderRevealed: ()=>[`natural wonder revealed`,'good'],
+  }[t];
+  if(m) return m();
+  if(t.startsWith('UnitOperation')||t.startsWith('UnitCommand')) return null;   // per-order noise
+  return [t.replace(/([A-Z])/g,' $1').trim().toLowerCase() + (e.data && !e.data.args ? ' ' + Object.entries(e.data).map(([k,v])=>`${k}:${v}`).join(' · ') : ''), ''];
+}
+function renderPanel(){
+  const r = snap.research, res = snap.resources, sc = snap.score;
+  const gov = snap.government || {}, rel = snap.religion || {};
+  const evts = (snap.events||[]).map(e=>[e, eventLine(e)]).filter(([,l])=>l);
+  const myLed = ledgerAt(snap.observer, snap.turn);
+  const won = manifest && manifest.winner_players?.length ? manifest.winner_players : null;
+  const majors = new Set([snap.observer, ...(snap.rivals||[]).map(r=>r.player_id)]);
+  if(ledger?.players) for(const p of Object.keys(ledger.players)) majors.add(+p);
+  const standings = [...majors].sort((a,b)=>a-b).map(pid=>{
+    const L = ledgerAt(pid, snap.turn);
+    const rv = (snap.rivals||[]).find(x=>x.player_id===pid);
+    const vp = pid===snap.observer ? (Object.keys(sc.victory_progress||{}).length ? sc.victory_progress : L?.[10]) : (L?.[10] || rv?.victory_progress);
+    const dead = L ? !L[7] : false;
+    const winner = won && won.includes(pid);
+    return {pid, L, rv, vp, dead, winner, score: L ? L[1] : (pid===snap.observer ? sc.total_score : (rv?.score||0))};
+  }).sort((a,b)=>b.score-a.score);
+  $('hdrInfo').innerHTML = `<b>${snap.observer_civ?fmt(snap.observer_civ):'observer P'+snap.observer}</b>${snap.observer_leader?' · '+fmt(snap.observer_leader):''}${snap.era?' · '+fmt(snap.era)+' era':''}${snap.map_size?' · '+fmt(snap.map_size):''}${snap.game_speed?' · '+fmt(snap.game_speed):''}${manifest?.victory_type?` · <b>${fmt(manifest.victory_type)} victory</b>`:''}`;
+  $('panel').innerHTML = `
+    <h2>Victory progress <small>${manifest?.end_reason ? manifest.end_reason : (ledger?.players ? 'all civs' : 'observer')}</small></h2>
+    ${raceChart()}
+    ${standings.map(s=>`<div class="civ${s.dead?' dead':''}" style="border-left-color:${s.pid===63?'#6b2f2f':(PCOL_HEX[s.pid]||'#9a8fb8')}">
+      <div class="row"><span class="nm">${playerName(s.pid)}${s.pid===snap.observer?' <span class="tag">you</span>':''}${s.winner?' <span class="tag win">WINNER</span>':''}${s.dead?' <span class="tag">dead</span>':''}</span><span class="v">${s.score}</span></div>
+      ${s.L?`<div class="sub">${s.L[2]} cities · ${s.L[3]} techs · ${s.L[4]} civics${s.L[5]?' · '+s.L[5]+' wonders':''}${s.L[6]?' · mil '+s.L[6]:''}${s.L[8]?' · '+fmt(s.L[8]):''}${s.L[9]?' · '+fmt(s.L[9]):''}</div>`:''}
+      ${vpBars(s.vp)}
+    </div>`).join('')}
+
+    <h2>Game state</h2>
+    <div class="row"><span class="k">score</span><span class="v">${sc.total_score}</span></div>
+    <div class="row"><span class="k">cities / pop</span><span class="v">${sc.num_cities} / ${sc.total_population}</span></div>
+    <div class="row"><span class="k">tiles · districts · wonders</span><span class="v">${sc.tiles_owned} · ${sc.num_districts||0} · ${sc.num_wonders||0}</span></div>
+    <div class="row"><span class="k">military</span><span class="v">${sc.military_strength}${sc.num_units?' ('+sc.num_units+' units)':''}</span></div>
+    <div class="row"><span class="k">government</span><span class="v">${fmt(gov.government_type||r.current_government)||'—'}${gov.anarchy_turns?' (anarchy '+gov.anarchy_turns+')':''}</span></div>
+    ${(gov.slot_policies||[]).length?`<div>${gov.slot_policies.map(p=>`<span class="pol${p?'':' empty'}">${p?fmt(p):'empty slot'}</span>`).join('')}</div>`:''}
+    ${gov.unlocked_policies?.length?`<div class="row"><span class="k">policies unlocked</span><span class="v">${gov.unlocked_policies.length}</span></div>`:''}
+    <div class="row"><span class="k">pantheon</span><span class="v">${fmt(rel.pantheon)||'—'}</span></div>
+    ${rel.religion?`<div class="row"><span class="k">religion</span><span class="v">${fmt(rel.religion)}</span></div>
+      <div class="row"><span class="k">beliefs</span><span class="v">${(rel.beliefs||[]).map(fmt).join(', ')||'—'}</span></div>
+      <div class="row"><span class="k">cities following</span><span class="v">${rel.cities_following} own · ${rel.foreign_cities_following} foreign</span></div>`:''}
+    ${rel.majority_religion&&rel.majority_religion!==rel.religion?`<div class="row"><span class="k">majority religion</span><span class="v">${fmt(rel.majority_religion)}</span></div>`:''}
+    ${res.trade_routes_capacity?`<div class="row"><span class="k">trade routes</span><span class="v">${res.trade_routes_active} / ${res.trade_routes_capacity}</span></div>`:''}
+    ${Object.keys(res.great_people_points||{}).length?`<div class="row"><span class="k">great people pts</span><span class="v">${Object.entries(res.great_people_points).map(([k,v])=>fmt(k).replace('great person class ','')+' '+v).join(', ')}</span></div>`:''}
+
+    <h2>Research</h2>
+    <div class="row"><span class="k">tech</span><span class="v">${fmt(r.current_tech)||'—'} (${r.tech_turns_left}t)</span></div>
+    ${bar(r.tech_progress_pct)}
+    <div class="row"><span class="k">civic</span><span class="v">${fmt(r.current_civic)||'—'} (${r.civic_turns_left}t)</span></div>
+    ${bar(r.civic_progress_pct,'civic')}
+    <div class="row"><span class="k">techs · civics</span><span class="v">${sc.num_techs} · ${sc.num_civics}</span></div>
+
+    <h2>Treasury</h2>
+    <div class="row"><span class="k">gold</span><span class="v">${res.gold.toFixed(0)} (${res.gold_per_turn>=0?'+':''}${res.gold_per_turn.toFixed(1)})</span></div>
+    <div class="row"><span class="k">science</span><span class="v">+${res.science_per_turn.toFixed(1)}</span></div>
+    <div class="row"><span class="k">culture</span><span class="v">+${res.culture_per_turn.toFixed(1)}</span></div>
+    <div class="row"><span class="k">faith</span><span class="v">${res.faith.toFixed(0)} (+${res.faith_per_turn.toFixed(1)})</span></div>
+    ${res.maintenance?`<div class="row"><span class="k">maintenance</span><span class="v">-${res.maintenance.toFixed(1)}</span></div>`:''}
+
+    <h2>Rivals</h2>
+    ${(snap.rivals||[]).map(v=>{
+      const tags = [];
+      if(v.is_at_war_with_observer) tags.push(`<span class="tag war">AT WAR${v.war_turn>0?' since t'+v.war_turn:''}</span>`);
+      else if(v.alliance) tags.push('<span class="tag ally">allied</span>');
+      else if(v.friendship) tags.push('<span class="tag friend">friends</span>');
+      if(v.denounced_us) tags.push('<span class="tag den">denounced us</span>');
+      if(v.we_denounced) tags.push('<span class="tag den">we denounced</span>');
+      if(!v.is_met) tags.push('<span class="tag">unmet</span>');
+      else if(!tags.length) tags.push('<span class="tag">neutral</span>');
+      const dipl = [v.we_have_delegation?'our delegation':'', v.they_have_delegation?'their delegation':'', v.we_have_embassy?'our embassy':'', v.they_have_embassy?'their embassy':'', v.deals_active?v.deals_active+' deals':''].filter(Boolean).join(' · ');
+      return `<div class="civ" style="border-left-color:${PCOL_HEX[v.player_id]||'#888'}">
+        <div class="row"><span class="nm">${v.is_met?fmt(v.civ_type):'unmet civ'}${v.is_met&&v.leader_type&&v.leader_type!=='UNKNOWN'?' <span class="sub">'+fmt(v.leader_type)+'</span>':''}</span><span>${tags.join('')}</span></div>
+        ${v.is_met?`<div class="sub">score ${v.score} · ${v.num_cities||v.visible_city_count} cities${v.num_techs?' · '+v.num_techs+' techs':''}${v.government?' · '+fmt(v.government):''}${v.religion?' · '+fmt(v.religion):''}${v.met_turn>=0?' · met t'+v.met_turn:''}</div>
+        ${dipl?`<div class="sub">${dipl}</div>`:''}
+        ${v.attitude?`<div class="sub">attitude <b style="color:${v.attitude_score>0?'var(--ok)':(v.attitude_score<0?'var(--danger)':'var(--text)')}">${fmt(v.attitude).replace('diplo state ','')} (${v.attitude_score>0?'+':''}${v.attitude_score})</b>${v.agenda?' · agenda: '+fmt(v.agenda).replace('agenda ',''):''}</div>`:''}
+        ${(v.modifiers||[]).length?`<div class="mods">${v.modifiers.map(m=>`<span class="mod ${m.score>0?'pos':(m.score<0?'neg':'')}">${m.score>0?'+':''}${m.score} ${m.text}</span>`).join('')}</div>`:''}`:''}
+      </div>`;
+    }).join('')}
+
+    ${(snap.city_states||[]).length?`<h2>City-states <small>${snap.city_states.length} met</small></h2>
+    ${snap.city_states.map(c=>{
+      const env = Object.entries(c.envoys||{}).map(([p,n])=>`${playerName(+p)} ${n}`).join(', ');
+      return `<div class="civ${c.is_alive?'':' dead'}" style="border-left-color:var(--cs)">
+        <div class="row"><span class="nm">${fmt(c.civ_type)} <span class="sub">${(c.category||'').toLowerCase()}</span></span>
+          <span>${c.is_at_war_with_observer?'<span class="tag war">war</span>':''}${c.suzerain!=null?`<span class="tag ${c.suzerain===snap.observer?'friend':''}">suzerain: ${playerName(c.suzerain)}</span>`:''}</span></div>
+        <div class="sub">${env?'envoys: '+env:'no envoys'}${c.quest?' · quest: '+fmt(c.quest):''}</div>
+      </div>`;
+    }).join('')}`:''}
+
+    ${(snap.notifications||[]).length?`<h2>Notifications <small>${snap.notifications.length}</small></h2>
+    ${snap.notifications.map(n=>`<div class="evt ${n.blocking?'war':''}"><b>${fmt(n.type).replace('notification ','')}</b>${n.summary?'<br>'+n.summary:''}${n.x>=0?` <span class="sub">(${n.x},${n.y})</span>`:''}</div>`).join('')}`:''}
+    ${(snap.gossip||[]).length?`<h2>Gossip <small>${snap.gossip.length}</small></h2>
+    ${snap.gossip.slice().sort((a,b)=>b.turn-a.turn).map(g=>`<div class="evt good"><span class="sub">t${g.turn} · ${playerName(g.player)}</span><br>${g.text}</div>`).join('')}`:''}
+    <h2>Events <small>this turn</small></h2>
+    ${evts.length? evts.map(([e,[txt,cls]])=>`<div class="evt ${cls}"><b>${txt}</b></div>`).join('') : '<div class="evt">quiet turn</div>'}
+  `;
+}
+function renderLegend(){
+  $('legend').innerHTML = [
+    ['var(--grass)','grass'],['var(--plains)','plains'],['var(--desert)','desert'],
+    ['var(--tundra)','tundra'],['var(--coast)','coast'],['var(--ocean)','ocean'],
+    ['var(--p0)','you'],['var(--p1)','rival'],['var(--cs)','city-state'],['var(--barb)','barbarian'],
+  ].map(([c,l])=>`<span><i style="background:${c}"></i>${l}</span>`).join('');
+}
+
+/* ---------- tooltip ---------- */
+const tileAt = (x,y) => snap.tiles.find(t=>t.x===x&&t.y===y);
+svg.addEventListener('mousemove', e=>{
+  const g = e.target.closest('.unitG, .cityG');
+  const hexEl = e.target.classList?.contains('hex') ? e.target : null;
+  let html = '';
+  if(g?.dataset.unit){
+    const u = snap.units.find(u=>u.id==g.dataset.unit);
+    html = `<div class="tt-h">${fmt(u.unit_type)}</div>
+      <span class="m">owner</span> ${playerName(u.owner)} · <span class="m">hp</span> ${u.hp}/${u.max_hp}<br>
+      <span class="m">moves</span> ${u.moves_remaining}/${u.max_moves}
+      ${u.combat?` · <span class="m">cs</span> ${u.combat}`:''}${u.ranged_combat?` · <span class="m">rs</span> ${u.ranged_combat}`:''}
+      ${u.promotions?`<br><span class="m">promotions</span> ${u.promotions} · <span class="m">xp</span> ${u.experience}`:''}
+      ${u.is_fortified?'<br>fortified':''}${u.religion?`<br><span class="m">religion</span> ${fmt(u.religion)} (${u.action_charges} charges)`:''}`;
+  } else if(g?.dataset.city){
+    const c = snap.cities.find(c=>c.id==g.dataset.city);
+    html = `<div class="tt-h">${c.name}${c.is_capital?' ★':''} <span class="m">· ${playerName(c.owner)}</span></div>
+      <span class="m">pop</span> ${c.population} · <span class="m">hp</span> ${c.hp}/${c.max_hp}${c.housing?` · <span class="m">housing</span> ${c.housing}`:''}${c.amenities!=null&&c.housing?` · <span class="m">amenities</span> ${c.amenities}/${c.amenities_needed}`:''}<br>
+      ${c.production?`<span class="m">building</span> ${fmt(c.production.item_type)} (${c.production.turns_left}t)<br>`:''}
+      <span class="m">yields</span> ${c.food_per_turn.toFixed(0)}f ${c.production_per_turn.toFixed(0)}p ${c.gold_per_turn.toFixed(0)}g ${c.science_per_turn.toFixed(0)}s ${c.culture_per_turn.toFixed(0)}c ${c.faith_per_turn.toFixed(0)}f
+      ${(c.districts||[]).length?`<br><span class="m">districts</span> ${c.districts.map(fmt).join(', ')}`:''}
+      ${(c.wonders||[]).length?`<br><span class="m">wonders</span> ${c.wonders.map(fmt).join(', ')}`:''}
+      ${c.majority_religion?`<br><span class="m">religion</span> ${fmt(c.majority_religion)}`:''}${c.is_occupied?'<br><span style="color:var(--danger)">occupied</span>':''}`;
+  } else if(hexEl){
+    const [x,y] = hexEl.dataset.i.split(',').map(Number);
+    const t = tileAt(x,y);
+    if(t) html = `<div class="tt-h">${fmt(t.terrain)} (${t.x},${t.y})</div>
+      ${t.feature?fmt(t.feature)+'<br>':''}${t.resource?'⬤ '+fmt(t.resource)+'<br>':''}
+      ${t.improvement?fmt(t.improvement)+(t.pillaged?' (pillaged)':'')+'<br>':''}${t.district?fmt(t.district)+'<br>':''}
+      ${t.wonder?'★ '+fmt(t.wonder)+(t.wonder_complete?'':' (building)')+'<br>':''}${t.route?fmt(t.route)+'<br>':''}
+      ${t.owner!=null?`<span class="m">owned by</span> ${playerName(t.owner)}<br>`:''}
+      <span class="m">yields</span> ${Object.entries(t.yields||{}).map(([k,v])=>v+k[0].toLowerCase()).join(' ')||'—'}
+      ${t.visible?'':'<br><span class="m">· in fog ·</span>'}`;
+  }
+  if(html){ tip.innerHTML = html; tip.style.display='block';
+    tip.style.left = Math.min(e.clientX+14, innerWidth-300)+'px';
+    tip.style.top = Math.min(e.clientY+14, innerHeight-180)+'px';
+  } else tip.style.display='none';
+});
+svg.addEventListener('mouseleave', ()=> tip.style.display='none');
+
+/* ---------- pan & zoom ---------- */
+const wrap = $('mapWrap');
+let drag = null;
+wrap.addEventListener('mousedown', e=>{ drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y}; userView=true; wrap.classList.add('dragging'); });
+addEventListener('mousemove', e=>{
+  if(!drag) return;
+  const {s} = fitParams();
+  view.x = drag.vx - (e.clientX-drag.x)/s;
+  view.y = drag.vy - (e.clientY-drag.y)/s;
+  applyView();
+});
+addEventListener('mouseup', ()=>{ drag=null; wrap.classList.remove('dragging'); });
+wrap.addEventListener('wheel', e=>{
+  e.preventDefault();
+  userView = true;
+  // zoom about the cursor: the map point under the mouse stays put
+  const r = wrap.getBoundingClientRect();
+  if(!(r.width > 0 && r.height > 0)) return;      // hidden/collapsed pane: no geometry to zoom about
+  const px = e.clientX - r.left, py = e.clientY - r.top;
+  const [mx, my] = screenToMap(px, py);
+  view.k = Math.max(.5, Math.min(8, view.k * (e.deltaY<0?1.15:0.87)));
+  const {s, ox, oy} = fitParams();
+  view.x = mx - (px - ox)/s;
+  view.y = my - (py - oy)/s;
+  applyView();
+},{passive:false});
+// the SVG keeps its aspect ratio ("meet"): the viewBox is scaled uniformly and centred
+function fitParams(){
+  const W = +svg.dataset.w||1000, H = +svg.dataset.h||600;
+  const r = wrap.getBoundingClientRect();
+  const vw = W/view.k, vh = H/view.k;
+  const s = Math.min(r.width/vw, r.height/vh);
+  return {s, ox:(r.width - vw*s)/2, oy:(r.height - vh*s)/2};
+}
+function screenToMap(px, py){
+  const {s, ox, oy} = fitParams();
+  return [view.x + (px - ox)/s, view.y + (py - oy)/s];
+}
+function applyView(){
+  const W = +svg.dataset.w||1000, H = +svg.dataset.h||600;
+  svg.setAttribute('viewBox', `${view.x} ${view.y} ${W/view.k} ${H/view.k}`);
+}
+
+/* ---------- transport ---------- */
+$('scrub').oninput = e => loadTurn(+e.target.value);
+$('prevBtn').onclick = ()=> step(-1);
+$('nextBtn').onclick = ()=> step(1);
+function step(d){
+  if(!cur||!snap) return;
+  const i = cur.turns.indexOf(snap.turn);
+  const nt = cur.turns[i+d];
+  if(nt!=null) loadTurn(nt);
+  else if(d>0) stopPlay();
+}
+function stopPlay(){ clearInterval(playTimer); playTimer=null; $('playBtn').textContent='PLAY'; $('playBtn').classList.remove('playing'); }
+$('playBtn').onclick = ()=>{
+  if(playTimer) return stopPlay();
+  $('playBtn').textContent='PAUSE'; $('playBtn').classList.add('playing');
+  playTimer = setInterval(()=>step(1), 450);
+};
+addEventListener('keydown', e=>{
+  if(e.key==='ArrowLeft') step(-1);
+  else if(e.key==='ArrowRight') step(1);
+  else if(e.key===' '){ e.preventDefault(); $('playBtn').click(); }
+  else if(e.key==='l'||e.key==='L') $('liveBtn').click();
+});
+
+/* ---------- live bar: every running game, click = follow that one (pinned) ---------- */
+let runningList = [], opsBySeed = new Map(), opsFleet = null;
+function renderLiveBar(){
+  const bar = $('liveBar');
+  const seedOf = gid => (gid.match(/^s(\d+)/) || [])[1];
+  const tiles = runningList.map(g => {
+    const o = opsBySeed.get(seedOf(g.game_id));
+    const label = o ? String(o.i) : g.game_id.replace(/^s(\d{3})\d*-.*$/, '$1…');
+    const cap = (cur && cur.game_id===g.game_id && snap && snap.max_turns > 0) ? snap.max_turns : 250;
+    const stale = (Date.now()/1000 - g.updated) > 45;
+    const warn = stale || (o && (o.rss_mb > 5000 || o.threads > 80));
+    const tip = `${g.game_id}` + (o ? `\n${o.rss_mb} MB · ${o.threads} threads · ${o.age_s}s since progress · ✓${o.valid_today} ✗${o.partial_today} today` : '');
+    return `<div class="tile${cur && cur.game_id===g.game_id ? ' cur' : ''}${warn ? ' warn' : ''}" data-id="${g.game_id}" title="${tip}"><div class="t"><b>${label}</b><span>t${g.latest}</span></div><div class="p"><i style="width:${Math.min(100, 100*g.latest/cap).toFixed(0)}%"></i></div></div>`;
+  }).join('');
+  bar.innerHTML = tiles;
+  for(const b of bar.querySelectorAll('.tile')) b.onclick = () => { livePin = b.dataset.id; if(!liveTimer) $('liveBtn').click(); };
+  const f = $('fleetSum');
+  if(opsFleet){
+    const hot = opsFleet.mem_avail_gb < 6 || opsFleet.swap_used_mb > 500;
+    f.className = hot ? 'hot' : '';
+    f.innerHTML = `<span><b>${opsFleet.valid_games_1h}</b> valid/h · ${runningList.length} live${opsFleet.partial_games_1h ? ' · ' + opsFleet.partial_games_1h + ' partial' : ''}</span><span>≈${opsFleet.valid_per_day.toLocaleString()}/day · load ${opsFleet.load.split(' ')[0]} · ${opsFleet.mem_used_gb}G/${opsFleet.mem_avail_gb}G free${opsFleet.swap_used_mb > 200 ? ' · swap ' + opsFleet.swap_used_mb + 'M' : ''}${opsFleet.guard_kills_1h ? ' · ' + opsFleet.guard_kills_1h + ' kills' : ''}</span>`;
+  } else f.innerHTML = `<span>${runningList.length} live</span>`;
+}
+async function refreshRunning(){ if(events) return; try{ runningList = await api('/api/running'); nLive = runningList.length; renderLiveBar(); }catch(e){} }
+setInterval(refreshRunning, 3000);
+
+/* ---------- ops strip: fleet status (host daemon -> /api/ops), one line per instance ---------- */
+async function refreshOps(){
+  try{
+    const o = await api('/api/ops'); opsFleet = o;
+    opsBySeed = new Map(o.instances.filter(x => x.seed).map(x => [String(x.seed), x]));
+    renderLiveBar();
+  }catch(e){}
+}
+setInterval(refreshOps, 10000); refreshOps();
+
+/* ---------- live mode: 1 s poll of /api/live, skip straight to the newest turn ---------- */
+let liveTimer = null, listTimer = null, ledgerTimer = null, livePin = null, nLive = 0, events = null, eventsPin = undefined, pendingLive = null;
+function stopLive(){ clearInterval(liveTimer); clearInterval(listTimer); liveTimer=listTimer=null; if(events){ events.close(); events = null; } $('liveBtn').classList.remove('live'); $('rate').textContent=''; }
+// one Server-Sent Events stream per tab replaces the 1 s /api/live + 3 s /api/running polls; falls back to polling
+function openEvents(handle){
+  if(!window.EventSource) return false;
+  if(events && eventsPin === livePin) return true;
+  if(events) events.close();
+  eventsPin = livePin;
+  events = new EventSource('/api/events' + (livePin ? `?game=${livePin}` : ''));
+  events.addEventListener('status', ev => { const d = JSON.parse(ev.data); runningList = d.running; nLive = runningList.length; renderLiveBar(); pendingLive = d.live; handle(); });
+  events.onerror = () => {};   // EventSource reconnects by itself
+  return true;
+}
+$('liveBtn').onclick = ()=>{
+  if(liveTimer) return stopLive();
+  stopPlay();
+  $('liveBtn').classList.add('live');
+  const poll = async ()=>{
+    if(loading) return;                          // never queue behind a slow render
+    try{
+      if(livePin && runningList.length && !runningList.some(x => x.game_id === livePin)) livePin = null;   // pinned game ended
+      let g;
+      if(events){ if(eventsPin !== livePin) openEvents(poll); g = pendingLive; if(!g) return; }
+      else g = await api('/api/live' + (livePin ? `?game=${livePin}` : ''));
+      if(!g.game_id) return;
+      if(!livePin && g.running) livePin = g.game_id;   // sticky: never hop between concurrently running games
+      if(!cur || cur.game_id !== g.game_id){
+        // LIVE follows the pinned game, else whichever game is newest right now
+        cur = expandTurns(games.find(x=>x.game_id===g.game_id) || {game_id:g.game_id, first:g.first, last:g.latest, n:g.n, updated:g.updated, complete:!g.running});
+        $('gameSel').value = g.game_id; userView = false; terrainKey = null; prevSnap = null; snap = null;
+        await loadGameMeta(g.game_id);
+      }
+      // keep the turn list current without a full /api/games scan: latest is authoritative
+      if(!cur.turns.length || cur.turns[cur.turns.length-1] < g.latest){
+        const last = cur.turns.length ? cur.turns[cur.turns.length-1] : g.first-1;
+        for(let t=last+1; t<=g.latest; t++) cur.turns.push(t);
+      }
+      $('scrub').min = cur.turns[0]; $('scrub').max = g.latest;
+      if(!snap || snap.game_id!==g.game_id || g.latest>snap.turn){
+        // rate samples: (server turn-file time, turn) of THIS game only — a game switch or chain hand-off restarts
+        // the turn numbers, which used to collapse the delta and print nonsense
+        if(turnTimes.length && turnTimes[0][2] !== g.game_id) turnTimes.length = 0;
+        if(!turnTimes.length || g.latest > turnTimes[turnTimes.length-1][1]) turnTimes.push([g.updated*1000, g.latest, g.game_id]);
+        if(turnTimes.length>12) turnTimes.shift();
+        await loadTurn(g.latest);
+        // ledger: only the rows since the last turn we hold (delta), and only when a turn actually arrived
+        const seen = ledger && ledger.players ? Math.max(0, ...Object.values(ledger.players).flat().map(r => r[0] || 0)) : -1;
+        api(`/api/ledger?game=${g.game_id}&after=${seen}`).then(l => {
+          if(!ledger || !ledger.players || seen < 0) { ledger = l; return; }
+          for(const [p, rows] of Object.entries(l.players)) (ledger.players[p] = ledger.players[p] || []).push(...rows);
+        }).catch(()=>{});
+        if(turnTimes.length>2){
+          const [t0,n0] = turnTimes[0], [t1,n1] = turnTimes[turnTimes.length-1];
+          if(n1 > n0 && t1 > t0) $('rate').textContent = `${((t1-t0)/1000/(n1-n0)).toFixed(2)} s/turn` + (nLive > 1 ? ` · ${nLive} live` : '');
+        }
+      } else if(!g.running){
+        livePin = null;                            // follow whatever is newest again
+        $('rate').textContent = 'game over — waiting for next' + (nLive > 1 ? ` · ${nLive} live` : '');
+        if(!manifest){ manifest = await api(`/api/manifest?game=${g.game_id}`).catch(()=>null); if(manifest) render(); }
+      }
+    }catch(e){ $('status').textContent = 'live: server unreachable'; }
+  };
+  poll();
+  liveTimer = setInterval(() => { if(!events) poll(); }, 1000);   // fallback when EventSource is unavailable
+  openEvents(poll);
+  listTimer = setInterval(async ()=>{ try{ refreshGameList(await fetchGames()); }catch(e){} }, 60000);   // summary list: once a minute is plenty
+};
+// manual navigation exits live mode
+for(const el of ['scrub','prevBtn','nextBtn']){
+  $(el).addEventListener(el==='scrub'?'input':(el==='gameSel'?'change':'click'), ()=>{ if(liveTimer) stopLive(); });
+}
+
+boot();
+</script>
+</body>
+</html>
