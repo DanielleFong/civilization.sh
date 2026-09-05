@@ -17,3 +17,7 @@
 
 ## Lessons for game 2 capture
 OBS **records to disk from turn 1** (game-window capture, not desktop), independent of the live pipeline. One encoder process, ever. Archive every turn's still. Never declare footage lost before inventorying the operator's own recordings.
+
+## Game 3 (human) time-lapse — 2026-09-05
+Source: `Videos/Screen Recordings/Screen Recording 2026-09-03 033552.mp4` (5:59:10, 5112×2158, 108 GB; game window flanked by two terminals).
+Cut: keyframes only (`-skip_frame nokey`), `crop=3830:2100:640:0` then `crop=1885:1052` after scaling to 1920 (final crop = 3760 px of the source, both side panes out), `setpts=N/30/TB` → 718 s at 30 fps. Covers ~T21–T106. Encoded `edit/human-game3-timelapse.mp4` (1.0 GB), segmented to `dist/vod/human/` (121 × 6 s HLS, 904 MB). Served at /watch?src=human. The win (T154) was not recorded.

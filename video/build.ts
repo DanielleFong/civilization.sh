@@ -76,7 +76,7 @@ const watchHtml = `<!doctype html><html lang=en><head><meta charset=utf-8><meta 
 <header><h1><b>civilization.is</b> · watch</h1><nav><a class=on href="/watch">watch</a><a href="/">replay</a><a href="/map">state</a><a href="/results">results</a><a href="/plan">plan</a><a href="https://github.com/DanielleFong/civilization.sh">github</a></nav></header>
 <div class=wrap>
 <div class=lede><h2>Game 1, on film. <i>The parts that survived.</i></h2><div class=meta><b>1080p · 30 fps</b><br>highlights 20 min · full cut 64 min<br>static AI-turn waits removed</div></div>
-<div class=pick><button id=bh class=on>Highlights · 20 min</button><button id=bf>Full cut · 64 min</button></div>
+<div class=pick><button id=bh class=on>Highlights · 20 min</button><button id=bf>Full cut · 64 min</button><button id=bu>Game 3 · human · 12 min time-lapse</button></div>
 <div class=stage><video id=v controls playsinline preload=metadata></video></div>
 <div class=note>Part I is one frame per turn (T10–T146, no continuous video existed). Part II is Danielle's 4K screen recording of T147–T152. Part III is the civilization.is live stream of T159–T161. Then the T164 result. Footage in the highlights cut runs at 3–4×.</div>
 <h3 class=k>Chapters</h3><div class=chap id=chap></div>
@@ -85,14 +85,14 @@ const watchHtml = `<!doctype html><html lang=en><head><meta charset=utf-8><meta 
 <script src="/hls.min.js"></script>
 <script>
 const v=document.getElementById('v');let h=null;
-const CH={highlights:[[0,'Title'],[3.5,'Part I · T10–T146 stills'],[289,'Part II · T147–T152 recording'],[1128,'Part III · T159–T161 live'],[1200,'T164 · Defeat']],
+const CH={human:[[0,'T21 · Danielle takes over the board'],[180,'~T40'],[360,'~T65'],[540,'~T90'],[700,'~T106 · recording ends (game won T154)']],highlights:[[0,'Title'],[3.5,'Part I · T10–T146 stills'],[289,'Part II · T147–T152 recording'],[1128,'Part III · T159–T161 live'],[1200,'T164 · Defeat']],
           full:[[0,'Title'],[3.5,'Part I · T10–T146 stills'],[289,'Part II · T147–T152 recording'],[3583,'Part III · T159–T161 live'],[3830,'T164 · Defeat']]};
 function load(name){const src='/vod/'+name+'/index.m3u8';if(h){h.destroy();h=null}
   if(window.Hls&&Hls.isSupported()){h=new Hls({maxBufferLength:30});h.loadSource(src);h.attachMedia(v);}else{v.src=src;}
-  bh.classList.toggle('on',name==='highlights');bf.classList.toggle('on',name==='full');
+  bh.classList.toggle('on',name==='highlights');bf.classList.toggle('on',name==='full');bu.classList.toggle('on',name==='human');
   chap.innerHTML=CH[name].map(([t,l])=>'<a href="#" data-t="'+t+'"><b>'+Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')+'</b>'+l+'</a>').join('');
   chap.querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();v.currentTime=+a.dataset.t;v.play().catch(()=>{})});}
-bh.onclick=()=>load('highlights');bf.onclick=()=>load('full');load('highlights');
+bh.onclick=()=>load('highlights');bf.onclick=()=>load('full');bu.onclick=()=>load('human');load(new URLSearchParams(location.search).get('src')==='human'?'human':'highlights');
 </script></body></html>`;
 await Deno.writeTextFile("dist/watch.html", watchHtml);
 
