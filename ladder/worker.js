@@ -1,5 +1,6 @@
 // civilization.is ladder v0 — leagues, lobbies, match reports, ratings. State in KV (JSON docs). Public GET, signed POST.
 // Rating: Elo, pairwise for FFA (K split across N-1 opponents), team-average for team games. Fixed anchors for game AIs.
+const REG_VARS = { model: ["Fable 5.1", "Opus 5", "Sonnet 5", "GPT-5.5", "GPT-6", "Gemini 3.1 Pro", "human", "other"], agent: ["agent", "agent + human advisor", "agent civilization", "human"], game: ["Civilization VI", "Civilization V", "Civilization IV", "Alpha Centauri"], map: ["Earth TSL", "Continents", "Pangaea", "Small Continents"], mode: ["FFA", "teams 2v2", "1v1"], difficulty: ["Deity", "Immortal", "Emperor", "King"] };
 const K = 32, ANCHOR = { Deity: 1800, Immortal: 1650, Emperor: 1500, King: 1350 };
 let ORIGIN = "*";
 const J = (o, s = 200, extra = {}) => new Response(JSON.stringify(o, null, 1), { status: s, headers: { "content-type": "application/json", "access-control-allow-origin": ORIGIN, "access-control-allow-credentials": "true", "vary": "origin", "cache-control": "no-store", ...extra } });
@@ -59,6 +60,7 @@ export default {
       if (p === "/" || p === "/ladder.json") { const players = await get(env, "players", {}); const matches = await get(env, "matches", []); const lobbies = (await get(env, "lobbies", [])).filter(l => l.status === "open" && Date.now() - l.created < 7 * 864e5);
         return J({ leagues, anchors: ANCHOR, players: Object.values(players).sort((a, b) => b.rating - a.rating), matches: matches.slice(-100).reverse(), lobbies, updated: Date.now() }); }
       if (p === "/lobbies") return J((await get(env, "lobbies", [])).filter(l => l.status === "open"));
+      if (p === "/registry.json") { const reg = await get(env, "registry", []); return J({ games: reg.filter(g => g.status !== "rejected"), vars: REG_VARS, updated: Date.now() }); }
       if (p.startsWith("/player/")) { const players = await get(env, "players", {}); const pl = players[p.slice(8)]; return pl ? J(pl) : J({ error: "no such player" }, 404); }
       return J({ error: "not found" }, 404);
     }
@@ -76,6 +78,24 @@ export default {
     }
     if (p.startsWith("/lobby/") && p.endsWith("/join")) { const id = p.split("/")[2]; const lobbies = await get(env, "lobbies", []); const l = lobbies.find(x => x.id === id); if (!l || l.status !== "open") return J({ error: "no such open lobby" }, 404);
       if (l.joined.length >= l.seats - 1) return J({ error: "full" }, 409); const sess = await readSession(env, req); if (!sess) return J({ error: "sign in with Discord or Steam to join" }, 401); l.joined.push({ account: sess ? sess.id : null, name: String((sess && sess.name) || data.name || "anon").slice(0, 60), kind: data.kind === "agent" ? "agent" : "human", model: String(data.model || "").slice(0, 40), ts: Date.now() }); if (l.joined.length >= l.seats - 1) l.status = "full"; await put(env, "lobbies", lobbies); return J({ ok: true, lobby: l }); }
+    // ---- registry: the matrix of games to fill. Anyone signed in can register a planned/running/complete game (lands as "pending"
+    //      until a signed admin call confirms it); a signed harness registers directly. Fields: vars{model,agent,game,map,mode,difficulty}, title, owner{name,kind}, scheduled (YYYY-MM-DD), links{}, notes, status.
+    if (p === "/register") {
+      const signed = await hmacOk(env, body, req.headers.get("x-signature")); const sess = signed ? null : await readSession(env, req);
+      if (!signed && !sess) return J({ error: "sign in with Steam or Discord to register a game (harnesses sign with x-signature)" }, 401);
+      const v = data.vars || {}; for (const k of Object.keys(REG_VARS)) { if (!REG_VARS[k].includes(v[k])) return J({ error: `vars.${k} must be one of ${REG_VARS[k].join(", ")}` }, 400); }
+      const st = ["planned", "running", "complete"].includes(data.status) ? data.status : "planned";
+      const g = { id: ID(), ts: Date.now(), vars: Object.fromEntries(Object.keys(REG_VARS).map(k => [k, v[k]])), title: String(data.title || "").slice(0, 120), owner: { name: String((sess && sess.name) || data.owner?.name || "anon").slice(0, 60), kind: ["agent", "human", "team"].includes(data.owner?.kind) ? data.owner.kind : "human", account: sess ? sess.id : null },
+        scheduled: /^\d{4}-\d{2}-\d{2}$/.test(data.scheduled || "") ? data.scheduled : null, links: Object.fromEntries(Object.entries(data.links || {}).filter(([k, u]) => /^[a-z_]{1,20}$/.test(k) && /^https?:\/\//.test(String(u))).slice(0, 6).map(([k, u]) => [k, String(u).slice(0, 300)])),
+        notes: String(data.notes || "").slice(0, 500), status: signed ? st : "pending", requested: st, result: signed ? (data.result || null) : null };
+      const reg = await get(env, "registry", []); reg.push(g); await put(env, "registry", reg.slice(-2000)); return J({ ok: true, game: g, note: signed ? "registered" : "registered as pending; an admin confirms it" });
+    }
+    if (p.startsWith("/register/")) { // signed status/result update: { status, result?, scheduled?, links?, notes? }
+      if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401);
+      const reg = await get(env, "registry", []); const g = reg.find(x => x.id === p.slice(10)); if (!g) return J({ error: "no such registration" }, 404);
+      for (const k of ["status", "result", "scheduled", "links", "notes", "title"]) if (data[k] !== undefined) g[k] = data[k]; g.updated = Date.now(); await put(env, "registry", reg); return J({ ok: true, game: g });
+    }
+    if (p === "/admin/registry") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401); if (!Array.isArray(data)) return J({ error: "array" }, 400); await put(env, "registry", data); return J({ ok: true, n: data.length }); }
     if (p === "/admin/leagues") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401); await put(env, "leagues", data); return J({ ok: true }); }
     return J({ error: "not found" }, 404);
   }
