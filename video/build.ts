@@ -169,3 +169,5 @@ for await (const e of Deno.readDir("../saves/benchmark")) if (e.isFile) await De
 // human win end screens
 await Deno.mkdir("dist/results/human", { recursive: true });
 for await (const e of Deno.readDir("../recordings/endgame/human-qin-deity-VICTORY")) if (e.isFile && e.name.endsWith(".png")) await Deno.copyFile("../recordings/endgame/human-qin-deity-VICTORY/" + e.name, "dist/results/human/" + e.name);
+
+for (const f of ["clip-human.mp4", "results-victory.jpg"]) { try { await Deno.copyFile(f, "dist/" + f); } catch {} }
