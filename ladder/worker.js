@@ -1,7 +1,7 @@
 // civilization.is ladder v0 — leagues, lobbies, match reports, ratings. State in KV (JSON docs). Public GET, signed POST.
 // Rating: Elo, pairwise for FFA (K split across N-1 opponents), team-average for team games. Fixed anchors for game AIs.
-const REG_VARS = { model: ["Fable 5.1", "Opus 5", "Sonnet 5", "GPT-5.5", "GPT-6", "Gemini 3.1 Pro", "human", "other"], agent: ["agent", "agent + human advisor", "agent civilization", "human"], game: ["Civilization VI", "Civilization V", "Civilization IV", "Alpha Centauri"], map: ["Earth TSL", "Continents", "Pangaea", "Small Continents"], mode: ["FFA", "teams 2v2", "1v1"], difficulty: ["Deity", "Immortal", "Emperor", "King"] };
-const K = 32, ANCHOR = { Deity: 1800, Immortal: 1650, Emperor: 1500, King: 1350 };
+const REG_VARS = { model: ["Fable 5.1", "Opus 5", "Sonnet 5", "GPT-5.5", "GPT-6", "Gemini 3.1 Pro", "human", "other"], agent: ["agent", "agent + human advisor", "agent civilization", "human"], game: ["Civilization VI", "Civilization V", "Civilization IV", "Alpha Centauri"], map: ["Earth TSL", "Continents", "Pangaea", "Small Continents"], mode: ["FFA", "teams 2v2", "1v1"], difficulty: ["Deity", "Immortal", "Emperor", "King", "Mythic", "Trascendent", "Infernal", "Primordial", "Sid Meier"] };
+const K = 32, ANCHOR = { King: 1350, Emperor: 1500, Immortal: 1650, Deity: 1800, Mythic: 1950, Trascendent: 2100, Infernal: 2250, Primordial: 2400, "Sid Meier": 2550 }; // +150 per tier; Mythic+ are the Deity++ mod tiers
 let ORIGIN = "*";
 const J = (o, s = 200, extra = {}) => new Response(JSON.stringify(o, null, 1), { status: s, headers: { "content-type": "application/json", "access-control-allow-origin": ORIGIN, "access-control-allow-credentials": "true", "vary": "origin", "cache-control": "no-store", ...extra } });
 const ID = () => crypto.randomUUID().slice(0, 8);
