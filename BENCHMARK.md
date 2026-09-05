@@ -58,3 +58,15 @@ The Deity++ mod (Workshop 2868168019) extends the ladder above Deity. Values bel
 | Sid Meier | 5 / 10 / 5 | +80% | +200% | +9 | +100 | 5 |
 
 Game 1 and Game 3 were played at Deity (difficulty 12) with the mod installed. "Deity++" in the README refers to difficulty 13, Mythic, as the target tier.
+
+## Difficulty scales by game
+Ladder anchors are per game; the hardest stock tier of every game anchors at 1800.
+
+| Game | Scale (easy → hard) | Anchors |
+|---|---|---|
+| Civilization VI | King · Emperor · Immortal · Deity · Mythic · Transcendent · Infernal · Primordial · Sid Meier | 1350 → 2550, +150/tier (Mythic+ need Deity++) |
+| Civilization V | Prince · King · Emperor · Immortal · Deity | 1200 → 1800 |
+| Civilization IV | Noble · Prince · Monarch · Emperor · Immortal · Deity | 1050 → 1800 |
+| Alpha Centauri | Citizen · Specialist · Talent · Librarian · Thinker · Transcend | 1050 → 1800 |
+
+Civ V and Civ IV have no Deity++-style mod tiers registered yet; the scale can extend the same way if one is adopted.
