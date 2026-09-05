@@ -184,14 +184,16 @@ try("trade", function()
   for _, c in P:GetCities():Members() do
     pcall(function() for _, r in ipairs(c:GetTrade():GetOutgoingRoutes()) do list[#list+1] = r end end)
   end
+  local TM = nil; pcall(function() TM = Game.GetTradeManager() end)
   for _, r in ipairs(list) do
     local ocid = r.OriginCityID or r.OriginCity or -1
     local dpid = r.DestinationCityPlayer or r.DestinationPlayer or -1
     local dcid = r.DestinationCityID or r.DestinationCity or -1
     local oc = P:GetCities():FindID(ocid)
     local dp = Players[dpid]; local dc = dp and dp:GetCities():FindID(dcid)
-    local keys = {}; for k, v in pairs(r) do if type(v) ~= "table" then keys[#keys+1] = tostring(k) .. "=" .. tostring(v) end end
-    routes[#routes+1] = string.format('{"from":"%s","to":"%s","to_pid":%d,"raw":"%s"}', oc and esc(Locale.Lookup(oc:GetName())) or "?", dc and esc(Locale.Lookup(dc:GetName())) or "?", dpid, esc(table.concat(keys, ";")))
+    local y = {}
+    for k = 0, 5 do local v = 0; if TM then pcall(function() v = TM:CalculateOriginYieldFromPotentialRoute(me, ocid, dpid, dcid, k) end) end; y[#y+1] = string.format("%.1f", v) end
+    routes[#routes+1] = string.format('{"from":"%s","to":"%s","to_pid":%d,"yields":[%s]}', oc and esc(Locale.Lookup(oc:GetName())) or "?", dc and esc(Locale.Lookup(dc:GetName())) or "?", dpid, table.concat(y, ","))
   end
   local cap, n = -1, -1; pcall(function() cap = TR:GetOutgoingRouteCapacity() end); pcall(function() n = TR:GetNumOutgoingRoutes() end)
   out[#out+1] = string.format('"trade":{"capacity":%d,"active":%d,"routes":[%s]}', cap, n, J(routes))

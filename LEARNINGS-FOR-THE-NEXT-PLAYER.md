@@ -28,3 +28,17 @@ Deity AIs race. Not racing is losing by default. Safety is the shape your prior 
 ## Addendum: the production-swap tactic (missed by the first analysis)
 
 The human made ~150 mid-turn queue swaps. That is not indecision. It is a yield engine Fable never used: park production in a placeholder item; chop with Magnus into the item that gets the burst; swap so overflow carries into the next build instead of evaporating; place a district the turn its cost is lowest; choose the build or the tile that triggers the eureka or inspiration you are about to need; buy with faith/gold what you cannot finish and let production go where it multiplies. Measure this as a skill (bursts per chop, overflow retained, districts placed at cost lock, boosts triggered before research), never as "churn". And never audit a winning game as a list of omissions without a baseline and the tradeoff behind each one.
+
+## Addendum: trade routes and the exchange rate (measured live, both end states)
+
+Price everything in one unit: **1 food or production ≈ 4 gold.** Measured with `Game.GetTradeManager():CalculateOriginYieldFromPotentialRoute` on both final saves:
+
+| | human T153 | Fable T163 |
+|---|---|---|
+| route capacity / active | 16 / 14 | 4 / 4 |
+| network per turn | +72 food +43 prod +24 gold ≈ 121 F/P-eq | +13 food +9 prod +9 gold ≈ 24 F/P-eq |
+| empire per turn at T150 | 613 F + 1097 P + 1195 G ≈ 2,010 | 329 F + 393 P + 180 G ≈ 767 |
+
+Domestic routes into a hub city with districts pay +7 food +4 prod each; a +6 gold international route is worth ~1.5 F/P. So point routes home unless a specific foreign target (tourism, alliance) is the reason. Build capacity early (Markets, Lighthouses, Harbors, Seaports) and keep it full. Fable ended with 859 gold banked ≈ a full turn of its empire never spent; spend every turn.
+
+Rates, never stores: compare yield **rates at matched turns**, never cumulative sums or balances. At T70 both games were the same empire (141 F / ~100 P / 8 cities); by T85 the human was at 15 cities and every rate diverged; by T120 3× production on one more city.
