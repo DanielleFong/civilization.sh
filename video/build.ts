@@ -165,3 +165,7 @@ for await (const e of Deno.readDir("icons")) if (e.isFile) await Deno.copyFile("
 // downloadable benchmark package: start save, human win save, mod list
 await Deno.mkdir("dist/saves", { recursive: true });
 for await (const e of Deno.readDir("../saves/benchmark")) if (e.isFile) await Deno.copyFile("../saves/benchmark/" + e.name, "dist/saves/" + e.name);
+
+// human win end screens
+await Deno.mkdir("dist/results/human", { recursive: true });
+for await (const e of Deno.readDir("../recordings/endgame/human-qin-deity-VICTORY")) if (e.isFile && e.name.endsWith(".png")) await Deno.copyFile("../recordings/endgame/human-qin-deity-VICTORY/" + e.name, "dist/results/human/" + e.name);
