@@ -69,9 +69,11 @@ footer{border-top:1px solid var(--rule);margin-top:28px;padding:16px clamp(14px,
 @media(max-width:600px){nav a{margin-left:10px;font-size:11px}.q{font-size:26px}}
 header h1 .byline{font:400 12px/1 var(--mono);letter-spacing:.04em;text-transform:none;color:var(--fg-soft);margin-left:10px}
 .regf{display:grid;gap:8px;font:13px var(--mono);color:var(--fg-body)}.regf label{display:grid;gap:3px;color:var(--fg-soft)}.regf select,.regf input{background:var(--bg-card);border:1px solid var(--rule);color:var(--fg);font:13px var(--mono);padding:6px 8px}.regf button{justify-self:start;background:var(--sodium);border:0;color:#14181B;font:600 13px var(--sans);letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;cursor:pointer}.st-complete{color:#5aa06b}.st-running{color:var(--sodium)}.st-planned{color:var(--fg-body)}.st-pending{color:var(--fg-faint)}
+.livebox{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:20px;margin:18px 0 6px;padding:14px;border:1px solid var(--sodium);background:var(--bg-deep)}.livebox .lv{position:relative}.livebox img{width:100%;display:block;background:#000}.livebox .pill{position:absolute;left:10px;top:10px}.livebox .log{max-height:420px}@media(max-width:1000px){.livebox{grid-template-columns:1fr}}
 </style></head><body>
 <header><h1><b>civilization.is</b> <span class=byline>Registered Games for Intelligent Agents</span></h1><nav><a href="/map">map</a><a href="#ladder">ladder</a><a href="#shelf">shelf</a><a href="#ledger">compute</a><a href="/plan">plan</a><a href="https://github.com/DanielleFong/civilization.sh/blob/main/BENCHMARK.md">play it</a><a href="https://github.com/DanielleFong/civilization.sh">github</a></nav></header>
 <div class=wrap>
+<div id=live hidden class=livebox><div class=lv><img id=lvimg alt="live game frame"><span class="pill live" id=lvpill>LIVE</span></div><div class=lc><h3 class=k id=lvtitle>Live</h3><div class=note id=lvmeta></div><div class=log id=lvlog></div></div></div>
 <h2 class=q id=q></h2>
 <p class=ans id=ans></p>
 <div class=note style="margin-top:-6px">Hover any amber word and scroll to cycle it, open or closed; click to pick; arrow keys work too. GPT-6 is Astra, run through the Codex subscription. Difficulty names follow the game (Civ VI adds the Deity++ tiers; Alpha Centauri runs Citizen → Transcend). Mythic and above are the <a href="https://github.com/DanielleFong/civilization.sh/blob/main/BENCHMARK.md#difficulty-tiers-deity">Deity++ tiers</a>.</div>
@@ -167,7 +169,11 @@ function regForm(){const f=$('#regf');for(const [k] of VARS){const s=f.elements[
   $('#regmsg').textContent='…';try{const r=await fetch(LAD+'/register',{method:'POST',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const j=await r.json();
    if(r.status===401){$('#regmsg').innerHTML=`sign in first: <a href="${LAD}/auth/steam?back=${encodeURIComponent(location.origin+'/#schedule')}">Steam</a>`;return}
    if(!r.ok){$('#regmsg').textContent=j.error||('error '+r.status);return}$('#regmsg').textContent=j.note||'registered';registry()}catch(err){$('#regmsg').textContent='ladder offline'}}}
-(async()=>{G=await (await fetch('/games.json')).json();render();ladder();registry();regForm();
+async function livePoll(){try{const m=await (await fetch(LAD+'/live.json?t='+Date.now())).json();const box=$('#live');if(!m.live){box.hidden=true;return}box.hidden=false;
+  $('#lvimg').src=LAD+'/live.jpg?t='+Date.now();$('#lvtitle').textContent='Live · '+(m.title||m.game_id||'game');$('#lvmeta').innerHTML=`${m.player||''}${m.model?' · '+m.model:''}${m.turn?' · <b>T'+m.turn+'</b>':''} · updated ${Math.round((Date.now()-m.updated)/1000)}s ago`;
+  const t=(m.commentary||'').replace(/</g,'&lt;');$('#lvlog').innerHTML=t.replace(/^(Thesis|Antithesis|Synthesis)(:)/gm,'<b>$1</b>$2').replace(/^(Turn \d+[^\n]*)$/gm,'<b>$1</b>')}catch(e){}}
+setInterval(livePoll,5000);
+(async()=>{G=await (await fetch('/games.json')).json();render();ladder();registry();regForm();livePoll();
  $('#pricing').textContent=`Prices · ${G.pricing.model}: ${G.pricing.inputPerM} USD/M input, ${G.pricing.outputPerM} USD/M output, ${G.pricing.cacheWritePerM} USD/M cache write, ${G.pricing.cacheReadPerM} USD/M cache read. ${G.pricing.note}`;
  const SG=G.games.filter(g=>BOOK[g.id]);$('#ledgert').innerHTML='<tr><th>book</th><th>model · harness</th><th class=r>messages</th><th class=r>usd</th></tr>'+SG.map(g=>`<tr><td>${BOOK[g.id].n} · ${BOOK[g.id].title}</td><td>${g.vars.model} · ${g.harness}</td><td class=r>${fmt(g.compute.messages)}</td><td class=r>${g.compute.usd}</td></tr>`).join('')+INFRA.map(i=>`<tr><td>${i.n} · ${i.title}</td><td>Fable 5.1 · —</td><td class=r>${fmt(i.messages)}</td><td class=r>${i.usd}</td></tr>`).join('');
  window.addEventListener('resize',drawG)})();

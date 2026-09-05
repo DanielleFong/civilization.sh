@@ -68,6 +68,8 @@ export default {
       if (p === "/" || p === "/ladder.json") { const players = await get(env, "players", {}); const matches = await get(env, "matches", []); const lobbies = (await get(env, "lobbies", [])).filter(l => l.status === "open" && Date.now() - l.created < 7 * 864e5);
         return J({ leagues, anchors: ANCHOR, players: Object.values(players).sort((a, b) => b.rating - a.rating), matches: matches.slice(-100).reverse(), lobbies, updated: Date.now() }); }
       if (p === "/lobbies") return J((await get(env, "lobbies", [])).filter(l => l.status === "open"));
+      if (p === "/live.json") { const m = await get(env, "live:meta", null); return J(m ? { ...m, live: Date.now() - m.updated < 90000 } : { live: false }); }
+      if (p === "/live.jpg") { const b = await env.LADDER.get("live:frame", "arrayBuffer"); if (!b) return new Response("no frame", { status: 404 }); return new Response(b, { headers: { "content-type": "image/jpeg", "cache-control": "public, max-age=2", "access-control-allow-origin": ORIGIN } }); }
       if (p === "/registry.json") { const reg = await get(env, "registry", []); return J({ games: reg.filter(g => g.status !== "rejected"), vars: REG_VARS, difficultyByGame: DIFF_BY_GAME, anchors: ANCHOR_BY_GAME, updated: Date.now() }); }
       if (p.startsWith("/player/")) { const players = await get(env, "players", {}); const pl = players[p.slice(8)]; return pl ? J(pl) : J({ error: "no such player" }, 404); }
       return J({ error: "not found" }, 404);
@@ -105,6 +107,12 @@ export default {
       for (const k of ["status", "result", "scheduled", "links", "notes", "title"]) if (data[k] !== undefined) g[k] = data[k]; g.updated = Date.now(); await put(env, "registry", reg); return J({ ok: true, game: g });
     }
     if (p === "/admin/registry") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401); if (!Array.isArray(data)) return J({ error: "array" }, 400); await put(env, "registry", data); return J({ ok: true, n: data.length }); }
+    // ---- live: signed pusher posts { game_id, model, player, turn, title, commentary, frame_b64 } every few seconds
+    if (p === "/live") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401);
+      const meta = { game_id: String(data.game_id || "").slice(0, 80), model: String(data.model || "").slice(0, 40), player: String(data.player || "").slice(0, 80), turn: +data.turn || null, title: String(data.title || "").slice(0, 160), commentary: String(data.commentary || "").slice(0, 6000), commentary_ts: data.commentary_ts || null, updated: Date.now() };
+      await put(env, "live:meta", meta);
+      if (data.frame_b64) { const bin = Uint8Array.from(atob(data.frame_b64), c => c.charCodeAt(0)); if (bin.length < 4000000) await env.LADDER.put("live:frame", bin.buffer); }
+      return J({ ok: true, updated: meta.updated }); }
     if (p === "/admin/rerate") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401);
       const matches = await get(env, "matches", []); const players = {}; for (const m of matches) m.changes = rate(players, m); await put(env, "players", players); await put(env, "matches", matches); return J({ ok: true, players: Object.values(players).map(x => ({ id: x.id, name: x.name, rating: x.rating, games: x.games, provisional: x.provisional })) }); }
     if (p === "/admin/leagues") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401); await put(env, "leagues", data); return J({ ok: true }); }
