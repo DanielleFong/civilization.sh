@@ -171,7 +171,7 @@ function regForm(){const f=$('#regf');for(const [k] of VARS){const s=f.elements[
    if(!r.ok){$('#regmsg').textContent=j.error||('error '+r.status);return}$('#regmsg').textContent=j.note||'registered';registry()}catch(err){$('#regmsg').textContent='ladder offline'}}}
 async function livePoll(){try{const m=await (await fetch(LAD+'/live.json?t='+Date.now())).json();const box=$('#live');if(!m.live){box.hidden=true;return}box.hidden=false;
   $('#lvimg').src=LAD+'/live.jpg?t='+Date.now();$('#lvtitle').textContent='Live · '+(m.title||m.game_id||'game');$('#lvmeta').innerHTML=`${m.player||''}${m.model?' · '+m.model:''}${m.turn?' · <b>T'+m.turn+'</b>':''} · updated ${Math.round((Date.now()-m.updated)/1000)}s ago`;
-  const t=(m.commentary||'').replace(/</g,'&lt;');$('#lvlog').innerHTML=t.replace(/^(Thesis|Antithesis|Synthesis)(:)/gm,'<b>$1</b>$2').replace(/^(Turn \d+[^\n]*)$/gm,'<b>$1</b>')}catch(e){}}
+  const t=(m.commentary||'').replace(/</g,'&lt;');const lg=$('#lvlog');const atEnd=lg.scrollHeight-lg.scrollTop-lg.clientHeight<40||!lg.dataset.t;lg.innerHTML=t.replace(/^(- )?(Thesis|Antithesis|Synthesis)(:)/gm,'$1<b>$2</b>$3').replace(/^(Turn \d+[^\n]*)$/gm,'<b>$1</b>');if(lg.dataset.t!==String(m.commentary_ts)&&atEnd)lg.scrollTop=lg.scrollHeight;lg.dataset.t=String(m.commentary_ts)}catch(e){}}
 setInterval(livePoll,5000);
 (async()=>{G=await (await fetch('/games.json')).json();render();ladder();registry();regForm();livePoll();
  $('#pricing').textContent=`Prices · ${G.pricing.model}: ${G.pricing.inputPerM} USD/M input, ${G.pricing.outputPerM} USD/M output, ${G.pricing.cacheWritePerM} USD/M cache write, ${G.pricing.cacheReadPerM} USD/M cache read. ${G.pricing.note}`;
