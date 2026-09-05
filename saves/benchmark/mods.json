@@ -1,0 +1,18 @@
+[
+ {"source":"workshop","id":"871861883","name":"Yet (not) Another Maps Pack (YnAMP)","role":"Earth TSL map","required":true},
+ {"source":"local","id":"BBG-7.4.6","name":"Better Balanced Game 7.4.6","role":"balance ruleset","required":true},
+ {"source":"workshop","id":"2868168019","name":"Deity ++","role":"difficulty 13 (Deity+5) — the Deity++ tier","required":true},
+ {"source":"workshop","id":"3307282026","name":"Multiplayer Helper (MPH)","role":"Smart-Timer = Off (value 1). Never write TURN_TIMER into a live game.","required":true},
+ {"source":"local","id":"CivFleetAutoBegin","name":"CivFleet Auto Begin","role":"harness: auto-begin at menu","required":false},
+ {"source":"workshop","id":"1312585482","name":"Better Report Screen (UI)","role":"UI only","required":false},
+ {"source":"workshop","id":"1505351262","name":"Repeat Project","role":"UI only","required":false},
+ {"source":"workshop","id":"1652106496","name":"Great Works Viewer","role":"UI only","required":false},
+ {"source":"workshop","id":"2266952591","name":"Extended Policy Cards","role":"UI only","required":false},
+ {"source":"workshop","id":"2428969051","name":"Detailed Map Tacks","role":"UI only","required":false},
+ {"source":"workshop","id":"2447217603","name":"Better Trade Screen Fix","role":"UI only","required":false},
+ {"source":"workshop","id":"2460661464","name":"Quick Deals","role":"UI only","required":false},
+ {"source":"workshop","id":"2542898147","name":"Sukritact's Oceans","role":"visual only","required":false},
+ {"source":"workshop","id":"873246701","name":"Better Trade Screen","role":"UI only","required":false},
+ {"source":"workshop","id":"882664162","name":"Leugi's Unique District Icons","role":"visual only","required":false},
+ {"source":"workshop","id":"939149009","name":"Sukritact's Simple UI Adjustments","role":"UI only","required":false}
+]
