@@ -2,7 +2,7 @@
 // Rating: Elo, pairwise for FFA (K split across N-1 opponents), team-average for team games. Fixed anchors for game AIs.
 const REG_VARS = { model: ["Fable 5.1", "Opus 5", "Sonnet 5", "GPT-5.5", "GPT-6", "Gemini 3.1 Pro", "human", "other"], agent: ["agent", "agent + human advisor", "agent civilization", "human"], game: ["Civilization VI", "Civilization V", "Civilization IV", "Alpha Centauri"], map: ["Earth TSL", "Continents", "Pangaea", "Small Continents"], mode: ["FFA", "teams 2v2", "1v1"], difficulty: ["King", "Emperor", "Immortal", "Deity", "Mythic", "Transcendent", "Infernal", "Primordial", "Sid Meier", "Prince", "Noble", "Monarch", "Citizen", "Specialist", "Talent", "Librarian", "Thinker", "Transcend"] };
 const DIFF_BY_GAME = { "Civilization VI": ["King", "Emperor", "Immortal", "Deity", "Mythic", "Transcendent", "Infernal", "Primordial", "Sid Meier"], "Civilization V": ["Prince", "King", "Emperor", "Immortal", "Deity"], "Civilization IV": ["Noble", "Prince", "Monarch", "Emperor", "Immortal", "Deity"], "Alpha Centauri": ["Citizen", "Specialist", "Talent", "Librarian", "Thinker", "Transcend"] };
-const K = 32, ANCHOR = { King: 1350, Emperor: 1500, Immortal: 1650, Deity: 1800, Mythic: 1950, Transcendent: 2100, Infernal: 2250, Primordial: 2400, "Sid Meier": 2550 }; // Civ VI; +150 per tier; Mythic+ are the Deity++ mod tiers
+const K = 32, PLACEMENT = 3, ANCHOR = { King: 1350, Emperor: 1500, Immortal: 1650, Deity: 1800, Mythic: 1950, Transcendent: 2100, Infernal: 2250, Primordial: 2400, "Sid Meier": 2550 }; // Civ VI; +150 per tier; Mythic+ are the Deity++ mod tiers
 const ANCHOR_BY_GAME = { "Civilization VI": ANCHOR, "Civilization V": { Prince: 1200, King: 1350, Emperor: 1500, Immortal: 1650, Deity: 1800 }, "Civilization IV": { Noble: 1050, Prince: 1200, Monarch: 1350, Emperor: 1500, Immortal: 1650, Deity: 1800 }, "Alpha Centauri": { Citizen: 1050, Specialist: 1200, Talent: 1350, Librarian: 1500, Thinker: 1650, Transcend: 1800 } };
 const anchorFor = (game, diff) => (ANCHOR_BY_GAME[game] || ANCHOR)[diff] ?? ANCHOR[diff] ?? 1600;
 let ORIGIN = "*";
@@ -20,8 +20,12 @@ function rate(players, result) {
   const delta = sides.map(() => 0); const n = sides.length;
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { if (i === j) continue; const sc = sides[i].place < sides[j].place ? 1 : sides[i].place > sides[j].place ? 0 : 0.5; delta[i] += (K / (n - 1)) * (sc - expected(sideR[i], sideR[j])); }
   const changes = [];
-  sides.forEach((s, i) => s.players.forEach(p => { if (p.kind === "ai") return; const cur = players[p.id] ?? { id: p.id, name: p.name, kind: p.kind, model: p.model, harness: p.harness, rating: 1500, games: 0, wins: 0, history: [] };
-    const before = cur.rating; cur.rating = Math.round(cur.rating + delta[i]); cur.games++; if (s.place === 1) cur.wins++; cur.name = p.name ?? cur.name; cur.model = p.model ?? cur.model; cur.harness = p.harness ?? cur.harness;
+  // performance rating of side i against the field: mean opponent rating + 400·(W−L)/N (ties = 0)
+  const perf = (i) => { let W = 0, L = 0, sum = 0, N = 0; for (let j = 0; j < n; j++) { if (i === j) continue; N++; sum += sideR[j]; if (sides[i].place < sides[j].place) W++; else if (sides[i].place > sides[j].place) L++; } return N ? Math.round(sum / N + 400 * (W - L) / N) : 1500; };
+  sides.forEach((s, i) => s.players.forEach(p => { if (p.kind === "ai") return; const cur = players[p.id] ?? { id: p.id, name: p.name, kind: p.kind, model: p.model, harness: p.harness, rating: 1500, games: 0, wins: 0, history: [], placements: [] };
+    const before = cur.rating;
+    if (cur.games < PLACEMENT) { (cur.placements ??= []).push(perf(i)); cur.rating = Math.round(cur.placements.reduce((a, b) => a + b, 0) / cur.placements.length); cur.provisional = cur.placements.length < PLACEMENT; }
+    else { cur.rating = Math.round(cur.rating + delta[i]); cur.provisional = false; } cur.games++; if (s.place === 1) cur.wins++; cur.name = p.name ?? cur.name; cur.model = p.model ?? cur.model; cur.harness = p.harness ?? cur.harness;
     cur.history.push({ match: result.id, before, after: cur.rating, place: s.place, of: n, league: result.league }); if (cur.history.length > 200) cur.history.shift(); players[p.id] = cur; changes.push({ id: p.id, before, after: cur.rating }); }));
   return changes;
 }
@@ -101,6 +105,8 @@ export default {
       for (const k of ["status", "result", "scheduled", "links", "notes", "title"]) if (data[k] !== undefined) g[k] = data[k]; g.updated = Date.now(); await put(env, "registry", reg); return J({ ok: true, game: g });
     }
     if (p === "/admin/registry") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401); if (!Array.isArray(data)) return J({ error: "array" }, 400); await put(env, "registry", data); return J({ ok: true, n: data.length }); }
+    if (p === "/admin/rerate") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401);
+      const matches = await get(env, "matches", []); const players = {}; for (const m of matches) m.changes = rate(players, m); await put(env, "players", players); await put(env, "matches", matches); return J({ ok: true, players: Object.values(players).map(x => ({ id: x.id, name: x.name, rating: x.rating, games: x.games, provisional: x.provisional })) }); }
     if (p === "/admin/leagues") { if (!(await hmacOk(env, body, req.headers.get("x-signature")))) return J({ error: "bad signature" }, 401); await put(env, "leagues", data); return J({ ok: true }); }
     return J({ error: "not found" }, 404);
   }
