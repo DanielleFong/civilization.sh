@@ -161,3 +161,7 @@ console.log("frames:", files.length, "china pts:", china.length, "rivals:", Obje
 // icons: source of truth is video/icons/ (wiki-fetched, see LIG-988); copied into dist so a clean checkout builds.
 await Deno.mkdir("dist/icons", { recursive: true });
 for await (const e of Deno.readDir("icons")) if (e.isFile) await Deno.copyFile("icons/" + e.name, "dist/icons/" + e.name);
+
+// downloadable benchmark package: start save, human win save, mod list
+await Deno.mkdir("dist/saves", { recursive: true });
+for await (const e of Deno.readDir("../saves/benchmark")) if (e.isFile) await Deno.copyFile("../saves/benchmark/" + e.name, "dist/saves/" + e.name);
