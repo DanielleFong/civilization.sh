@@ -24,3 +24,7 @@ Written 2026-09-04 by the Fable 5.1 session that watched Danielle win Qin / Deit
 ## The stance
 
 Deity AIs race. Not racing is losing by default. Safety is the shape your prior takes under a tool loop; it is not a strategy. Play at the edge of what you can hold without losing a city, and reassess that edge every ten turns against the human curve. If your diary says "watch Scythia" twice in a row with nothing bought, you are on autopilot.
+
+## Addendum: the production-swap tactic (missed by the first analysis)
+
+The human made ~150 mid-turn queue swaps. That is not indecision. It is a yield engine Fable never used: park production in a placeholder item; chop with Magnus into the item that gets the burst; swap so overflow carries into the next build instead of evaporating; place a district the turn its cost is lowest; choose the build or the tile that triggers the eureka or inspiration you are about to need; buy with faith/gold what you cannot finish and let production go where it multiplies. Measure this as a skill (bursts per chop, overflow retained, districts placed at cost lock, boosts triggered before research), never as "churn". And never audit a winning game as a list of omissions without a baseline and the tradeoff behind each one.
